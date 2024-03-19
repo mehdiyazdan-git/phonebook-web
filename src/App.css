@@ -1,38 +1,42 @@
-.App {
-  text-align: center;
+body {
+    background-image: url('/src/components/assets/img/default.jpg'); /* Adjust the path as needed */
+    background-size: cover; /* Adjust as needed */
+    /* Other background properties can be added here (e.g., background-repeat, background-position) */
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.label {
+    font-family: "IRANSans", sans-serif;
+    font-size: 0.75rem;
+    font-weight: bold;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.container-fluid {
+    font-family: "IRANSans", serif;
+    border: 1px #ccc solid;
+    border-radius: 4px;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.3);
+    /* Additional styles from inline styles */
+    /* Add more styles here if needed */
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.container-fluid > * {
+    margin: 0;
 }
 
-.App-link {
-  color: #61dafb;
+.container-fluid > *:not(:last-child) {
+    margin-right: 0.5rem; /* Adjust the horizontal margin as needed */
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.table-cell {
+    font-family: "IRANSans", sans-serif;
+    font-size: 0.75rem;
 }
+.table-header {
+    font-family: "IRANSans", sans-serif;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+
+

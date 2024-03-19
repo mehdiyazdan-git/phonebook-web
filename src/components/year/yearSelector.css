@@ -1,0 +1,50 @@
+/* Styles for the select element */
+.drop-down {
+    width: 100%;
+    padding: 8px; /* Adjust padding as needed */
+    font-size: 0.85rem; /* Adjust font size as needed */
+    border: 1px solid #ced4da; /* Add border color */
+    border-radius: 4px; /* Add border radius for rounded corners */
+    background-color: #fff; /* Set background color */
+    cursor: pointer; /* Show pointer cursor on hover */
+    outline: none; /* Remove outline on focus */
+    box-sizing: border-box; /* Include padding and border in element's total width and height */
+    font-family: "IRANSans", sans-serif;
+}
+
+/* Styles for the select options */
+.option {
+    padding: 12px; /* Adjust padding as needed */
+    background-color: #fff; /* Set background color */
+    cursor: pointer; /* Show pointer cursor on hover */
+    margin: 4px 0; /* Add space between options */
+    font-family: "IRANSans", sans-serif;
+    font-size: 0.85rem; /* Adjust font size as needed */
+}
+
+/* Styles for the horizontal line between options */
+.separator {
+    border-top: 1px solid #4c4e51; /* Gray border color for separation */
+    margin: 4px 0; /* Adjust margin to control the separation */
+}
+
+/* Styles for the selected option */
+.drop-down option:checked {
+    background-color: #e0e0e0; /* Set background color for the selected option */
+}
+
+
+/* Styles for the selected option */
+.drop-down option:checked {
+    background-color: #e0e0e0; /* Set background color for the selected option */
+}
+
+/* Styles for the select arrow icon (assuming Material-UI styling) */
+.drop-down::after {
+    content: '▼'; /* Unicode for a down arrow */
+    position: absolute;
+    top: 50%;
+    right: 12px; /* Adjust the distance of the arrow from the right edge */
+    transform: translateY(-50%);
+    pointer-events: none; /* Ensure that the arrow doesn't interfere with select interaction */
+}

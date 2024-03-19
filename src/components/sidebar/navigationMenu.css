@@ -1,0 +1,50 @@
+.accordion-button {
+    background-color : rgba(15, 134, 251, 0.12) !important;
+    border: 1px #ccc solid;
+    font-family: "IRANSansMedium", sans-serif;
+}
+
+.accordion-button:focus {
+    box-shadow: none;
+}
+
+.accordion-button:not(.collapsed) {
+    color: #212529;
+
+}
+.accordion-body{
+    font-family: "IRANSansMedium", sans-serif;
+    font-size: 0.9rem;
+    text-align: right;
+    padding: 0;
+}
+
+.nav-item{
+    margin: 0;
+    padding: 0;
+}
+.nav-item :hover{
+    background-color: #007bff;
+    color: #eff2f7;
+}
+.nav-item .Link {
+    text-decoration: none;
+}
+
+/* styles.css */
+
+.Link {
+    /* Your default link styles here */
+    color: #333;
+    text-decoration: none;
+    padding: 5px;
+}
+
+.Link.active {
+    background-color: #1d5380;
+    border-bottom: 2px solid #007bff; /* Example: Blue underline for the active link */
+    color: #92b5f0; /* Example: Change text color for the active link */
+    padding: 5px;
+}
+
+
