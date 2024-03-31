@@ -1,10 +1,17 @@
 import { useEffect, useState } from "react";
 import Select from 'react-select/async';
 import Customer from "../../services/customerService";
+import useHttp from "../hooks/useHttp";
 
 const CustomerDropDown = ({ id, onSelect, name, error, defaultOptions, disabled }) => {
     const [selectedCustomer, setSelectedCustomer] = useState(null);
     const [defaultCustomers, setDefaultCustomers] = useState([]);
+
+    const {http} = useHttp();
+
+    const getAllCustomers = async (queryParams) => {
+        return await http.get(`/customers?${queryParams.toString()}`).then(r => r.data);
+    };
 
     const loadOptions = async (inputValue, callback) => {
         if (inputValue) {
@@ -59,7 +66,7 @@ const CustomerDropDown = ({ id, onSelect, name, error, defaultOptions, disabled 
         // Load default customer options when the component mounts
         const fetchDefaultCustomers = async () => {
             try {
-                const customerData = await Customer.crud.getAllCustomers();
+                const customerData = await getAllCustomers();
                 const options = customerData.data.map((customer) => ({
                     label: customer.name,
                     value: customer.id,

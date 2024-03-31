@@ -11,7 +11,6 @@ import moment from "jalali-moment";
 import { verifyIranianNationalId } from "@persian-tools/persian-tools";
 import {NationalIdInput} from "../../utils/formComponents/NationalIdInput";
 import {PhoneNumberInput} from "../../utils/formComponents/PhoneNumberInput";
-import PersonDocumentUpload from "./PersonDocumentUpload";
 
 
 
@@ -99,7 +98,6 @@ const NewPersonForm = ({onAddPerson, show, onHide}) => {
                             انصراف
                         </Button>
                     </Form>
-                    <PersonDocumentUpload/>
                 </div>
             </Modal.Body>
         </Modal>

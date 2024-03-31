@@ -13,13 +13,26 @@ import AttachmentTable from "../attachment/AttachmentTable";
 import Customer from "../../services/CustomerService";
 import Company from "../../services/companyService";
 import Letter from "../../services/letterService";
+import useHttp from "../../hooks/useHttp";
 
 
 const headerStyle = {backgroundColor: 'rgba(63,51,106,0.6)',};
 const titleStyle = {fontFamily: 'IRANSansBold', fontSize: '0.8rem', color: '#fff',};
 const bodyStyle = {backgroundColor: 'rgba(240,240,240,0.3)',};
 
-const EditLetterForm = ({letter, onUpdateLetter, show, onHide}) => {
+const EditLetterForm = ({letter, onUpdateLetter, show, onHide,letterType}) => {
+
+    const {http} = useHttp();
+    const getCompanySelect = async (queryParam) => {
+        return await http.get(`/companies/select?queryParam=${queryParam ? queryParam : ''}`);
+    };
+
+    const search = async (searchQuery) => {
+        return await http.get(`/search?searchQuery=${searchQuery}`).then(response => response.data);
+    };
+    const getCustomerSelect = async () => {
+        return await http.get(`/customers/select`);
+    };
 
     const validationSchema = Yup.object().shape({
         letterNumber: Yup.string().required('شماره نامه الزامیست.'),
@@ -53,17 +66,17 @@ const EditLetterForm = ({letter, onUpdateLetter, show, onHide}) => {
                             </FormRow>
                             <FormRow>
                                 <Col>
-                                    <label className="label">فرستنده</label>
+                                    <label className="label">{letterType === "outgoing" ? "فرستنده" : "گیرنده"}</label>
                                     <AsyncSelectInput
                                         name={"companyId"}
-                                        apiFetchFunction={Company.crud.getCompanySelect}
+                                        apiFetchFunction={getCompanySelect}
                                     />
                                 </Col>
                                 <Col>
-                                    <label className="label">گیرنده</label>
+                                    <label className="label">{letterType === "incoming" ? "فرستنده" : "گیرنده"}</label>
                                     <AsyncSelectInput
                                         name={"customerId"}
-                                        apiFetchFunction={Customer.crud.getCustomerSelect}
+                                        apiFetchFunction={getCustomerSelect}
                                     />
                                 </Col>
                             </FormRow>

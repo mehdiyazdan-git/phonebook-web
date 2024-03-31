@@ -45,6 +45,7 @@ const SidebarMenu = () => {
             <SidebarLink to={`/year`}>تعریف سال</SidebarLink>
             <SidebarLink to={`/positions`}>سمت هیئت مدیره</SidebarLink>
             <SidebarLink to={`/board-members`}>اعضای هیئت مدیره</SidebarLink>
+            <SidebarLink to="/users">Users</SidebarLink>
         </Sidebar>
     );
 };

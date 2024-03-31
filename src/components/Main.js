@@ -1,23 +1,15 @@
-import React from 'react';
-import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
+import React, {useState} from 'react';
+import {Route, Routes, useNavigate} from "react-router-dom";
 import App from "../App";
 import NewPersonForm from "./person/NewPersonForm";
 import EditPersonForm from "./person/EditPersonForm";
 import NewLetterForm from "./letters/NewLetterForm";
 import EditLetterForm from "./letters/EditLetterForm";
-import SenderPage from "./senders/SenderPage";
-import SenderContainer from "./senders/SenderContainer";
-import EditSenderForm from "./senders/EditSenderForm";
-import SenderLetters from "./senders/SenderLetters";
-import NewSenderForm from "./senders/NewSenderForm";
 import NotFoundPage from "./senders/NotFoundPage";
 import FiscalYear from "./year/FiscalYear";
-import {NavigationProvider} from "./contexts/NavigationContext";
 import Letters from "./letters/Letters";
 import Persons from "./person/Persons";
-import Companies from "./company/Companies";
 import NewCompanyForm from "./company/NewCompanyForm";
-import ModalEditCompanyForm from "./company/ModalEditCompanyForm";
 import CreateCustomerForm from "./customers/CreateCustomerForm";
 import Customers from "./customers/Customers";
 import EditCustomerForm from "./customers/EditCustomerForm";
@@ -30,13 +22,33 @@ import EditPositionForm from "./position/EditPositionForm";
 import BoardMembers from "./boardmember/BoardMembers";
 import CreateBoardMemberForm from "./boardmember/CreateBoardMemberForm";
 import EditBoardMemberForm from "./boardmember/EditBoardMemberForm";
+import CompanyDocumentList from "./company/CompanyDocumentList";
+import RequireAuth from "./auth/RequireAuth";
+import Users from "./users/Users";
+import Login from "./auth/Login";
+import {useAuth} from "./hooks/useAuth";
+import AccessDenied from "./AccessDenied";
+import ServerConnectionError from "./ServerConnectionError";
+import {IdleTimeoutProvider} from "./contexts/IdleTimeoutProvider";
 
 const Main = () => {
 
+    const navigate = useNavigate();
+    const [innerTimeout,setInnerTimeout] = useState(1200000);
+
+    const onIdle = () => {
+        navigate('/login');
+    };
+
+    const {role} = useAuth();
+
     return (
-        <NavigationProvider>
-            <Router>
-                <Routes>
+        <IdleTimeoutProvider
+            onIdle={onIdle}
+            timeout={innerTimeout}
+        >
+            <Routes>
+                <Route element={<RequireAuth />}>
                     <Route path="/" element={<App/>}>
                         <Route path="/persons" index element={<Persons/>}/>
                         <Route path="/persons/create" element={<NewPersonForm/>}/>
@@ -64,17 +76,25 @@ const Main = () => {
                                 <Route path="edit" element={<EditCompanyForm/>}/>
                                 <Route path="outgoing" element={<Letters/>}/>
                                 <Route path="incoming" element={<Letters/>}/>
+                                <Route path="documents" element={<CompanyDocumentList/>}/>
                                 <Route path="create" element={<NewCompanyForm/>}/>
                                 <Route path="outgoing/create" element={<NewLetterForm/>}/>
                                 <Route path="*" element={<NotFoundPage/>}/>
                             </Route>
                         </Route>
                         <Route path="/year" index element={<FiscalYear/>}/>
-
                     </Route>
-                </Routes>
-            </Router>
-        </NavigationProvider>
+                    <Route path="users"
+                           element={
+                               (role && role ==="ADMIN")
+                                   ? <Users/>
+                                   : <AccessDenied />} />
+                </Route>
+                <Route path="/login" element={<Login />} />
+                <Route path="/server-error" element={<ServerConnectionError />} />
+            </Routes>
+        </IdleTimeoutProvider>
+
     );
 };
 

@@ -7,6 +7,7 @@ import Table from "../table/Table";
 import NewLetterForm from "./NewLetterForm";
 import EditLetterForm from "./EditLetterForm";
 import {useLocation, useParams} from "react-router-dom";
+import useHttp from "../../hooks/useHttp";
 
 
 const toShamsi = (date) => {
@@ -19,6 +20,7 @@ const Letters = () => {
     const [refreshTrigger, setRefreshTrigger] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [showEditModal, setEditShowModal] = useState(false);
+
 
     const location = useLocation();
     const letterType = location.pathname.split('/').pop(); // Extract letterType from the pathname
@@ -101,6 +103,7 @@ const Letters = () => {
                     show={showModal}
                     onHide={() => setShowModal(false)}
                     companyId={companyId}
+                    letterType={letterType}
                 />
             <Table
                 columns={columns}
@@ -121,6 +124,7 @@ const Letters = () => {
                         setEditingLetter(null);
                         setEditShowModal(false);
                     }}
+                    letterType={letterType}
                 />
             )}
         </div>

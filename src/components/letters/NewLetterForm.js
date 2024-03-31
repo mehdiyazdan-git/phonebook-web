@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import * as Yup from 'yup';
 import {yupResolver} from "@hookform/resolvers/yup";
 import AsyncSelectInput from "../form/AsyncSelectInput";
@@ -13,10 +13,15 @@ import FormContainer from "../../utils/formComponents/FormContainer";
 import getCurrentYear from "../../utils/functions/getCurrentYear";
 import Customer from "../../services/CustomerService";
 import Company from "../../services/companyService";
+import YearService from "../../services/yearServices";
+import { Alert } from 'react-bootstrap';
+import useHttp from "../../hooks/useHttp";
 
 
-const NewLetterForm = ({show, onHide, onAddLetter, companyId}) => {
 
+const NewLetterForm = ({show, onHide, onAddLetter, companyId,letterType}) => {
+    const [years, setYears] = useState([]);
+    const [alertMessage, setAlertMessage] = useState('');
     const validationSchema = Yup.object().shape({
         letterNumber: Yup.string().required('شماره نامه الزامیست.'),
         creationDate: Yup.date().required('تاریخ نامه الزامیست.'),
@@ -26,6 +31,18 @@ const NewLetterForm = ({show, onHide, onAddLetter, companyId}) => {
     });
     const resolver = yupResolver(validationSchema);
 
+    const {http} = useHttp();
+    const getCompanySelect = async (queryParam) => {
+        return await http.get(`/companies/select?queryParam=${queryParam ? queryParam : ''}`);
+    };
+
+    const search = async (searchQuery) => {
+        return await http.get(`/search?searchQuery=${searchQuery}`).then(response => response.data);
+    };
+    const getCustomerSelect = async () => {
+        return await http.get(`/customers/select`);
+    };
+
     const onSubmit = (data) => {
         onAddLetter(data);
         onHide()
@@ -34,6 +51,20 @@ const NewLetterForm = ({show, onHide, onAddLetter, companyId}) => {
     const headerStyle = {backgroundColor: 'rgba(63,51,106,0.6)',};
     const titleStyle = {fontFamily: 'IRANSansBold', fontSize: '0.8rem', color: '#fff',};
     const bodyStyle = {backgroundColor: 'rgba(240,240,240,0.3)',};
+
+    useEffect(() => {
+        const loadYears = async () => {
+            return await YearService.crud.getAllYears()
+        };
+        loadYears().then(response => {
+            setYears(response.data);
+        })
+            .catch(error => {
+                console.error('Error fetching years:', error);
+            });
+    }, []);
+
+
 
     return (
         <Modal size={"lg"} show={show} onHide={onHide}>
@@ -52,6 +83,7 @@ const NewLetterForm = ({show, onHide, onAddLetter, companyId}) => {
                         companyId: Number(companyId),
                         yearId: getCurrentYear(),
                         letterState: 'DRAFT',
+                        letterTypeId: letterType === "incoming" ? 1 : 2
                     }}
                     resolver={resolver}>
                     <FormContainer>
@@ -66,17 +98,17 @@ const NewLetterForm = ({show, onHide, onAddLetter, companyId}) => {
                             </FormRow>
                             <FormRow>
                                 <Col>
-                                    <label className="label">فرستنده</label>
+                                    <label className="label">{letterType === "outgoing" ? "فرستنده" : "گیرنده"}</label>
                                     <AsyncSelectInput
                                         name="companyId"
-                                        apiFetchFunction={Company.crud.getCompanySelect}
+                                        apiFetchFunction={getCompanySelect}
                                     />
                                 </Col>
                                 <Col>
-                                    <label className="label">گیرنده</label>
+                                    <label className="label">{letterType === "incoming" ? "فرستنده" : "گیرنده"}</label>
                                     <AsyncSelectInput
                                         name={"customerId"}
-                                        apiFetchFunction={Customer.crud.getCustomerSelect}
+                                        apiFetchFunction={getCustomerSelect}
                                     />
                                 </Col>
                             </FormRow>
@@ -86,9 +118,13 @@ const NewLetterForm = ({show, onHide, onAddLetter, companyId}) => {
                             </FormRow>
                         </div>
                         <Button variant={"primary"} type="submit">ایجاد</Button>
-                        <Button variant={"warning"} onClick={onHide} type="button">انصراف</Button>
+                        <Button variant={"warning"} onClick={()=> {
+                            setAlertMessage('')
+                            onHide();
+                        }} type="button">انصراف</Button>
                     </FormContainer>
                 </Form>
+                {alertMessage && alertMessage.length >0 && <Alert style={{fontFamily:"IRANSans",fontSize:"0.6rem"}} variant="danger">{alertMessage}</Alert>}
             </Modal.Body>
         </Modal>
     );

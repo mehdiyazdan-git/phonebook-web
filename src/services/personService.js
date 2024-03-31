@@ -1,37 +1,35 @@
-import axios from "axios";
-import { IPADDRESS, PORT } from "./conntectionParams";
+import React from 'react';
+import useHttp from "../hooks/useHttp";
 
-const http = axios.create({
-    baseURL: `http://${IPADDRESS}:${PORT}/api/persons`
-});
 
-const Person = {
-    crud: {
-        getAllPersons: async (queryParams) => {
-            return await http.get(`/?${queryParams.toString()}`).then(r => r.data);
-        },
-        getAllByRecipientId: async (recipientId) => {
-            return await http.get(`all-by-recipient-id/${recipientId}`).then(response => response.data);
-        },
-        getPersonById: async (id) => {
-            return await http.get(`/${id}`).then(response => response.data);
-        },
-        createPerson: async (data) => {
-            return await http.post("/", data);
-        },
-        updatePerson: async (id, data) => {
-            return await http.put(`/${id}`, data);
-        },
-        removePerson: async (id) => {
-            return await http.delete(`/${id}`);
-        },
-        getPersonSelect: async () => {
-            return await http.get(`/select`).then(r => r.data);
-        },
-        searchPersons: async (searchQuery) => {
-            return await http.get(`/search?searchQuery=${searchQuery}`).then(response => response.data);
-        },
-    },
-};
-
-export default Person;
+export default function PersonService() {
+    const http = useHttp();
+    const getAllPersons = async (queryParams) => {
+        return await http.get(`/persons?${queryParams.toString()}`).then(r => r.data);
+    }
+    const createPerson = async (data) => {
+        return await http.post("/persons", data);
+    };
+    const updatePerson = async (id, data) => {
+        return await http.put(`/persons/${id}`, data);
+    };
+    const removePerson = async (id) => {
+        return await http.delete(`/persons/${id}`);
+    };
+    const getPersonSelect = async () => {
+        return await http.get(`/persons/select`).then(r => r.data);
+    };
+    const searchPersons = async (searchQuery) => {
+        return await http.get(`/persons/search?searchQuery=${searchQuery}`).then(response => response.data);
+    };
+    return (
+        {
+            getAllPersons,
+            createPerson,
+            updatePerson,
+            removePerson,
+            getPersonSelect,
+            searchPersons
+        }
+    );
+}

@@ -35,7 +35,12 @@ const SimpleTable = ({ columns, data, onEdit, onDelete }) => {
                             <td key={column.key}>{item[column.key]}</td>
                         ))}
                         <td style={{ padding: '0px' }}>
-                            <IconEdit style={{ margin: '0px 10px', cursor: 'pointer' }} fontSize={'1rem'} color="green" onClick={() => onEdit(item)} />
+                            <IconEdit
+                                style={{ margin: '0px 10px', cursor: 'pointer' }}
+                                fontSize={'1rem'}
+                                color="green"
+                                onClick={() => onEdit(item)}
+                            />
                             <IconDeleteOutline
                                 style={{ cursor: 'pointer' }}
                                 size={'1.5rem'}

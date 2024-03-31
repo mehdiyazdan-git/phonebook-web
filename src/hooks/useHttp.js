@@ -3,9 +3,11 @@ import axios from 'axios';
 
 import {useNavigate} from "react-router-dom";
 import {BASE_URL} from "../config/config";
+import {useAuth} from "../components/hooks/useAuth";
 
 
 const useHttp = () => {
+    const auth = useAuth();
 
     const navigate = useNavigate();
 
@@ -15,6 +17,7 @@ const useHttp = () => {
 
     instance.interceptors.request.use(
         (config) => {
+            config.headers.Authorization = `Bearer ${auth?.accessToken}`;
             return config;
         },
         (error) => {

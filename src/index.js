@@ -1,14 +1,18 @@
-import React from 'react';
+import React, {useState} from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import "bootstrap/dist/css/bootstrap.min.css";
 import Main from "./components/Main";
-import { ChakraProvider } from "@chakra-ui/react"
+import {BrowserRouter} from "react-router-dom";
+import {AuthProvider} from "./components/hooks/useAuth";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
     <React.StrictMode>
-        <Main/>
-
+        <BrowserRouter>
+            <AuthProvider>
+                    <Main/>
+            </AuthProvider>
+        </BrowserRouter>
     </React.StrictMode>
 );

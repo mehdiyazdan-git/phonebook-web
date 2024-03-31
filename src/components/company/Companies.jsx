@@ -6,6 +6,7 @@ import CompanyService from "../../services/companyService";
 import Button from "../../utils/Button";
 import moment from "jalali-moment";
 import Table from "../table/Table";
+import useHttp from "../hooks/useHttp";
 
 const toShamsi = (date) => {
     return date ? moment(date, 'YYYY-MM-DD').format('jYYYY/jMM/jDD') : '';
@@ -16,16 +17,45 @@ const Companies = () => {
     const [showModal, setShowModal] = useState(false);
     const [showEditModal, setEditShowModal] = useState(false);
     const [refreshTrigger, setRefreshTrigger] = useState(false);
+    const {http} = useHttp();
+
+     const getAllCompanies = async (queryParams) => {
+        return await http.get(`/companies?${queryParams.toString()}`).then(r => r.data);
+    };
+
+     const getCompanyById = async (id) => {
+        return await http.get(`/${id}`);
+    };
+
+     const getCompanySelect = async (queryParam) => {
+        return await http.get(`/companies/select?queryParam=${queryParam ? queryParam : ''}`);
+    };
+
+     const createCompany = async (data) => {
+        return await http.post("/companies", data);
+    };
+
+     const updateCompany = async (id, data) => {
+        return await http.put(`/companies/${id}`, data);
+    };
+
+     const removeCompany = async (id) => {
+        return await http.delete(`/companies/${id}`);
+    };
+
+     const search = async (searchQuery) => {
+        return await http.get(`/companies/search?searchQuery=${searchQuery}`).then(response => response.data);
+    };
 
     const handleAddCompany = async (newCompany) => {
-        const response = await CompanyService.crud.createCompany(newCompany);
+        const response = await createCompany(newCompany);
         if (response.status === 201) {
             setRefreshTrigger(!refreshTrigger); // Toggle the refresh trigger
         }
     };
 
     const handleUpdateCompany = async (updatedCompany) => {
-        const response = await CompanyService.crud.updateCompany(updatedCompany.id, updatedCompany);
+        const response = await updateCompany(updatedCompany.id, updatedCompany);
         if (response.status === 200) {
             setRefreshTrigger(!refreshTrigger); // Toggle the refresh trigger
             setEditingCompany(null);
@@ -33,7 +63,7 @@ const Companies = () => {
     };
 
     const handleDeleteCompany = async (id) => {
-        await CompanyService.crud.removeCompany(id);
+        await removeCompany(id);
         setRefreshTrigger(!refreshTrigger); // Refresh the table data
     };
 
@@ -64,7 +94,7 @@ const Companies = () => {
             </div>
             <Table
                 columns={columns}
-                fetchData={CompanyService.crud.getAllCompanies}
+                fetchData={getAllCompanies}
                 onEdit={(company) => {
                     setEditingCompany(company);
                     setEditShowModal(true);
