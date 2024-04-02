@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import NewCompanyForm from './NewCompanyForm';
 import ModalEditCompanyForm from './ModalEditCompanyForm';
 import "./company.css";
-import CompanyService from "../../services/companyService";
 import Button from "../../utils/Button";
 import moment from "jalali-moment";
 import Table from "../table/Table";
-import useHttp from "../hooks/useHttp";
+import useHttp from "../../hooks/useHttp";
+import { saveAs } from 'file-saver';
 
 const toShamsi = (date) => {
     return date ? moment(date, 'YYYY-MM-DD').format('jYYYY/jMM/jDD') : '';
@@ -17,20 +17,11 @@ const Companies = () => {
     const [showModal, setShowModal] = useState(false);
     const [showEditModal, setEditShowModal] = useState(false);
     const [refreshTrigger, setRefreshTrigger] = useState(false);
-    const {http} = useHttp();
+    const http = useHttp();
 
      const getAllCompanies = async (queryParams) => {
         return await http.get(`/companies?${queryParams.toString()}`).then(r => r.data);
     };
-
-     const getCompanyById = async (id) => {
-        return await http.get(`/${id}`);
-    };
-
-     const getCompanySelect = async (queryParam) => {
-        return await http.get(`/companies/select?queryParam=${queryParam ? queryParam : ''}`);
-    };
-
      const createCompany = async (data) => {
         return await http.post("/companies", data);
     };
@@ -79,12 +70,26 @@ const Companies = () => {
         // Add more columns as needed
     ];
 
+    async function downloadExcelFile() {
+        await http.get('/companies/download-all-companies.xlsx',{ responseType: 'blob' })
+            .then((response) => response.data)
+            .then((blobData) => {
+                saveAs(blobData, "companies.xlsx");
+            })
+            .catch((error) => {
+                console.error('Error downloading file:', error);
+            });
+    }
+
     return (
         <div className="table-container">
             <span style={{ fontFamily: "IRANSansBold", fontSize: "1.2rem" }}>لیست شرکت‌ها</span>
             <div>
                 <Button variant="primary" onClick={() => setShowModal(true)}>
                     جدید
+                </Button>
+                <Button variant="secondary" onClick={downloadExcelFile}>
+                    دانلود به Excel
                 </Button>
                 <NewCompanyForm
                     onAddCompany={handleAddCompany}

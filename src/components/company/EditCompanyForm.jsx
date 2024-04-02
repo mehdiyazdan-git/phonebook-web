@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import * as Yup from "yup";
 import {useYupValidationResolver} from "../../hooks/useYupValidationResolver";
 import moment from "jalali-moment";
@@ -7,13 +7,13 @@ import {Form} from "../../utils/Form";
 import {TextInput} from "../../utils/formComponents/TextInput";
 import DateInput from "../../utils/formComponents/DateInput";
 import Button from "../../utils/Button";
-import Company from "../../services/companyService";
 import {useParams} from "react-router-dom";
+import useHttp from "../../hooks/useHttp";
 
 const EditCompanyForm = () => {
     const {companyId} = useParams();
     const  [successUpdate,setSuccessUpdate] = useState(false);
-    const [data , setData] = useState();
+    const http = useHttp();
     const validationSchema = Yup.object().shape({
         taxEconomicCode: Yup.string().required('کد اقتصادی الزامیست.'),
         taxFileNumber: Yup.string().required('شماره پرونده مالیاتی الزامیست.'),
@@ -40,36 +40,32 @@ const EditCompanyForm = () => {
 
     const resolver = useYupValidationResolver(validationSchema);
 
+    const updateCompany = async (id, data) => {
+        return await http.put(`/companies/${id}`, data);
+    };
+
     const onSubmit = async (data) => {
         const formattedDate = moment(new Date(data.registrationDate)).format('YYYY-MM-DD');
         const formData = {
             ...data,
             registrationDate: formattedDate
         }
-        await Company.crud.updateCompany(companyId,formData)
+        await updateCompany(companyId,formData)
             .then(response => {
                 if (response.status === 200){
                     setSuccessUpdate(true)
                 }
             })
     };
-    useEffect(()=>{
-         async function loadCompanyById(companyId){
-             const response = await  Company.crud.getCompanyById(companyId);
-             console.log(response)
-             return response;
-         }
-      loadCompanyById(companyId).then(response => {
-          setData(response.data)
-      }).catch(err => console.log(err.message))
-    },[companyId])
 
     return (
         <div className="container">
             <div style={{ backgroundColor: "rgba(240,240,240,0.3)" }}>
                 <div className="container-fluid modal-form">
                     <Form
-                        defaultValues={() => Company.crud.getCompanyById(companyId).then(response => response.data)}
+                        defaultValues={async () => await http
+                            .get(`/companies/${Number(companyId)}`)
+                            .then(response => response.data)}
                         onSubmit={onSubmit}
                         resolver={resolver}
                     >

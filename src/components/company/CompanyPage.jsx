@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import styled from "styled-components";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import Company from "../../services/companyService";
 import NewCompanyForm from "./NewCompanyForm";
 import Button from "../../utils/Button";
+import useHttp from "../../hooks/useHttp";
+import { saveAs } from 'file-saver';
+import {Col, Row} from "react-bootstrap";
+import {SiMicrosoftexcel} from "react-icons/si";
 
 const LayoutWrapper = styled.div`
   display: flex;
@@ -51,9 +54,14 @@ const CompanyPage = () => {
     const [companies, setCompanies] = useState([]);
     const navigate = useNavigate();
     const [showModal, setShowModal] = useState(false);
+    const http = useHttp();
+
+    const getCompanySelect = async (queryParam) => {
+        return await http.get(`/companies/select?queryParam=${queryParam ? queryParam : ''}`);
+    };
 
     const handleAddCompany = async (newCompany) => {
-        const response = await Company.crud.createCompany(newCompany);
+        const response = await http.post("/companies",newCompany);
         if (response.status === 201) {
             setCompanies([...companies, response.data]);
         }
@@ -62,7 +70,7 @@ const CompanyPage = () => {
 
     useEffect(() => {
         async function loadData() {
-            return await Company.crud.getCompanySelect().then(response => response.data);
+            return await getCompanySelect().then(response => response.data);
         }
 
         loadData().then(data => {
@@ -73,13 +81,30 @@ const CompanyPage = () => {
         });
     }, []);
 
+    async function downloadExcelFile() {
+        await http.get('/companies/download-all-companies.xlsx',{ responseType: 'blob' })
+            .then((response) => response.data)
+            .then((blobData) => {
+                saveAs(blobData, "companies.xlsx");
+            })
+            .catch((error) => {
+                console.error('Error downloading file:', error);
+            });
+    }
+
     return (
         <div>
             <LayoutWrapper>
                 <Sidebar>
                     <Button variant="primary" onClick={() => setShowModal(true)}>
-                        ایجاد شرکت
+                        جدید
                     </Button>
+                    <SiMicrosoftexcel
+                        onClick={downloadExcelFile}
+                        size={"2rem"}
+                        style={{color: "#72a355", cursor: "pointer", margin: "1rem 1rem"}}
+                        type="button"
+                    />
                     <NewCompanyForm onAddCompany={handleAddCompany} show={showModal} onHide={() => setShowModal(false)}/>
                     {companies.map(company =>
                         <SidebarLink

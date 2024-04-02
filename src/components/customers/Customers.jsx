@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import CreateCustomerForm from './CreateCustomerForm';
 import EditCustomerForm from './EditCustomerForm';
 import "./customer.css";
-import CustomerService from "../../services/CustomerService";
 import Button from "../../utils/Button";
 import moment from "jalali-moment";
 import Table from "../table/Table";
 import useHttp from "../../hooks/useHttp";
+import { saveAs } from 'file-saver';
 
 
 const toShamsi = (date) => {
@@ -18,21 +18,12 @@ const Customers = () => {
     const [showModal, setShowModal] = useState(false);
     const [showEditModal, setEditShowModal] = useState(false);
     const [refreshTrigger, setRefreshTrigger] = useState(false);
-    const {http} = useHttp();
+    const http = useHttp();
 
-    const search = async (searchQuery) => {
-        return await http.get(`/search?searchQuery=${searchQuery}`).then(response => response.data);
-    };
 
      const getAllCustomers = async (queryParams) => {
         return await http.get(`/customers?${queryParams.toString()}`).then(r => r.data);
     };
-
-     const getCustomerById = async (id) => {
-        return await http.get(`/customers/${id}`).then(response => response.data);
-    };
-
-
 
      const createCustomer = async (data) => {
         return await http.post("/customers", data);
@@ -78,11 +69,25 @@ const Customers = () => {
         { key: 'registerDate', title: 'تاریخ ثبت', width: '7%', sortable: true, searchable: true, type: 'date', render: (item) => toShamsi(item.registerDate) },
     ];
 
+    async function downloadExcelFile() {
+        await http.get('/customers/download-all-customers.xlsx',{ responseType: 'blob' })
+            .then((response) => response.data)
+            .then((blobData) => {
+                saveAs(blobData, "customers.xlsx");
+            })
+            .catch((error) => {
+                console.error('Error downloading file:', error);
+            });
+    }
+
     return (
         <div className="table-container">
             <div>
                 <Button variant="primary" onClick={() => setShowModal(true)}>
                     جدید
+                </Button>
+                <Button variant="secondary" onClick={downloadExcelFile}>
+                    دانلود به Excel
                 </Button>
                 <CreateCustomerForm
                     onAddCustomer={handleAddCustomer}

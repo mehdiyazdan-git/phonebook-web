@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import {IoCloudDownloadOutline, IoDocumentOutline} from "react-icons/io5";
 import {RiDeleteBin6Line} from "react-icons/ri";
-import {IPADDRESS, PORT} from "../../config/config";
 import { saveAs } from 'file-saver';
 import ConfirmationModal from "../table/ConfirmationModal";
 import DropZoneUploader from "../person/document/DropZoneUploader";
 import {useParams} from "react-router-dom";
-import Document  from "../../services/documentService";
+import useHttp from "../../hooks/useHttp";
 
 const CompanyDocumentList = ({onHide }) => {
     const {companyId} = useParams();
@@ -14,18 +13,24 @@ const CompanyDocumentList = ({onHide }) => {
     const [refreshTrigger, setRefreshTrigger] = useState(false);
     const [selectedDocumentId, setSelectedDocumentId] = useState(null);
     const [showConfirmationModal, setShowConfirmationModal] = React.useState(false);
+    const http = useHttp();
+
+    const deleteDocument = async (id) => {
+        return await http.delete(`/documents/${id}`);
+    };
+
 
     useEffect(() => {
         const fetchData = async (companyId) => {
-            const response = await Document.crud.getAllByCompanyId(companyId);
+            const response = await http.get(`/documents/${companyId}`);
             setDocuments(response.data);
         };
         fetchData(Number(companyId));
-    }, [companyId, refreshTrigger]);
+    }, [companyId, http, refreshTrigger]);
 
     const handleDeleteConfirm = async () => {
         if (selectedDocumentId) {
-            await Document.crud.deleteDocument(selectedDocumentId);
+            await deleteDocument(selectedDocumentId);
             setShowConfirmationModal(false);
             setRefreshTrigger(!refreshTrigger);
             setSelectedDocumentId(null);
@@ -33,8 +38,8 @@ const CompanyDocumentList = ({onHide }) => {
     };
 
     const handleDownload = (document) => {
-        const downloadUrl = `http://${IPADDRESS}:${PORT}/api/documents/${document.id}`;
-        fetch(downloadUrl)
+        const downloadUrl = `/documents/${document.id}`;
+        http.get(downloadUrl,{ responseType: 'blob' })
             .then((response) => response.blob())
             .then((blobData) => {
                 saveAs(blobData, document.fileName);
@@ -45,9 +50,9 @@ const CompanyDocumentList = ({onHide }) => {
     };
 
     const handleOpenInNewTab = (document) => {
-        const downloadUrl = `http://${IPADDRESS}:${PORT}/api/documents/${document.id}`;
-        fetch(downloadUrl)
-            .then(response => response.blob())
+        const downloadUrl = `/documents/${document.id}`;
+        http.get(downloadUrl,{ responseType: 'blob' })
+            .then((response) => response.blob())
             .then(blobData => {
                 const blobUrl = URL.createObjectURL(blobData);
                 window.open(blobUrl, '_blank');

@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
-import axios from 'axios';
 import {extensionToType} from "../../../utils/documentUtils";
 import useHttp from "../../../hooks/useHttp";
+
 
 const DropZoneUploader = ({personId,companyId, refreshTrigger, setRefreshTrigger,onHide}) => {
     const [uploadProgress, setUploadProgress] = useState(null);

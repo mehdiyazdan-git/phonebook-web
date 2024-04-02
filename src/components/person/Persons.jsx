@@ -6,7 +6,8 @@ import Button from "../../utils/Button";
 import moment from "jalali-moment";
 import Table from "../table/Table";
 import useHttp from "../../hooks/useHttp";
-import PersonService from "../../services/personService";
+import { saveAs } from 'file-saver';
+
 
 
 
@@ -51,8 +52,22 @@ const Persons = () => {
 
     const handleDeletePerson = async (id) => {
         await removePerson(id);
-        setRefreshTrigger(!refreshTrigger); // Refresh the table data
+        setRefreshTrigger(!refreshTrigger);
     };
+
+    async function downloadExcelFile() {
+        await http.get('/persons/download-all-persons.xlsx',{ responseType: 'blob' })
+            .then((response) => response.data)
+            .then((blobData) => {
+                saveAs(blobData, "persons.xlsx");
+            })
+            .catch((error) => {
+                console.error('Error downloading file:', error);
+            });
+    }
+
+
+
 
     const columns = [
         {key: 'id', title: 'شناسه', width: '5%', sortable: true},
@@ -79,6 +94,9 @@ const Persons = () => {
             <div>
                 <Button variant="primary" onClick={() => setShowModal(true)}>
                     جدید
+                </Button>
+                <Button variant="secondary" onClick={downloadExcelFile}>
+                    دانلود به Excel
                 </Button>
                 <NewPersonForm
                     onAddPerson={handleAddPerson}
