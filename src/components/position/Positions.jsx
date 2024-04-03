@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import CreatePositionForm from './CreatePositionForm';
 import EditPositionForm from './EditPositionForm';
-import PositionService from '../../services/positionService'; // Adjust the import path as needed
 import Button from "../../utils/Button";
 import "./position.css";
-import SimpleTable from "../table/SimpleTable"; // Ensure this path is correct
+import SimpleTable from "../table/SimpleTable";
+import useHttp from "../../hooks/useHttp";
 
 const Positions = () => {
     const [positions, setPositions] = useState([]);
@@ -12,10 +12,28 @@ const Positions = () => {
     const [showEditModal, setEditShowModal] = useState(false);
     const [editingPosition, setEditingPosition] = useState(null);
     const [refreshTrigger, setRefreshTrigger] = useState(false);
+    const http = useHttp();
+
+
+     const getAllPositions = async () => {
+        return await http.get("/positions").then(response => response.data);
+    };
+
+     const createPosition = async (data) => {
+        return await http.post("/positions", data);
+    };
+
+     const updatePosition = async (id, data) => {
+        return await http.put(`/positions/${id}`, data);
+    };
+
+     const removePosition = async (id) => {
+        return await http.delete(`/positions/${id}`);
+    };
 
     useEffect(() => {
         const fetchData = async () => {
-            const response = await PositionService.crud.getAllPositions();
+            const response = await getAllPositions();
             setPositions(response); // Assuming response.data is the array of positions
         };
 
@@ -23,14 +41,14 @@ const Positions = () => {
     }, [refreshTrigger]); // Dependency on refreshTrigger to re-fetch when needed
 
     const handleAddPosition = async (newPosition) => {
-        const response = await PositionService.crud.createPosition(newPosition);
+        const response = await createPosition(newPosition);
         if (response.status === 201) {
             setRefreshTrigger(!refreshTrigger); // Toggle the refresh trigger
         }
     };
 
     const handleUpdatePosition = async (updatedPosition) => {
-        const response = await PositionService.crud.updatePosition(updatedPosition.id, updatedPosition);
+        const response = await updatePosition(updatedPosition.id, updatedPosition);
         if (response.status === 200) {
             setRefreshTrigger(!refreshTrigger); // Toggle the refresh trigger
             setEditingPosition(null);
@@ -38,7 +56,7 @@ const Positions = () => {
     };
 
     const handleDeletePosition = async (id) => {
-        await PositionService.crud.removePosition(id);
+        await removePosition(id);
         setRefreshTrigger(!refreshTrigger); // Refresh the table data
     };
 

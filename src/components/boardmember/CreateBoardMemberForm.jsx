@@ -1,18 +1,33 @@
 import React, {useState} from 'react';
-
-
 import {Form} from "../../utils/Form";
 import AsyncSelectInput from "../../utils/formComponents/AsyncSelectInput";
-import Company from "../../services/companyService";
-import PersonService from "../../services/personService";
-import PositionService from "../../services/positionService";
 import Button from "../../utils/Button";
 import {Modal} from "react-bootstrap";
+import useHttp from "../../hooks/useHttp";
 
 const CreateBoardMemberForm = ({show,onHide,onAddBoardMember}) => {
 
     const [submitting, setSubmitting] = useState(false);
+    const http = useHttp();
 
+     const searchCompany = async (searchQuery) => {
+        return await http.get(`/companies/search?searchQuery=${searchQuery}`).then(response => response.data);
+    };
+     const getCompanySelect = async (queryParam) => {
+        return await http.get(`/companies/select?queryParam=${queryParam ? queryParam : ''}`).then(response => response.data);
+    };
+    const getPersonSelect = async () => {
+        return await http.get(`/persons/select`).then(r => r.data);
+    };
+    const searchPersons = async (searchQuery) => {
+        return await http.get(`/persons/search?searchQuery=${searchQuery}`).then(response => response.data);
+    };
+     const getAllPositions = async () => {
+        return await http.get("/positions").then(response => response.data);
+    };
+     const searchPositions = async (searchQuery) => {
+        return await http.get(`/positions/search?searchQuery=${searchQuery}`).then(response => response.data);
+    };
     const onSubmit = async (data) => {
         setSubmitting(true);
         try {
@@ -40,29 +55,29 @@ const CreateBoardMemberForm = ({show,onHide,onAddBoardMember}) => {
                             <AsyncSelectInput
                                 defaultOptions={[]}
                                 name={"companyId"}
-                                fetchCallBack={Company.crud.getCompanySelect}
-                                searchCallback={Company.crud.search}
+                                fetchCallBack={getCompanySelect}
+                                searchCallback={searchCompany}
                             />
                             <label className="label">شخص</label>
                             <AsyncSelectInput
                                 defaultOptions={[]}
                                 name={"personId"}
-                                fetchCallBack={PersonService.crud.getPersonSelect}
-                                searchCallback={PersonService.crud.searchPersons}
+                                fetchCallBack={getPersonSelect}
+                                searchCallback={searchPersons}
                             />
                             <label className="label">سمت</label>
                             <AsyncSelectInput
                                 defaultOptions={[]}
                                 name={"positionId"}
-                                fetchCallBack={PositionService.crud.getAllPositions}
-                                searchCallback={PositionService.crud.searchPositions}
+                                fetchCallBack={getAllPositions}
+                                searchCallback={searchPositions}
                             />
                         </div>
                         <div>
                             <Button variant={"primary"} type="submit" disabled={submitting}>
                                 ایجاد
                             </Button>
-                            <Button variant={"warning"} type="button" disabled={submitting}>
+                            <Button onClick={onHide} variant={"warning"} type="button" disabled={submitting}>
                                 انصراف
                             </Button>
                         </div>

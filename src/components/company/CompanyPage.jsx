@@ -5,8 +5,9 @@ import NewCompanyForm from "./NewCompanyForm";
 import Button from "../../utils/Button";
 import useHttp from "../../hooks/useHttp";
 import { saveAs } from 'file-saver';
-import {Col, Row} from "react-bootstrap";
 import {SiMicrosoftexcel} from "react-icons/si";
+import "./company.css"
+import DownloadExcelIcon from "../assets/icons/DownloadExcelIcon";
 
 const LayoutWrapper = styled.div`
   display: flex;
@@ -99,12 +100,7 @@ const CompanyPage = () => {
                     <Button variant="primary" onClick={() => setShowModal(true)}>
                         جدید
                     </Button>
-                    <SiMicrosoftexcel
-                        onClick={downloadExcelFile}
-                        size={"2rem"}
-                        style={{color: "#72a355", cursor: "pointer", margin: "1rem 1rem"}}
-                        type="button"
-                    />
+                    <DownloadExcelIcon downloadExcelFile={downloadExcelFile}/>
                     <NewCompanyForm onAddCompany={handleAddCompany} show={showModal} onHide={() => setShowModal(false)}/>
                     {companies.map(company =>
                         <SidebarLink

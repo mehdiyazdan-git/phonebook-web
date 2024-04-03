@@ -3,16 +3,21 @@ import { useFormContext } from 'react-hook-form';
 import IconBxRefresh from '../assets/icons/IconBxRefresh';
 import persianToArabicDigits from '../../utils/functions/persianToArabicDigits';
 import getCurrentYear from "../../utils/functions/getCurrentYear";
-import Company from "../../services/companyService"; // Changed from Sender to Company
+import useHttp from "../../hooks/useHttp";
 
 const GenerateLetterNumberButton = () => {
     const [defaultCompanies, setDefaultCompanies] = useState([]);
     const { setValue, getValues } = useFormContext();
+    const http = useHttp();
+
+     const getCompanySelect = async (queryParam) => {
+        return await http.get(`/companies/select?queryParam=${queryParam ? queryParam : ''}`);
+    };
 
     useEffect(() => {
         const fetchDefaultCompanies = async () => {
             try {
-                const companyData = await Company.crud.getCompanySelect().then(response => response.data);
+                const companyData = await getCompanySelect().then(response => response.data);
                 const options = companyData.map((company) => ({
                     name: company.name,
                     id: company.id,

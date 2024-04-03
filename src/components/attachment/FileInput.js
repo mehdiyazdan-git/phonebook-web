@@ -3,12 +3,18 @@ import Attachment from '../../services/attachmentService';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Button from "../../utils/Button";
+import useHttp from "../../hooks/useHttp";
 
 const FileInput = ({ label, letterId, reload }) => {
     const [selectedFileName, setSelectedFileName] = useState('فایلی انتخاب نشده است');
     const fileInputRef = useRef(null);
+    const http = useHttp();
 
-    const onFileChangeHandler = (e) => {
+    const upload = async (data) => {
+        return await http.post("/attachments/upload", data);
+    };
+
+    const onFileChangeHandler = async (e) => {
         const files = e.target.files;
         let fileNames = [];
         for (let i = 0; i < files.length; i++) {
@@ -22,7 +28,7 @@ const FileInput = ({ label, letterId, reload }) => {
             formData.append('file', files[i]);
         }
 
-        Attachment.crud.upload(formData)
+        upload(formData)
             .then(res => {
                 console.log(res.data);
                 toast.success('فایل با موفقیت بارگذاری شد.', {

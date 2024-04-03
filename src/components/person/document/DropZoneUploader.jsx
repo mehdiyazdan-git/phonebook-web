@@ -22,8 +22,8 @@ const DropZoneUploader = ({personId,companyId, refreshTrigger, setRefreshTrigger
         formData.append('companyId', companyId);
 
         try {
-            for (let progress = 0; progress <= 100; progress += 10) {
-                await new Promise(resolve => setTimeout(resolve, 500));
+            for (let progress = 0; progress <= 100; progress += 2) {
+                await new Promise(resolve => setTimeout(resolve, 50));
                 setUploadProgress(progress);
             }
 
@@ -41,6 +41,9 @@ const DropZoneUploader = ({personId,companyId, refreshTrigger, setRefreshTrigger
             setRefreshTrigger(!refreshTrigger);
             setUploadProgress(null);
             console.log('File upload successful');
+            setTimeout(() => {
+                setUploadComplete(false);
+            }, 3000);
         } catch (error) {
             console.error('Error uploading file:', error);
         }

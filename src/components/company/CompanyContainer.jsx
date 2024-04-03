@@ -43,6 +43,9 @@ const Tabs = () => {
             <Tab isActive={activeTab === 'documents'} onClick={() => setActiveTab('documents')}>
                 <SidebarLink to="documents">مدارک</SidebarLink>
             </Tab>
+            <Tab isActive={activeTab === 'board-members'} onClick={() => setActiveTab('board-members')}>
+                <SidebarLink to="board-members">هیئت مدیره</SidebarLink>
+            </Tab>
         </TabContainer>
     );
 };

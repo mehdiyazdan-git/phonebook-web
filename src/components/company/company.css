@@ -112,4 +112,10 @@
     text-align: right; /* Align placeholder text to the right */
     opacity: 0.7; /* Slightly transparent placeholder */
 }
+.excel-icon:hover {
+    color: #90ee90; /* Change the color on hover */
+    filter: brightness(1.2); /* Increase brightness on hover */
+    transition: color 0.3s, filter 0.3s; /* Smooth transition for color and brightness change */
+}
+
 
