@@ -3,52 +3,66 @@ import { saveAs } from 'file-saver';
 import {IoCloudDownloadOutline, IoDocumentOutline} from "react-icons/io5";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import FileInput from "./FileInput";
-import Attachment from "../../services/attachmentService";
-import {IPADDRESS, PORT} from "../../services/conntectionParams";
+import useHttp from "../../hooks/useHttp";
+
 
 const AttachmentTable = ({letterId}) => {
     const [attachments, setAttachments] = useState([]);
+    const http = useHttp();
 
-    const reloadAttachments = async () => {
-        return await Attachment.crud.getAllAttachments(letterId).then(res => setAttachments(res.data));
+     const getAllAttachments = async (letterId) => {
+        return await http.get(`/attachments/all-by-letter-id/${letterId}`);
+    };
+     const handleReload = async () => {
+         return await getAllAttachments().then(data => setAttachments(data))
+     }
+
+     const getAttachmentById = async (id) => {
+        return await http.get(`/attachments/${id}`).then((response) => response.data);
+    };
+
+     const createAttachment = async (data) => {
+        return await http.post("/attachments", data);
+    };
+
+
+
+     const removeAttachment = async (id) => {
+        return await http.delete(`/attachments/${id}`);
     };
 
     useEffect(() => {
-        async function loadAttachments() {
-            return await Attachment.crud.getAllAttachments(letterId);
-        }
-        loadAttachments().then(res => setAttachments(res.data));
+        getAllAttachments(letterId).then(res => setAttachments(res.data));
     }, [letterId]);
 
-    const handleDownload = (attachment) => {
-        const downloadUrl = `http://${IPADDRESS}:${PORT}/api/attachments/download/${attachment.id}`;
-        fetch(downloadUrl)
-            .then(response => response.blob())
-            .then(blobData => {
-                saveAs(blobData, attachment.fileName);
+    const handleDownload = (document) => {
+        http.get(`/attachments/download/${document.id}`,{ responseType: 'blob' })
+            .then((response) => response.data)
+            .then((blobData) => {
+                saveAs(blobData, document.fileName);
             })
-            .catch(error => {
+            .catch((error) => {
                 console.error('Error downloading file:', error);
             });
     };
 
-    const handleOpenInNewTab = (attachment) => {
-        const downloadUrl = `http://${IPADDRESS}:${PORT}/api/attachments/download/${attachment.id}`;
-        fetch(downloadUrl)
-            .then(response => response.blob())
-            .then(blobData => {
-                const blobUrl = URL.createObjectURL(blobData);
+    const handleOpenInNewTab = (document) => {
+        http.get(`/attachments/download/${document.id}`, {
+            responseType: 'blob',
+        })
+            .then((response) => {
+                const blobUrl = URL.createObjectURL(response.data);
                 window.open(blobUrl, '_blank');
                 URL.revokeObjectURL(blobUrl);
             })
-            .catch(error => {
+            .catch((error) => {
                 console.error('Error downloading file:', error);
             });
     };
 
     const handleDelete = async (attachmentId) => {
         try {
-            Attachment.crud.removeAttachment(attachmentId).then(response => {
+            removeAttachment(attachmentId).then(response => {
                 if (response.status === 204) {
                     setAttachments((prevAttachments) =>
                         prevAttachments.filter((attachment) => attachment.id !== attachmentId)
@@ -73,7 +87,7 @@ const AttachmentTable = ({letterId}) => {
         }} className="container mt-2">
             <h6 className="label">لیست پیوست</h6>
             <div className="row m-1">
-                <FileInput reload={reloadAttachments} letterId={letterId} label="انتخاب فایل PDF"/>
+                <FileInput reload={handleReload} letterId={letterId} label="انتخاب فایل PDF"/>
             </div>
             {attachments.length === 0 ? (
                 <p>بدون ضمیمه پیوست.</p>

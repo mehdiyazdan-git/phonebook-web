@@ -1,74 +1,64 @@
 import React from 'react';
-import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { Modal, Button } from 'react-bootstrap';
+import { Modal } from 'react-bootstrap';
+import {Form} from "../../utils/Form";
+import {TextInput} from "../../utils/formComponents/TextInput";
+import SelectInput from "../../utils/formComponents/SelectInput";
+import Button from "../../utils/Button";
+import ImageUploader from "../../utils/formComponents/ImageUploade";
+import MortgageCalculator from "../../utils/formComponents/MortgageCalculator";
 
 const schema = yup.object({
-    firstname: yup.string().required('First name is required'),
-    lastname: yup.string().required('Last name is required'),
-    email: yup.string().email('Invalid email').required('Email is required'),
-    password: yup.string().min(6, 'Password must be at least 6 characters').required('Password is required'),
-    role: yup.string().oneOf(['ADMIN', 'MANAGER', 'USER']).required('Role is required')
-}).required();
+    firstname: yup.string().required('نام الزامیست.'),
+    lastname: yup.string().required('نام خانوادگی الزامیست.'),
+    email: yup.string().email('ایمیل نامعتبر است.').required('ایمیل الزامیست.'),
+    password: yup.string().min(6, 'رمز عبور باید حداقل 6 کاراکتر باشد.').required('رمز عبور الزامیست.'),
+    role: yup.string().required('نقش الزامیست.')
+});
 
 const CreateUserForm = ({ onAddUser, show, onHide }) => {
-    const { register, handleSubmit, formState: { errors }, reset } = useForm({
-        resolver: yupResolver(schema)
-    });
-
     const onSubmit = (data) => {
         onAddUser(data);
-        reset();
         onHide(); // Hide the modal after submitting
     };
 
+    const roleOptions = [
+        { value: 'ADMIN', label: 'مدیر' },
+        { value: 'MANAGER', label: 'مدیر محتوا' },
+        { value: 'USER', label: 'کاربر' }
+    ];
     return (
-        <Modal show={show} onHide={onHide}>
-            <Modal.Header closeButton>
-                <Modal.Title>Add New User</Modal.Title>
+        <Modal size="lg" show={show} onHide={onHide}>
+            <Modal.Header style={{ backgroundColor: "rgba(63,51,106,0.6)" }}>
+                <Modal.Title style={{ fontFamily: "IRANSansBold", fontSize: "0.8rem", color: "#fff" }}>افزودن کاربر جدید</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <form onSubmit={handleSubmit(onSubmit)}>
-                    <div className="mb-3">
-                        <label className="form-label">First Name:</label>
-                        <input type="text" className={`form-control ${errors.firstname ? 'is-invalid' : ''}`} {...register('firstname')} />
-                        {errors.firstname && <div className="invalid-feedback">{errors.firstname.message}</div>}
-                    </div>
-
-                    <div className="mb-3">
-                        <label className="form-label">Last Name:</label>
-                        <input type="text" className={`form-control ${errors.lastname ? 'is-invalid' : ''}`} {...register('lastname')} />
-                        {errors.lastname && <div className="invalid-feedback">{errors.lastname.message}</div>}
-                    </div>
-
-                    <div className="mb-3">
-                        <label className="form-label">Email:</label>
-                        <input type="email" className={`form-control ${errors.email ? 'is-invalid' : ''}`} {...register('email')} />
-                        {errors.email && <div className="invalid-feedback">{errors.email.message}</div>}
-                    </div>
-
-                    <div className="mb-3">
-                        <label className="form-label">Password:</label>
-                        <input type="password" className={`form-control ${errors.password ? 'is-invalid' : ''}`} {...register('password')} />
-                        {errors.password && <div className="invalid-feedback">{errors.password.message}</div>}
-                    </div>
-
-                    <div className="mb-3">
-                        <label className="form-label">Role:</label>
-                        <select className={`form-control ${errors.role ? 'is-invalid' : ''}`} {...register('role')}>
-                            <option value="">Select a role</option>
-                            <option value="ADMIN">ADMIN</option>
-                            <option value="MANAGER">MANAGER</option>
-                            <option value="USER">USER</option>
-                        </select>
-                        {errors.role && <div className="invalid-feedback">{errors.role.message}</div>}
-                    </div>
+                <Form
+                    defaultValues={{
+                        firstname: '',
+                        lastname: '',
+                        email: '',
+                        password: '',
+                        role: ''
+                    }}
+                    onSubmit={onSubmit}
+                    resolver={yupResolver(schema)}
+                >
+                    <TextInput name="firstname" label="نام" />
+                    <TextInput name="lastname" label="نام خانوادگی" />
+                    <TextInput name="email" label="ایمیل" />
+                    <TextInput name="password" label="رمز عبور" type="password" />
+                    <SelectInput name="role" label="نقش" options={roleOptions} />
 
                     <Button variant="primary" type="submit">
-                        Add User
+                        افزودن کاربر
                     </Button>
-                </form>
+                    <Button onClick={onHide} variant="warning" type="button">
+                        انصراف
+                    </Button>
+                </Form>
+                <MortgageCalculator/>
             </Modal.Body>
         </Modal>
     );

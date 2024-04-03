@@ -10,9 +10,6 @@ import FormRow from "../form/FormRow";
 import Button from "../../utils/Button";
 import FormContainer from "../../utils/formComponents/FormContainer";
 import AttachmentTable from "../attachment/AttachmentTable";
-import Customer from "../../services/CustomerService";
-import Company from "../../services/companyService";
-import Letter from "../../services/letterService";
 import useHttp from "../../hooks/useHttp";
 
 
@@ -22,7 +19,7 @@ const bodyStyle = {backgroundColor: 'rgba(240,240,240,0.3)',};
 
 const EditLetterForm = ({letter, onUpdateLetter, show, onHide,letterType}) => {
 
-    const {http} = useHttp();
+    const http = useHttp();
     const getCompanySelect = async (queryParam) => {
         return await http.get(`/companies/select?queryParam=${queryParam ? queryParam : ''}`);
     };
@@ -33,6 +30,10 @@ const EditLetterForm = ({letter, onUpdateLetter, show, onHide,letterType}) => {
     const getCustomerSelect = async () => {
         return await http.get(`/customers/select`);
     };
+     const getLetterById = async (id) => {
+        return await http.get(`/letters/${id}`).then((response) => response.data);
+    };
+
 
     const validationSchema = Yup.object().shape({
         letterNumber: Yup.string().required('شماره نامه الزامیست.'),
@@ -56,7 +57,7 @@ const EditLetterForm = ({letter, onUpdateLetter, show, onHide,letterType}) => {
             <Modal.Body style={bodyStyle}>
                 <Form
                     onSubmit={onSubmit}
-                    defaultValues={async() => Letter.crud.getLetterById(letter.id)}
+                    defaultValues={async() => getLetterById(letter.id)}
                     resolver={resolver}>
                     <FormContainer>
                         <div className="mt-1">

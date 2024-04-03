@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react';
 import "./letter.css";
-import LetterService from "../../services/letterService";
 import Button from "../../utils/Button";
 import moment from "jalali-moment";
 import Table from "../table/Table";
@@ -20,10 +19,30 @@ const Letters = () => {
     const [refreshTrigger, setRefreshTrigger] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [showEditModal, setEditShowModal] = useState(false);
+    const http = useHttp();
 
 
     const location = useLocation();
-    const letterType = location.pathname.split('/').pop(); // Extract letterType from the pathname
+    const letterType = location.pathname.split('/').pop();
+
+     const getAllLetters = async (queryParams) => {
+        return await http.get("/letters/pageable", queryParams);
+    };
+
+     const getAllByCompanyId = async (companyId, queryParams) => {
+        return await http.get(`/letters/pageable?companyId=${companyId}&${queryParams.toString()}`);
+    };
+     const createLetter = async (data) => {
+        return await http.post("/letters", data);
+    };
+
+     const updateLetter = async (id, data) => {
+        return await http.put(`/letters/${id}`, data);
+    };
+
+     const removeLetter = async (id) => {
+        return await http.delete(`/letters/${id}`);
+    };
 
     // Refresh the component each time the location changes
     useEffect(() => {
@@ -35,16 +54,16 @@ const Letters = () => {
 
         if (companyId) {
             // If senderId is available, fetch letters for this sender
-            return await LetterService.crud.getAllBySenderId(companyId, queryParams.toString());
+            return await getAllByCompanyId(Number(companyId), queryParams.toString()).then(r => r.data);
         } else {
             // Otherwise, fetch all letters
-            return await LetterService.crud.getAllLetters(queryParams.toString());
+            return await getAllLetters(queryParams.toString()).then(r => r.data);
         }
     };
 
     const handleAddLetter = async (newLetter) => {
         newLetter.letterType = letterType.toUpperCase(); // Add the new property
-        const response = await LetterService.crud.createLetter(newLetter);
+        const response = await createLetter(newLetter);
         if (response.status === 201) {
             setRefreshTrigger(!refreshTrigger); // Toggle the refresh trigger
         }
@@ -52,14 +71,14 @@ const Letters = () => {
 
 
     const handleUpdateLetter = async (updatedLetter) => {
-        const response = await LetterService.crud.updateLetter(updatedLetter.id, updatedLetter);
+        const response = await updateLetter(updatedLetter.id, updatedLetter);
         if (response.status === 200) {
             setRefreshTrigger(!refreshTrigger); // Toggle the refresh trigger
             setEditingLetter(null);
         }
     };
     const handleDeleteLetter = async (id) => {
-        await LetterService.crud.removeLetter(id);
+        await removeLetter(id);
         setRefreshTrigger(!refreshTrigger); // Refresh the table data
     };
 

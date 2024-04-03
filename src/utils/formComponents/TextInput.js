@@ -5,7 +5,7 @@ import { ConnectForm } from './ConnectForm';
 export function TextInput({ name, label, style, ...rest }) {
     return (
         <ConnectForm>
-            {({ control, formState: { errors } }) => (
+            {({ control}) => (
                 <Controller
                     name={name}
                     control={control}

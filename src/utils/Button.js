@@ -7,6 +7,7 @@ const Button = styled.button.attrs(props => ({
   padding: 0.5rem 1rem;
   border: none;
   border-radius: 0.25rem;
+  font-family: "IRANSans", sans-serif;
   font-size: 0.7rem;
   margin: 0.25rem;
   cursor: pointer;

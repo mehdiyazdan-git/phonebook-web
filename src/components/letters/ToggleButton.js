@@ -1,13 +1,18 @@
 import React, { useState } from 'react';
-import Letter from "../../services/letterService";
-import {GrLock, GrUnlock} from "react-icons/gr"; // Assuming you are using Reactstrap
+import {GrLock, GrUnlock} from "react-icons/gr";
+import useHttp from "../../hooks/useHttp";
 
 const ToggleButton = ({ letterId, initialLetterState, onUpdate }) => {
     const [letterState, setLetterState] = useState(initialLetterState);
+    const http = useHttp();
+
+     const updateLetterState = async (letterId, letterState) => {
+        return await http.put(letterId, `/letters/update-state/${letterState === "DRAFT" ? "DELIVERED" : "DRAFT"}`);
+    };
 
     const handleClick = async () => {
         try {
-            Letter.crud.updateLetterState(letterId,letterState).then(response => {
+            updateLetterState(letterId,letterState).then(response => {
                 if (response.status === 200) {
                     // Update the local state and trigger any additional callback
                     setLetterState((prevState) => (prevState === 'DRAFT' ? 'DELIVERED' : 'DRAFT'));

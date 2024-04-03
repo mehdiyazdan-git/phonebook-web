@@ -30,6 +30,8 @@ import {useAuth} from "./hooks/useAuth";
 import AccessDenied from "./AccessDenied";
 import ServerConnectionError from "./ServerConnectionError";
 import {IdleTimeoutProvider} from "./contexts/IdleTimeoutProvider";
+import CreateUserForm from "./users/CreateUserForm";
+import EditUserForm from "./users/EditUserForm";
 
 const Main = () => {
 
@@ -53,6 +55,10 @@ const Main = () => {
                         <Route path="/persons" index element={<Persons/>}/>
                         <Route path="/persons/create" element={<NewPersonForm/>}/>
                         <Route path="/persons/:personId/edit" element={<EditPersonForm/>}/>
+
+                        <Route path="/users" index element={<Users/>}/>
+                        <Route path="/users/create" element={<CreateUserForm/>}/>
+                        <Route path="/users/:userId/edit" element={<EditUserForm/>}/>
 
                         <Route path="/letters" index element={<Letters/>}/>
                         <Route path="/letters/create" element={<NewLetterForm/>}/>
@@ -79,6 +85,7 @@ const Main = () => {
                                 <Route path="documents" element={<CompanyDocumentList/>}/>
                                 <Route path="create" element={<NewCompanyForm/>}/>
                                 <Route path="outgoing/create" element={<NewLetterForm/>}/>
+                                <Route path="board-members" index element={<BoardMembers/>}/>
                                 <Route path="*" element={<NotFoundPage/>}/>
                             </Route>
                         </Route>

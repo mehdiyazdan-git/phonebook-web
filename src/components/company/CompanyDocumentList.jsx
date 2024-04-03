@@ -18,14 +18,11 @@ const CompanyDocumentList = ({onHide }) => {
     const deleteDocument = async (id) => {
         return await http.delete(`/documents/${id}`);
     };
-
-
     useEffect(() => {
         const fetchData = async (companyId) => {
-            const response = await http.get(`/documents/${companyId}`);
-            setDocuments(response.data);
+            return  await http.get(`/documents/by-company-id/${companyId}`);
         };
-        fetchData(Number(companyId));
+        fetchData(Number(companyId)).then(response => setDocuments(response.data));
     }, [companyId, http, refreshTrigger]);
 
     const handleDeleteConfirm = async () => {
@@ -38,9 +35,8 @@ const CompanyDocumentList = ({onHide }) => {
     };
 
     const handleDownload = (document) => {
-        const downloadUrl = `/documents/${document.id}`;
-        http.get(downloadUrl,{ responseType: 'blob' })
-            .then((response) => response.blob())
+        http.get(`/documents/${document.id}`,{ responseType: 'blob' })
+            .then((response) => response.data)
             .then((blobData) => {
                 saveAs(blobData, document.fileName);
             })
@@ -50,15 +46,15 @@ const CompanyDocumentList = ({onHide }) => {
     };
 
     const handleOpenInNewTab = (document) => {
-        const downloadUrl = `/documents/${document.id}`;
-        http.get(downloadUrl,{ responseType: 'blob' })
-            .then((response) => response.blob())
-            .then(blobData => {
-                const blobUrl = URL.createObjectURL(blobData);
+        http.get(`/documents/${document.id}`, {
+            responseType: 'blob',
+        })
+            .then((response) => {
+                const blobUrl = URL.createObjectURL(response.data);
                 window.open(blobUrl, '_blank');
                 URL.revokeObjectURL(blobUrl);
             })
-            .catch(error => {
+            .catch((error) => {
                 console.error('Error downloading file:', error);
             });
     };
