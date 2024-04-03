@@ -6,7 +6,7 @@ import AsyncSelectDropdown from "./AsyncSelectDropdown";
 const AsyncSelectInput = ({fetchCallBack, defaultOptions, disabled, name, searchCallback, id}) => {
     return (
         <ConnectForm>
-            {({ control,getValues}) => (
+            {({ control}) => (
                 <Controller
                     rules={{ required: true }}
                     name={name}

@@ -1,30 +1,22 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Modal } from 'react-bootstrap';
+import {Alert, Modal} from 'react-bootstrap';
 import { TextInput } from "../../utils/formComponents/TextInput";
 import Button from "../../utils/Button";
 import {Form} from "../../utils/Form";
 
-
-
-
 const CreatePositionForm = ({ show, onHide,onAddPosition }) => {
-
     const validationSchema = Yup.object().shape({
         name: Yup.string().required('نام پست الزامیست.')
     });
     const {reset } = useForm();
     const resolver = yupResolver(validationSchema);
-    const handleSubmit = async data => {
-        try {
-           await onAddPosition(data);
-            reset(); // Clear the form
-            onHide(); // Close the modal
-        } catch (error) {
-            console.error('There was an error creating the position:', error);
-        }
+    const handleSubmit = async (data) => {
+        onAddPosition(data);
+        reset(); // Clear the form
+        onHide(); // Close the modal
     };
 
     return (

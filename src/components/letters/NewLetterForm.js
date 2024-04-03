@@ -11,8 +11,6 @@ import GenerateLetterNumberButton from "./GenerateLetterNumberButton";
 import Button from "../../utils/Button";
 import FormContainer from "../../utils/formComponents/FormContainer";
 import getCurrentYear from "../../utils/functions/getCurrentYear";
-import Customer from "../../services/CustomerService";
-import Company from "../../services/companyService";
 import YearService from "../../services/yearServices";
 import { Alert } from 'react-bootstrap';
 import useHttp from "../../hooks/useHttp";

@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import IconPowerOff from "./components/assets/icons/IconPoweroff";
 import SidebarMenu from "./components/sidebar/SidebarMenu";
 import styled from "styled-components";
+import {useAuth} from "./components/hooks/useAuth";
 
 const LayoutWrapper = styled.div`
   display: flex;
@@ -50,8 +51,8 @@ const PageContentWrapper = styled.div`
 `;
 
 function App() {
-    const [currentUser, setCurrentUser] = useState("");
     const navigate = useNavigate();
+    const {currentUser} = useAuth();
 
     const handleLogout = (event) => {
         event.preventDefault();

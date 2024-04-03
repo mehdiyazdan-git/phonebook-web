@@ -2,10 +2,12 @@ import React, {useState} from 'react';
 import {Form} from "../../utils/Form";
 import AsyncSelectInput from "../../utils/formComponents/AsyncSelectInput";
 import Button from "../../utils/Button";
-import {Modal} from "react-bootstrap";
+import {Alert, Modal} from "react-bootstrap";
 import useHttp from "../../hooks/useHttp";
 
 const CreateBoardMemberForm = ({show,onHide,onAddBoardMember}) => {
+
+    const [formError, setFormError] = useState(''); // State to store form error message
 
     const [submitting, setSubmitting] = useState(false);
     const http = useHttp();
@@ -28,11 +30,23 @@ const CreateBoardMemberForm = ({show,onHide,onAddBoardMember}) => {
      const searchPositions = async (searchQuery) => {
         return await http.get(`/positions/search?searchQuery=${searchQuery}`).then(response => response.data);
     };
+    const handleClose = () => {
+        onHide();
+        setFormError('');
+    };
+
     const onSubmit = async (data) => {
         setSubmitting(true);
+        setFormError('');
         try {
-            await onAddBoardMember(data);
-            onHide();
+            const errorMessage = await onAddBoardMember(data);
+            if (errorMessage == null || errorMessage === ''){
+                onHide();
+                setFormError('');
+            }
+            const cleanMessage = errorMessage.replace('400 BAD_REQUEST', '').trim();
+            setFormError(cleanMessage);
+
         } catch (error) {
             console.error('Error creating board member:', error);
         } finally {
@@ -77,11 +91,17 @@ const CreateBoardMemberForm = ({show,onHide,onAddBoardMember}) => {
                             <Button variant={"primary"} type="submit" disabled={submitting}>
                                 ایجاد
                             </Button>
-                            <Button onClick={onHide} variant={"warning"} type="button" disabled={submitting}>
+                            <Button onClick={handleClose} variant={"warning"} type="button" disabled={submitting}>
                                 انصراف
                             </Button>
                         </div>
                     </Form>
+                    {(formError.length !== 0)
+                        && <Alert style={{
+                            fontFamily:"IRANSans",
+                            fontSize:"0.7rem",
+                            fontWeight:"bold"
+                        }} variant="danger">{formError}</Alert>}
                 </div>
             </Modal.Body>
         </Modal>

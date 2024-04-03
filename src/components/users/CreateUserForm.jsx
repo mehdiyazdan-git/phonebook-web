@@ -6,8 +6,6 @@ import {Form} from "../../utils/Form";
 import {TextInput} from "../../utils/formComponents/TextInput";
 import SelectInput from "../../utils/formComponents/SelectInput";
 import Button from "../../utils/Button";
-import ImageUploader from "../../utils/formComponents/ImageUploade";
-import MortgageCalculator from "../../utils/formComponents/MortgageCalculator";
 
 const schema = yup.object({
     firstname: yup.string().required('نام الزامیست.'),
@@ -22,12 +20,6 @@ const CreateUserForm = ({ onAddUser, show, onHide }) => {
         onAddUser(data);
         onHide(); // Hide the modal after submitting
     };
-
-    const roleOptions = [
-        { value: 'ADMIN', label: 'مدیر' },
-        { value: 'MANAGER', label: 'مدیر محتوا' },
-        { value: 'USER', label: 'کاربر' }
-    ];
     return (
         <Modal size="lg" show={show} onHide={onHide}>
             <Modal.Header style={{ backgroundColor: "rgba(63,51,106,0.6)" }}>
@@ -49,7 +41,15 @@ const CreateUserForm = ({ onAddUser, show, onHide }) => {
                     <TextInput name="lastname" label="نام خانوادگی" />
                     <TextInput name="email" label="ایمیل" />
                     <TextInput name="password" label="رمز عبور" type="password" />
-                    <SelectInput name="role" label="نقش" options={roleOptions} />
+                    <SelectInput
+                        name="role"
+                        label="نقش"
+                        options={[
+                            { value: 'ADMIN', label: 'مدیر' },
+                            { value: 'MANAGER', label: 'مدیر محتوا' },
+                            { value: 'USER', label: 'کاربر' }
+                        ]}
+                    />
 
                     <Button variant="primary" type="submit">
                         افزودن کاربر
@@ -58,7 +58,6 @@ const CreateUserForm = ({ onAddUser, show, onHide }) => {
                         انصراف
                     </Button>
                 </Form>
-                <MortgageCalculator/>
             </Modal.Body>
         </Modal>
     );

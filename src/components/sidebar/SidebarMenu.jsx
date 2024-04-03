@@ -43,7 +43,7 @@ const SidebarMenu = () => {
             <SidebarLink to={`/customers`}>لیست گیرندگان</SidebarLink>
             <SidebarLink to={`/companies`}>شرکت های زیر مجموعه</SidebarLink>
             <SidebarLink to={`/year`}>تعریف سال</SidebarLink>
-            <SidebarLink to={`/positions`}>سمت هیئت مدیره</SidebarLink>
+            <SidebarLink to={`/positions`}>تعریف سمت</SidebarLink>
             <SidebarLink to={`/board-members`}>اعضای هیئت مدیره</SidebarLink>
             <SidebarLink to="/users">Users</SidebarLink>
         </Sidebar>

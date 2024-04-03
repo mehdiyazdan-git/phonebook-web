@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import { Modal } from 'react-bootstrap';
 import { Form } from '../../utils/Form';
 import { TextInput } from '../../utils/formComponents/TextInput';
@@ -6,7 +6,6 @@ import SelectInput from '../../utils/formComponents/SelectInput';
 import * as yup from 'yup';
 import { useYupValidationResolver } from '../../hooks/useYupValidationResolver';
 import Button from "../../utils/Button";
-import useHttp from '../../hooks/useHttp';
 
 
 const schema = yup.object({
@@ -18,29 +17,12 @@ const schema = yup.object({
 });
 
 const EditUserForm = ({ user, onUpdateUser, show, onHide }) => {
-    const [initialValues, setInitialValues]=useState({
-        firstname: user.firstname,
-        lastname: user.lastname,
-        email: user.email,
-        password: user.password,
-        role: user.role.name,
-    });
     const resolver = useYupValidationResolver(schema);
-    const http = useHttp();
-
-
 
     const onSubmit = (data) => {
         onUpdateUser(data);
         onHide(); // Hide the modal after submitting
     };
-
-    useEffect(() => {
-        const getUserById = async (id) => {
-            return await http.get(`/users/${id}`).then(response => response.data);
-        };
-        getUserById(user.id).then(user => setInitialValues(user));
-    }, [user]);
 
     return (
         <Modal size={'lg'} show={show}>
@@ -51,7 +33,11 @@ const EditUserForm = ({ user, onUpdateUser, show, onHide }) => {
             </Modal.Header>
             <Modal.Body style={{ backgroundColor: 'rgba(240,240,240,0.3)' }}>
                 <div className="container modal-form">
-                    <Form defaultValues={initialValues || user} onSubmit={onSubmit} resolver={resolver}>
+                    <Form
+                        defaultValues={user}
+                        onSubmit={onSubmit}
+                        resolver={resolver}
+                    >
                         <TextInput name="id" label={'شناسه'} disabled={true} />
                         <TextInput name="firstname" label={'نام'} />
                         <TextInput name="lastname" label={'نام خانوادگی'} />
@@ -65,8 +51,8 @@ const EditUserForm = ({ user, onUpdateUser, show, onHide }) => {
                                 { value: 'MANAGER', label: 'مدیر محتوا' },
                                 { value: 'USER', label: 'کاربر' }
                             ]}
+                            defaultValue={user.role}
                         />
-
                         <Button variant="success" type="submit">
                             ویرایش
                         </Button>

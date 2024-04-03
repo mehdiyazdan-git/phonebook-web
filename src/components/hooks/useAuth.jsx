@@ -4,18 +4,22 @@ const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
     const [accessToken, setAccessToken] = useState(() => sessionStorage.getItem('accessToken') || '');
+    const [refreshToken, setRefreshToken] = useState(() => localStorage.getItem('refreshToken') || '');
     const [currentUser, setCurrentUser] = useState(() => sessionStorage.getItem('currentUser') || '');
     const [role, setRole] = useState(() => sessionStorage.getItem('role') || '');
 
     useEffect(() => {
         sessionStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refreshToken', refreshToken);
         sessionStorage.setItem('currentUser', currentUser);
         sessionStorage.setItem('role', role);
-    }, [accessToken, currentUser]);
+    }, [accessToken, refreshToken, currentUser, role]);
 
     const value = {
         accessToken,
         setAccessToken,
+        refreshToken,
+        setRefreshToken,
         currentUser,
         setCurrentUser,
         role,

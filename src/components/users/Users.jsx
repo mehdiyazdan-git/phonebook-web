@@ -106,7 +106,7 @@ const Users = () => {
                 <EditUserForm
                     user={editingUser}
                     show={showEditModal}
-                    onUpdateCustomer={handleUpdateUser}
+                    onUpdateUser={handleUpdateUser}
                     onHide={() => {
                         setEditingUser(null);
                         setEditShowModal(false);

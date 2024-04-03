@@ -48,7 +48,6 @@ const EditLetterForm = ({letter, onUpdateLetter, show, onHide,letterType}) => {
         onHide()
     }
 
-
     return (
         <Modal size={"xl"} show={show} onHide={onHide}>
             <Modal.Header style={headerStyle}>

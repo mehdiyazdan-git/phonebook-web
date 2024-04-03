@@ -17,13 +17,13 @@ const Login = () => {
     const onSubmit = async (data) => {
         try {
             const response = await axios.post(`${BASE_URL}/v1/auth/authenticate`, {
-                email: data.email,
+                username: data.username, // Changed from email to username
                 password: data.password
             });
 
             if (response.status === 200) {
                 auth.setAccessToken(response.data.access_token);
-                auth.setCurrentUser(response.data.email);
+                auth.setCurrentUser(response.data.userName); // Changed from email to username
                 auth.setRole(response.data.role);
                 navigate(from);
                 console.log('Authentication successful:', response.data);
@@ -57,9 +57,9 @@ const Login = () => {
                 <h2 className="login-title">Login</h2>
                 <input
                     placeholder="Username"
-                    {...register('email', { required: true })}
+                    {...register('username', { required: true })} // Changed from email to username
                 />
-                {errors.email && <p className="error-message">Email is required</p>}
+                {errors.username && <p className="error-message">Username is required</p>}
                 <input
                     type="password"
                     placeholder="Password"

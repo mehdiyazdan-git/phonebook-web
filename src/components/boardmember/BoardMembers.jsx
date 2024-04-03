@@ -27,9 +27,6 @@ const BoardMembers = () => {
         getAllBoardMembers().then(data => setBoardMembers(data))
     }, [ refreshTrigger]);
 
-
-
-
     const createBoardMember = async (data) => {
         return await http.post("/board-members", data);
     };
@@ -43,24 +40,44 @@ const BoardMembers = () => {
     };
 
     const handleCreateModalClose = async (newMember) => {
-        const response = await createBoardMember(newMember);
-        if (response.status === 201) {
-            setRefreshTrigger(!refreshTrigger); // Toggle the refresh trigger
+        try {
+            const response = await createBoardMember(newMember);
+            if (response.status === 201) {
+                setRefreshTrigger(!refreshTrigger);
+                return '';
+            } else {
+                throw new Error(response.data.message || "Failed to create board member.");
+            }
+        } catch (error) {
+            console.log(error.message);
+            return error.response?.data?.message || "An unexpected error occurred";
         }
-    };
-    const handleDeleteMember = async (id) => {
-        await removeBoardMember(id);
-        setRefreshTrigger(!refreshTrigger); // Refresh the table data
     };
 
     const handleUpdateBoardMember = async (formData) => {
-        console.log("beforeUpdate : " , formData)
-        const response = await updateBoardMember(formData.id, formData);
-        console.log("afterUpdate : " , response)
-        if (response.status === 200) {
-            setRefreshTrigger(!refreshTrigger);
-            setSelectedBoardMember(null);
+        try {
+            console.log("beforeUpdate : " , formData);
+            const response = await updateBoardMember(formData.id, formData);
+            console.log("afterUpdate : " , response);
+
+            if (response.status === 200) {
+                setRefreshTrigger(!refreshTrigger);
+                setSelectedBoardMember(null);
+                return '';
+            } else {
+                throw new Error(response.data.message || "Failed to update board member.");
+            }
+        } catch (error) {
+            console.log(error.message);
+            // Return the error message to the caller
+            return error.response?.data?.message || "An unexpected error occurred";
         }
+    };
+
+
+    const handleDeleteMember = async (id) => {
+        await removeBoardMember(id);
+        setRefreshTrigger(!refreshTrigger); // Refresh the table data
     };
 
     const columns = [

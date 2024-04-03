@@ -1,5 +1,5 @@
-import React from 'react';
-import {Modal} from "react-bootstrap";
+import React, {useState} from 'react';
+import {Alert, Modal} from "react-bootstrap";
 import {Form} from "../../utils/Form";
 import AsyncSelectInput from "../../utils/formComponents/AsyncSelectInput";
 import Button from "../../utils/Button";
@@ -7,6 +7,7 @@ import useHttp from "../../hooks/useHttp";
 
 
 const EditBoardMemberForm = ({ boardMember,show,onHide,onUpdateMemberBoard}) => {
+    const [formError, setFormError] = useState(''); // State to store form error message
     const http = useHttp();
     console.log(boardMember)
     const [submitting, setSubmitting] = React.useState(false);
@@ -30,16 +31,25 @@ const EditBoardMemberForm = ({ boardMember,show,onHide,onUpdateMemberBoard}) => 
     };
     const onSubmit = async (data) => {
         setSubmitting(true);
+        setFormError('');
+
         try {
-           await onUpdateMemberBoard(data);
-            onHide();
-            console.log(data)
+            const errorMessage = await onUpdateMemberBoard(data);
+            if (errorMessage) {
+                const cleanMessage = errorMessage.replace('400 BAD_REQUEST', '').trim();
+                setFormError(cleanMessage);
+            } else {
+                onHide(); // Assuming onHide is a prop that closes the modal/form
+                setFormError(''); // Clear any previous errors
+            }
         } catch (error) {
             console.error('Error updating board member:', error);
+            setFormError("An unexpected error occurred"); // Set a generic error message
         } finally {
-            setSubmitting(false);
+            setSubmitting(false); // Assuming you have a state hook for this
         }
     };
+
 
     return (
         <Modal show={show}>
@@ -77,15 +87,21 @@ const EditBoardMemberForm = ({ boardMember,show,onHide,onUpdateMemberBoard}) => 
                             />
                         </div>
                         <div>
-                            <Button variant={"success"} type="submit">
+                            <Button variant={"success"} type="submit" disabled={submitting}>
                                 ثبت
                             </Button>
-                            <Button variant={"warning"} type="button" onClick={onHide}>
+                            <Button variant={"warning"} type="button" onClick={onHide} disabled={submitting}>
                                 انصراف
                             </Button>
                         </div>
                     </Form>
                 </div>
+                {(formError.length !== 0)
+                    && <Alert style={{
+                        fontFamily:"IRANSans",
+                        fontSize:"0.7rem",
+                        fontWeight:"bold"
+                    }} variant="danger">{formError}</Alert>}
             </Modal.Body>
         </Modal>
     );
