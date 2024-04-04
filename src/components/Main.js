@@ -32,6 +32,8 @@ import ServerConnectionError from "./ServerConnectionError";
 import {IdleTimeoutProvider} from "./contexts/IdleTimeoutProvider";
 import CreateUserForm from "./users/CreateUserForm";
 import EditUserForm from "./users/EditUserForm";
+import UserContainer from "./admin/UserContainer";
+import AdminPanel from "./admin/AdminPanel";
 
 const Main = () => {
 
@@ -89,6 +91,15 @@ const Main = () => {
                                 <Route path="*" element={<NotFoundPage/>}/>
                             </Route>
                         </Route>
+
+                        <Route path="/admin" element={<AdminPanel/>}>
+                            <Route path="" element={<UserContainer/>}>
+                                <Route index path="users" element={<Users/>}/>
+                                <Route path="*" element={<NotFoundPage/>}/>
+                            </Route>
+                            <Route path="year" index element={<FiscalYear/>}/>
+                        </Route>
+
                         <Route path="/year" index element={<FiscalYear/>}/>
                     </Route>
                     <Route path="users"

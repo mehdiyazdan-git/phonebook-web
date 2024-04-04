@@ -1,74 +1,61 @@
-import React, { useState, useEffect } from 'react';
-import CreatePositionForm from './CreatePositionForm';
+import React, { useState } from 'react';
+import Table from '../table/Table';
+import useHttp from '../../hooks/useHttp';
 import EditPositionForm from './EditPositionForm';
-import Button from "../../utils/Button";
-import "./position.css";
-import SimpleTable from "../table/SimpleTable";
-import useHttp from "../../hooks/useHttp";
+import CreatePositionForm from './CreatePositionForm';
+import Button from '../../utils/Button';
 
 const Positions = () => {
-    const [positions, setPositions] = useState([]);
+    const [editingPosition, setEditingPosition] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [showEditModal, setEditShowModal] = useState(false);
-    const [editingPosition, setEditingPosition] = useState(null);
     const [refreshTrigger, setRefreshTrigger] = useState(false);
     const http = useHttp();
 
-
-     const getAllPositions = async () => {
-        return await http.get("/positions").then(response => response.data);
+    const getAllPositions = async (queryParams) => {
+        return await http.get(`/positions?${queryParams.toString()}`).then((r) => r.data);
     };
 
-     const createPosition = async (data) => {
-        return await http.post("/positions", data);
+    const createPosition = async (data) => {
+        return await http.post('/positions', data);
     };
 
-     const updatePosition = async (id, data) => {
+    const updatePosition = async (id, data) => {
         return await http.put(`/positions/${id}`, data);
     };
 
-     const removePosition = async (id) => {
+    const removePosition = async (id) => {
         return await http.delete(`/positions/${id}`);
     };
-
-    useEffect(() => {
-        const fetchData = async () => {
-            const response = await getAllPositions();
-            setPositions(response); // Assuming response.data is the array of positions
-        };
-
-        fetchData().catch(console.error);
-    }, [refreshTrigger]); // Dependency on refreshTrigger to re-fetch when needed
 
     const handleAddPosition = async (newPosition) => {
         const response = await createPosition(newPosition);
         if (response.status === 201) {
-            setRefreshTrigger(!refreshTrigger); // Toggle the refresh trigger
+            setRefreshTrigger(!refreshTrigger);
         }
     };
 
     const handleUpdatePosition = async (updatedPosition) => {
         const response = await updatePosition(updatedPosition.id, updatedPosition);
         if (response.status === 200) {
-            setRefreshTrigger(!refreshTrigger); // Toggle the refresh trigger
+            setRefreshTrigger(!refreshTrigger);
             setEditingPosition(null);
         }
     };
 
     const handleDeletePosition = async (id) => {
         await removePosition(id);
-        setRefreshTrigger(!refreshTrigger); // Refresh the table data
+        setRefreshTrigger(!refreshTrigger);
     };
 
     const columns = [
-        { key: 'id', title: 'شناسه' },
-        { key: 'name', title: 'نام پست' },
-        // ... add other columns as needed
+        { key: 'id', title: 'شناسه', width: '5%', sortable: true },
+        { key: 'name', title: 'نام پست', width: '20%', sortable: true, searchable: true },
+        // Add more columns as needed
     ];
 
     return (
         <div className="table-container">
-            <span style={{ fontFamily: "IRANSansBold", fontSize: "1.2rem" }}>لیست پست‌ها</span>
             <div>
                 <Button variant="primary" onClick={() => setShowModal(true)}>
                     افزودن پست جدید
@@ -79,15 +66,17 @@ const Positions = () => {
                     onHide={() => setShowModal(false)}
                 />
             </div>
-            <SimpleTable
+            <Table
                 columns={columns}
-                data={positions}
+                fetchData={getAllPositions}
                 onEdit={(position) => {
                     setEditingPosition(position);
                     setEditShowModal(true);
                 }}
                 onDelete={handleDeletePosition}
+                refreshTrigger={refreshTrigger}
             />
+
             {editingPosition && (
                 <EditPositionForm
                     position={editingPosition}

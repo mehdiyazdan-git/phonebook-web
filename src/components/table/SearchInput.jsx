@@ -16,4 +16,4 @@ const SearchInput = ({ width, id, name, value, onChange, placeholder = "جستج
     );
 };
 
-export default SearchInput;
+export default React.memo(SearchInput);

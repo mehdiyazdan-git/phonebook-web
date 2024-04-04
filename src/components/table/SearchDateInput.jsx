@@ -24,4 +24,4 @@ const SearchDateInput = ({ width, value, onChange, placeholder = "جستجو..."
     );
 };
 
-export default SearchDateInput;
+export default React.memo(SearchDateInput);

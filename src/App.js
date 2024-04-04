@@ -64,7 +64,7 @@ function App() {
         <LayoutWrapper dir="rtl">
             <Navbar>
                 <NavbarCol>
-                    <span style={{ color: "white" }}>{` کاربر جاری : ${currentUser}`}</span>
+                    <span style={{ color: "white",fontFamily:"IRANSans",fontSize:"0.8rem" }}>{` کاربر جاری : ${currentUser}`}</span>
                 </NavbarCol>
                 <NavbarCol>
 

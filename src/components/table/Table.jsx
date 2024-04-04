@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useMemo, useState} from 'react';
 import Th from './Th';
 import SearchInput from './SearchInput';
 import SearchDateInput from './SearchDateInput';
@@ -19,12 +19,12 @@ const Table = ({ columns, fetchData, onEdit, onDelete, refreshTrigger }) => {
     const [showConfirmationModal, setShowConfirmationModal] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
 
-    const initialSearchState = columns.reduce((acc, column) => {
+    const initialSearchState = useMemo(() => columns.reduce((acc, column) => {
         if (column.searchable) {
             acc[column.key] = '';
         }
         return acc;
-    }, {});
+    }, {}), [columns]);
     const [search, setSearch] = useState(initialSearchState);
 
     const handlePageChange = (newPage) => {

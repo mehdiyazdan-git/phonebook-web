@@ -18,4 +18,4 @@ const Th = ({ width, sortBy, sortOrder, setSortBy, setSortOrder, children, sortK
     );
 };
 
-export default Th;
+export default React.memo(Th);

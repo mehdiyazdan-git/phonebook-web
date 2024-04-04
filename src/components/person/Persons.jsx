@@ -7,6 +7,8 @@ import moment from "jalali-moment";
 import Table from "../table/Table";
 import useHttp from "../../hooks/useHttp";
 import { saveAs } from 'file-saver';
+import FileUpload from "../../utils/formComponents/FileUpload";
+import DownloadTemplate from "../../utils/formComponents/DownloadTemplate";
 
 
 
@@ -98,6 +100,12 @@ const Persons = () => {
                 <Button variant="secondary" onClick={downloadExcelFile}>
                     دانلود به Excel
                 </Button>
+                <FileUpload uploadUrl={"/persons/import"}/>
+                <DownloadTemplate
+                    downloadUrl="/persons/template"
+                    buttonLabel="دانلود الگوی فرد"
+                    fileName="person_template.xlsx"
+                />
                 <NewPersonForm
                     onAddPerson={handleAddPerson}
                     show={showModal}

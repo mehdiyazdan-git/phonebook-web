@@ -2,6 +2,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { BASE_URL } from '../config/config';
 import { useAuth } from '../components/hooks/useAuth';
+import { v4 as uuidv4 } from 'uuid';
 
 const useHttp = () => {
     const auth = useAuth();
@@ -11,9 +12,13 @@ const useHttp = () => {
         baseURL: BASE_URL,
     });
 
+    // Request interceptor
     instance.interceptors.request.use(
         (config) => {
-            config.headers.Authorization = `Bearer ${auth?.accessToken}`;
+            if (auth?.accessToken) {
+                config.headers.Authorization = `Bearer ${auth.accessToken}`;
+            }
+            config.headers['X-Request-ID'] = uuidv4();
             return config;
         },
         (error) => {
@@ -21,35 +26,41 @@ const useHttp = () => {
         }
     );
 
+    // Response interceptor
     instance.interceptors.response.use(
-        (response) => response,
+        (response) => {
+            return response;
+        },
         async (error) => {
+            if (!error.response) {
+                // No response received from the server
+                navigate('/login');
+            }
+
+            // Handle 401 Unauthorized
             if (error.response.status === 401 && !error.config._retry) {
-                console.log("Mark the request as retried")
                 error.config._retry = true;
                 try {
-                    console.log("Attempt to refresh the token")
                     const refreshTokenResponse = await axios.post(`${BASE_URL}/v1/auth/refresh-token`, {
                         refreshToken: auth?.refreshToken,
                     });
 
                     if (refreshTokenResponse.status === 200) {
-                        console.log("Update the access token")
                         auth.setAccessToken(refreshTokenResponse.data.accessToken);
-                        console.log("Resend the original request with the new access token")
                         error.config.headers.Authorization = `Bearer ${refreshTokenResponse.data.accessToken}`;
                         return instance(error.config);
                     }
                 } catch (refreshError) {
-                    // Handle refresh token errors (e.g., navigate to login)
                     navigate('/login');
                     return Promise.reject(refreshError);
                 }
-            } else if (error.response.status === 403) {
-                // Handle forbidden errors (e.g., navigate to login)
+            }
+
+            // Handle 403 Forbidden or other errors
+            if (error.response.status === 403 || error.response.status >= 500) {
                 navigate('/login');
             }
-            // Propagate other errors
+
             return Promise.reject(error);
         }
     );

@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Document from '../../../services/documentService';
 import DropZoneUploader from './DropZoneUploader';
-import { IPADDRESS, PORT } from '../../../services/conntectionParams';
 import { saveAs } from 'file-saver';
 import ConfirmationModal from "../../table/ConfirmationModal";
 import {IoCloudDownloadOutline, IoDocumentOutline} from "react-icons/io5";
@@ -65,10 +63,6 @@ const DocumentList = ({ personId,onHide }) => {
                 console.error('Error downloading file:', error);
             });
     };
-
-
-
-
 
     return (
         <div className="p-0 m-0">

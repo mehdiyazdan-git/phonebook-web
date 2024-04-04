@@ -7,6 +7,8 @@ import moment from "jalali-moment";
 import Table from "../table/Table";
 import useHttp from "../../hooks/useHttp";
 import { saveAs } from 'file-saver';
+import FileUpload from "../../utils/formComponents/FileUpload";
+import DownloadTemplate from "../../utils/formComponents/DownloadTemplate";
 
 
 const toShamsi = (date) => {
@@ -89,6 +91,12 @@ const Customers = () => {
                 <Button variant="secondary" onClick={downloadExcelFile}>
                     دانلود به Excel
                 </Button>
+                <FileUpload uploadUrl={"/customers/import"}/>
+                <DownloadTemplate
+                    downloadUrl="/customers/template"
+                    buttonLabel="دانلود الگوی مشتری"
+                    fileName="customer_template.xlsx"
+                />
                 <CreateCustomerForm
                     onAddCustomer={handleAddCustomer}
                     show={showModal}

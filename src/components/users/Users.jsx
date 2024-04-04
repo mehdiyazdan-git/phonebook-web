@@ -1,15 +1,9 @@
 import React, { useState } from 'react';
 import Table from '../table/Table';
 import useHttp from '../../hooks/useHttp';
-import { saveAs } from 'file-saver';
-import moment from 'jalali-moment';
 import EditUserForm from "./EditUserForm";
 import CreateUserForm from "./CreateUserForm";
 import Button from "../../utils/Button";
-
-const toShamsi = (date) => {
-    return date ? moment(date, 'YYYY-MM-DD').format('jYYYY/jMM/jDD') : '';
-};
 
 const Users = () => {
     const [editingUser, setEditingUser] = useState(null);
@@ -64,26 +58,11 @@ const Users = () => {
         { key: 'role', title: 'نقش', width: '15%', sortable: true, searchable: true },
     ];
 
-
-    async function downloadExcelFile() {
-        await http.get('/customers/download-all-customers.xlsx', { responseType: 'blob' })
-            .then((response) => response.data)
-            .then((blobData) => {
-                saveAs(blobData, 'customers.xlsx');
-            })
-            .catch((error) => {
-                console.error('Error downloading file:', error);
-            });
-    }
-
     return (
         <div className="table-container">
             <div>
                 <Button variant="primary" onClick={() => setShowModal(true)}>
                     جدید
-                </Button>
-                <Button variant="secondary" onClick={downloadExcelFile}>
-                    دانلود به Excel
                 </Button>
                 <CreateUserForm
                     onAddUser={handleAddUser}
