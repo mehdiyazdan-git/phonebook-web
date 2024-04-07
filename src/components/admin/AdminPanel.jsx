@@ -4,6 +4,7 @@ import Users from "../users/Users";
 import FiscalYear from "../year/FiscalYear";
 import Positions from "../position/Positions";
 import BoardMembers from "../boardmember/BoardMembers";
+import AppSettings from "../AppSettings/AppSettings";
 
 
 const LayoutWrapper = styled.div`
@@ -68,12 +69,16 @@ const AdminPanel = () => {
                     <SidebarLink onClick={() => handleTabClick('positions')} className={activeTab === 'positions' ? 'active' : ''}>
                         سمت های هیئت مدیره
                     </SidebarLink>
+                    <SidebarLink onClick={() => handleTabClick('settings')} className={activeTab === 'settings' ? 'active' : ''}>
+                        تنظیمات
+                    </SidebarLink>
                 </Sidebar>
                 <Content>
                     {activeTab === 'users' && <Users />}
                     {activeTab === 'year' && <FiscalYear />}
                     {activeTab === 'positions' && <Positions />}
                     {activeTab === 'board-members' && <BoardMembers />}
+                    {activeTab === 'settings' && <AppSettings />}
                 </Content>
             </LayoutWrapper>
         </div>

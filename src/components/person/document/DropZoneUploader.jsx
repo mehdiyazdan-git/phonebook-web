@@ -1,25 +1,42 @@
-import React, {useState} from 'react';
-import {extensionToType} from "../../../utils/documentUtils";
+import React, { useState, useEffect } from 'react';
+import { extensionToType } from "../../../utils/documentUtils";
 import useHttp from "../../../hooks/useHttp";
 
-
-const DropZoneUploader = ({personId,companyId,letterId, refreshTrigger, setRefreshTrigger,onHide}) => {
+const DropZoneUploader = ({ personId, companyId, letterId, refreshTrigger, setRefreshTrigger, onHide }) => {
     const [uploadProgress, setUploadProgress] = useState(null);
     const [uploadComplete, setUploadComplete] = useState(false);
     const [dragging, setDragging] = useState(false);
+    const [fileSizeError, setFileSizeError] = useState(false);
+    const [maxUploadFileSize, setMaxUploadFileSize] = useState(null);
     const http = useHttp();
 
+    useEffect(() => {
+        // Fetch the maximum upload file size setting
+        http.get('/settings/max-upload-file-size')
+            .then(response => {
+                setMaxUploadFileSize(response.data);
+            })
+            .catch(error => {
+                console.error('Error fetching max upload file size:', error);
+            });
+    }, [http]);
+
     const sendFile = async (file) => {
-        if (uploadComplete) setUploadComplete(false)
+        if (uploadComplete) setUploadComplete(false);
+        if (maxUploadFileSize && file.size > maxUploadFileSize) {
+            setFileSizeError(true);
+            return;
+        }
+        setFileSizeError(false);
         const formData = new FormData();
         formData.append('documentName', file.name);
         formData.append('documentType', extensionToType[file.name.split('.').pop()]);
         formData.append('fileExtension', file.name.split('.').pop());
         formData.append('documentFile', file);
         if (personId !== undefined)
-        formData.append('personId', personId);
+            formData.append('personId', personId);
         if (companyId !== undefined)
-        formData.append('companyId', companyId);
+            formData.append('companyId', companyId);
         if (letterId !== undefined)
             formData.append('letterId', letterId);
 
@@ -33,7 +50,7 @@ const DropZoneUploader = ({personId,companyId,letterId, refreshTrigger, setRefre
 
             await http.post('/documents', formData, {
                 onUploadProgress: (progressEvent) => {
-                    const {loaded, total} = progressEvent;
+                    const { loaded, total } = progressEvent;
                     const progress = Math.round((loaded * 100) / total);
                     setUploadProgress(progress);
                 },
@@ -50,11 +67,12 @@ const DropZoneUploader = ({personId,companyId,letterId, refreshTrigger, setRefre
             console.error('Error uploading file:', error);
         }
     };
+
     const handleCancelClick = () => {
-        if (onHide !== null){
-            onHide()
+        if (onHide !== null) {
+            onHide();
         }
-    }
+    };
 
     const handleDrop = (event) => {
         event.preventDefault();
@@ -98,13 +116,12 @@ const DropZoneUploader = ({personId,companyId,letterId, refreshTrigger, setRefre
                 onDragOver={handleDragOver}
             >
                 {dragging ? 'اینجا فایل را بکشید و رها کنید' : 'فایل را بکشید و در اینجا رها کنید'}
-
             </div>
             <input
                 type="file"
                 id="fileElem"
                 accept="*/*"
-                style={{display: 'none'}}
+                style={{ display: 'none' }}
                 onChange={handleFileSelect}
             />
             <label className="btn btn-primary"
@@ -123,6 +140,7 @@ const DropZoneUploader = ({personId,companyId,letterId, refreshTrigger, setRefre
                 setUploadProgress(null)
                 setDragging(false)
                 setUploadComplete(false)
+                setFileSizeError(false);
             }} className="btn btn-warning btn-sm" type="button">
                 انصراف
             </button>
@@ -133,11 +151,14 @@ const DropZoneUploader = ({personId,companyId,letterId, refreshTrigger, setRefre
                     fontSize: '0.7rem',
                 }}>
                     <p>در حال بارگذاری : {uploadProgress}%</p>
-                    <progress value={uploadProgress} max="100"/>
+                    <progress value={uploadProgress} max="100" />
                 </div>
             )}
             {uploadComplete && (
-                <p style={{color: 'green', fontFamily: 'IRANSans',fontSize:"0.7rem"}}>فایل با موفقیت بارگذاری شد.!</p>
+                <strong style={{ color: 'green', fontFamily: 'IRANSans', fontSize: "0.7rem" }}>فایل با موفقیت بارگذاری شد.!</strong>
+            )}
+            {fileSizeError && (
+                <strong style={{ color: 'red', fontFamily: 'IRANSans', fontSize: "0.7rem" }}>خطا: حداکثر اندازه فایل باید {parseFloat((maxUploadFileSize / (1024 * 1024)).toFixed(2))} مگابایت باشد.</strong>
             )}
         </div>
     );

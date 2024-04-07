@@ -84,8 +84,12 @@ const Tabs = () => {
             <Tab isActive={activeTab === 'board-members'} onClick={() => setActiveTab('board-members')}>
                 <SidebarLink to="board-members">هیئت مدیره</SidebarLink>
             </Tab>
+            <Tab isActive={activeTab === 'shareholders'} onClick={() => setActiveTab('shareholders')}>
+                <SidebarLink to="shareholders">سهامداران</SidebarLink>
+            </Tab>
         </TabContainer>
     );
+
 };
 
 const CompanyContainer = () => {

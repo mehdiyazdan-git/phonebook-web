@@ -96,7 +96,6 @@ const EditLetterForm = ({letter, onUpdateLetter, show, onHide,letterType}) => {
                         <Button variant={"warning"} onClick={onHide} type="button">انصراف</Button>
                     </FormContainer>
                 </Form>
-                {/*<AttachmentTable letterId={letter.id}/>*/}
                 <LetterDocumentList letterId={letter.id} onHide={onHide} />
             </Modal.Body>
         </Modal>

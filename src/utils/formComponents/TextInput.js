@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Controller } from 'react-hook-form';
 import { ConnectForm } from './ConnectForm';
-import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Ensure you have react-icons installed
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 export function TextInput({ name, label, type, ...rest }) {
     const [showPassword, setShowPassword] = useState(false);
