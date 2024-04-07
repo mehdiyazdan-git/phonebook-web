@@ -7,6 +7,8 @@ import NewLetterForm from "./NewLetterForm";
 import EditLetterForm from "./EditLetterForm";
 import {useLocation, useParams} from "react-router-dom";
 import useHttp from "../../hooks/useHttp";
+import YearSelect from "../year/YearSelector";
+import getCurrentYear from "../../utils/functions/getCurrentYear";
 
 
 const toShamsi = (date) => {
@@ -14,12 +16,13 @@ const toShamsi = (date) => {
 };
 
 const Letters = () => {
+    const http = useHttp();
+    const [year,setYear] = useState({value : 3 , label : 1403});
     const { companyId } = useParams();
     const [editingLetter, setEditingLetter] = useState(null);
     const [refreshTrigger, setRefreshTrigger] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [showEditModal, setEditShowModal] = useState(false);
-    const http = useHttp();
 
 
     const location = useLocation();
@@ -30,7 +33,7 @@ const Letters = () => {
     };
 
      const getAllByCompanyId = async (companyId, queryParams) => {
-        return await http.get(`/letters/pageable?companyId=${companyId}&${queryParams.toString()}`);
+        return await http.get(`/letters/pageable?companyId=${Number(companyId)}&yearId=${Number(year.value)}&${queryParams.toString()}`);
     };
      const createLetter = async (data) => {
         return await http.post("/letters", data);
@@ -48,12 +51,17 @@ const Letters = () => {
     useEffect(() => {
         setRefreshTrigger((prev) => !prev);
     }, [location]);
+    useEffect(() => {
+        setRefreshTrigger((prev) => !prev);
+    }, [year.value]);
     const fetchData = async (queryParams) => {
         // Add the query parameter
         queryParams.set('letterType', letterType.toUpperCase());
+        queryParams.set("yearId",Number(year.value))
 
         if (companyId) {
-            // If senderId is available, fetch letters for this sender
+            // If companyId is available, fetch letters for this company
+            console.log(queryParams.toString())
             return await getAllByCompanyId(Number(companyId), queryParams.toString()).then(r => r.data);
         } else {
             // Otherwise, fetch all letters
@@ -117,6 +125,7 @@ const Letters = () => {
                 <Button variant="primary" onClick={() => setShowModal(true)}>
                     جدید
                 </Button>
+                <YearSelect value={year} onChange={setYear} currentYear={getCurrentYear()}/>
                 <NewLetterForm
                     onAddLetter={handleAddLetter}
                     show={showModal}

@@ -9,8 +9,8 @@ import DateInput from "../../utils/formComponents/DateInput";
 import FormRow from "../form/FormRow";
 import Button from "../../utils/Button";
 import FormContainer from "../../utils/formComponents/FormContainer";
-import AttachmentTable from "../attachment/AttachmentTable";
 import useHttp from "../../hooks/useHttp";
+import LetterDocumentList from "./LetterDocumentList";
 
 
 const headerStyle = {backgroundColor: 'rgba(63,51,106,0.6)',};
@@ -28,11 +28,17 @@ const EditLetterForm = ({letter, onUpdateLetter, show, onHide,letterType}) => {
         return await http.get(`/search?searchQuery=${searchQuery}`).then(response => response.data);
     };
     const getCustomerSelect = async () => {
-        return await http.get(`/customers/select`);
+        return await http.get(`/customers/select`)
     };
-     const getLetterById = async (id) => {
-        return await http.get(`/letters/${id}`).then((response) => response.data);
+    const getLetterById = async (id) => {
+        return await http.get(`/letters/${id}`).then((response) => {
+            const letterData = response.data;
+            // Reverse the letterNumber string
+            letterData.letterNumber = letterData.letterNumber.split('/').reverse().join('/');
+            return letterData;
+        });
     };
+
 
 
     const validationSchema = Yup.object().shape({
@@ -62,6 +68,7 @@ const EditLetterForm = ({letter, onUpdateLetter, show, onHide,letterType}) => {
                         <div className="mt-1">
                             <FormRow>
                                 <Col><TextInput  name="letterNumber" label={"شماره نامه"}/></Col>
+                                <Col><TextInput  name="id" label={"شناسه نامه"}/></Col>
                                 <Col><DateInput name="creationDate" label="تاریخ نامه:" /></Col>
                             </FormRow>
                             <FormRow>
@@ -70,6 +77,7 @@ const EditLetterForm = ({letter, onUpdateLetter, show, onHide,letterType}) => {
                                     <AsyncSelectInput
                                         name={"companyId"}
                                         apiFetchFunction={getCompanySelect}
+                                        isDisabled={true}
                                     />
                                 </Col>
                                 <Col>
@@ -88,7 +96,8 @@ const EditLetterForm = ({letter, onUpdateLetter, show, onHide,letterType}) => {
                         <Button variant={"warning"} onClick={onHide} type="button">انصراف</Button>
                     </FormContainer>
                 </Form>
-                <AttachmentTable letterId={letter.id}/>
+                {/*<AttachmentTable letterId={letter.id}/>*/}
+                <LetterDocumentList letterId={letter.id} onHide={onHide} />
             </Modal.Body>
         </Modal>
     );

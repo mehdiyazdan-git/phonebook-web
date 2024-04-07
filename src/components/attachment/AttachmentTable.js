@@ -86,6 +86,7 @@ const AttachmentTable = ({letterId}) => {
                     margin : "1rem"
         }} className="container mt-2">
             <h6 className="label">لیست پیوست</h6>
+            <p>{letterId}</p>
             <div className="row m-1">
                 <FileInput reload={handleReload} letterId={letterId} label="انتخاب فایل PDF"/>
             </div>

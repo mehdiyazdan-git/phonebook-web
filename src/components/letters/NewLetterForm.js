@@ -3,7 +3,7 @@ import * as Yup from 'yup';
 import {yupResolver} from "@hookform/resolvers/yup";
 import AsyncSelectInput from "../form/AsyncSelectInput";
 import {Col, Modal} from "react-bootstrap";
-import {Form} from "../../utils/Form";
+
 import {TextInput} from "../../utils/formComponents/TextInput";
 import DateInput from "../../utils/formComponents/DateInput";
 import FormRow from "../form/FormRow";
@@ -14,6 +14,7 @@ import getCurrentYear from "../../utils/functions/getCurrentYear";
 import YearService from "../../services/yearServices";
 import { Alert } from 'react-bootstrap';
 import useHttp from "../../hooks/useHttp";
+import {Form} from "../../utils/Form";
 
 
 
@@ -21,7 +22,6 @@ const NewLetterForm = ({show, onHide, onAddLetter, companyId,letterType}) => {
     const [years, setYears] = useState([]);
     const [alertMessage, setAlertMessage] = useState('');
     const validationSchema = Yup.object().shape({
-        letterNumber: Yup.string().required('شماره نامه الزامیست.'),
         creationDate: Yup.date().required('تاریخ نامه الزامیست.'),
         companyId: Yup.string().required('فرستنده الزامیست.'),
         customerId: Yup.string().required('گیرنده الزامیست.'),
@@ -29,13 +29,9 @@ const NewLetterForm = ({show, onHide, onAddLetter, companyId,letterType}) => {
     });
     const resolver = yupResolver(validationSchema);
 
-    const {http} = useHttp();
+    const http = useHttp();
     const getCompanySelect = async (queryParam) => {
         return await http.get(`/companies/select?queryParam=${queryParam ? queryParam : ''}`);
-    };
-
-    const search = async (searchQuery) => {
-        return await http.get(`/search?searchQuery=${searchQuery}`).then(response => response.data);
     };
     const getCustomerSelect = async () => {
         return await http.get(`/customers/select`);
@@ -102,6 +98,7 @@ const NewLetterForm = ({show, onHide, onAddLetter, companyId,letterType}) => {
                                         apiFetchFunction={getCompanySelect}
                                     />
                                 </Col>
+
                                 <Col>
                                     <label className="label">{letterType === "incoming" ? "فرستنده" : "گیرنده"}</label>
                                     <AsyncSelectInput

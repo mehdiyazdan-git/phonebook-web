@@ -1,8 +1,8 @@
-import React, {useState} from 'react';
+import React from 'react';
 import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 import { yupResolver } from "@hookform/resolvers/yup";
-import {Alert, Modal} from 'react-bootstrap';
+import {Modal} from 'react-bootstrap';
 import { TextInput } from "../../utils/formComponents/TextInput";
 import Button from "../../utils/Button";
 import {Form} from "../../utils/Form";

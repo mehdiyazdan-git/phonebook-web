@@ -1,58 +1,49 @@
-import React, {useState, useEffect} from 'react';
-import YearService from "../../services/yearServices";
-import "./yearSelector.css"
+import React, { useEffect, useState } from 'react';
+import AsyncSelect from 'react-select/async';
+import useHttp from '../../hooks/useHttp';
 
+const YearSelect = ({ onChange, value, currentYear }) => {
+    const http = useHttp();
+    const [selectedYear, setSelectedYear] = useState(null);
 
-function YearSelector() {
-    const [years, setYears] = useState([]);
-    const [selectedYear, setSelectedYear] = useState(localStorage.getItem('selectedYear') || '');
-
-
-    useEffect(() => {
-        async function loadYears() {
-            await YearService.crud.getAllYears().then(response => {
-                console.log("response.data", response.data)
-                setYears(response.data);
-            })
+    const getYearSelect = async () => {
+        const response = await http.get(`/years/select`);
+        const options = response.data.map(year => ({ value: year.id, label: year.name }));
+        // Find the option that matches currentYear and set it as the selected value
+        const matchingOption = options.find(option => option.label === currentYear);
+        if (matchingOption) {
+            setSelectedYear(matchingOption);
+            onChange(matchingOption); // Trigger onChange with the matching option
         }
-
-        loadYears()
-
-    }, []);
-
-    const handleYearChange = (event) => {
-        const selectedYear = event.target.value;
-        setSelectedYear(selectedYear);
-        localStorage.setItem('selectedYear', selectedYear);
-        window.location.reload();
+        return options;
     };
 
+    const loadOptions = (inputValue, callback) => {
+        getYearSelect().then(options => {
+            callback(options);
+        });
+    };
+
+    const handleChange = (selectedOption) => {
+        setSelectedYear(selectedOption);
+        onChange(selectedOption);
+    };
+
+    // Fetch options and set the matching option based on currentYear on component mount
+    useEffect(() => {
+        getYearSelect();
+    }, [currentYear]);
+
     return (
-        <div className="row m-1">
-            <div className="col-1"><label style={{color: "white", textAlign: "center"}}
-                                          htmlFor="yearSelect">سال:</label></div>
-            <div className="col-11">
-                <select className="drop-down"
-                        id="yearSelect"
-                        value={selectedYear}
-                        onChange={handleYearChange}
-                >
-                    {years.map((year, index) => (
-                        <React.Fragment key={year.id}>
-                            <option
-                                className="option"
-                                value={year.name}
-                            >
-                                {year.name}
-                            </option>
-                            {index < years.length - 1 && <div className="separator" />}
-                        </React.Fragment>
-                    ))}
-
-                </select>
-            </div>
-        </div>
+        <AsyncSelect
+            cacheOptions
+            loadOptions={loadOptions}
+            defaultOptions
+            defaultValue={selectedYear}
+            onChange={handleChange}
+            value={value}
+        />
     );
-}
+};
 
-export default YearSelector;
+export default YearSelect;

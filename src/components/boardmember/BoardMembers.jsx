@@ -1,125 +1,111 @@
-import React, { useState, useEffect } from 'react';
-import CreateBoardMemberForm from './CreateBoardMemberForm';
+import React, { useState } from 'react';
+import Table from '../table/Table';
+import useHttp from '../../hooks/useHttp';
 import EditBoardMemberForm from './EditBoardMemberForm';
-import SimpleTable from "../table/SimpleTable";
-import Button from "../../utils/Button";
-import useHttp from "../../hooks/useHttp";
+import CreateBoardMemberForm from './CreateBoardMemberForm';
+import Button from '../../utils/Button';
 import {useParams} from "react-router-dom";
 
 const BoardMembers = () => {
     const {companyId} = useParams();
-    const [boardMembers, setBoardMembers] = useState([]);
-    const [showCreateModal, setShowCreateModal] = useState(false);
-    const [showEditModal, setShowEditModal] = useState(false);
-    const [selectedBoardMember, setSelectedBoardMember] = useState(null);
+    const [editingBoardMember, setEditingBoardMember] = useState(null);
+    const [showModal, setShowModal] = useState(false);
+    const [showEditModal, setEditShowModal] = useState(false);
     const [refreshTrigger, setRefreshTrigger] = useState(false);
     const http = useHttp();
 
-    useEffect(() => {
-        const getAllBoardMembers = async () => {
-            if (companyId !== undefined && companyId !== null) {
-                return await http.get(`/board-members/all-by-companyId/${Number(companyId)}`)
-                    .then(response => response.data);
-            }
-            return await http.get("/board-members")
-                .then(response => response.data);
-        };
-        getAllBoardMembers().then(data => setBoardMembers(data))
-    }, [ refreshTrigger]);
-
-    const createBoardMember = async (data) => {
-        return await http.post("/board-members", data);
+    const getAllBoardMembers = async (queryParams) => {
+        if (companyId !== null && companyId !== undefined){
+            return await http
+                .get(`/board-members?companyId=${Number(companyId)}&${queryParams.toString()}`)
+                .then((r) => r.data);
+        }else {
+            return await http
+                .get(`/board-members?${queryParams.toString()}`)
+                .then((r) => r.data);
+        }
     };
 
-     const updateBoardMember = async (id, data) => {
+    const createBoardMember = async (data) => {
+        return await http.post('/board-members', data);
+    };
+
+    const updateBoardMember = async (id, data) => {
         return await http.put(`/board-members/${id}`, data);
     };
 
-     const removeBoardMember = async (id) => {
+    const removeBoardMember = async (id) => {
         return await http.delete(`/board-members/${id}`);
     };
 
-    const handleCreateModalClose = async (newMember) => {
-        try {
-            const response = await createBoardMember(newMember);
-            if (response.status === 201) {
-                setRefreshTrigger(!refreshTrigger);
-                return '';
-            } else {
-                throw new Error(response.data.message || "Failed to create board member.");
-            }
-        } catch (error) {
-            console.log(error.message);
-            return error.response?.data?.message || "An unexpected error occurred";
+    const handleAddBoardMember = async (newBoardMember) => {
+        const response = await createBoardMember(newBoardMember);
+        if (response.status === 201) {
+            setRefreshTrigger(!refreshTrigger);
         }
     };
 
-    const handleUpdateBoardMember = async (formData) => {
-        try {
-            console.log("beforeUpdate : " , formData);
-            const response = await updateBoardMember(formData.id, formData);
-            console.log("afterUpdate : " , response);
-
-            if (response.status === 200) {
-                setRefreshTrigger(!refreshTrigger);
-                setSelectedBoardMember(null);
-                return '';
-            } else {
-                throw new Error(response.data.message || "Failed to update board member.");
-            }
-        } catch (error) {
-            console.log(error.message);
-            // Return the error message to the caller
-            return error.response?.data?.message || "An unexpected error occurred";
+    const handleUpdateBoardMember = async (updatedBoardMember) => {
+        const response = await updateBoardMember(updatedBoardMember.id, updatedBoardMember);
+        if (response.status === 200) {
+            setRefreshTrigger(!refreshTrigger);
+            setEditingBoardMember(null);
         }
     };
 
-
-    const handleDeleteMember = async (id) => {
+    const handleDeleteBoardMember = async (id) => {
         await removeBoardMember(id);
-        setRefreshTrigger(!refreshTrigger); // Refresh the table data
+        setRefreshTrigger(!refreshTrigger);
     };
 
     const columns = [
-        { key: 'id', title: 'شناسه' },
-        { key: 'fullName', title: 'نام و نام خانوادگی' },
-        { key: 'positionName', title: 'سمت' },
-        { key: 'companyCompanyName', title: 'شرکت' },
+        { key: 'id', title: 'شناسه', width: '5%', sortable: true },
+        {
+            key: 'fullName',
+            title: 'نام و نام خانوادگی',
+            width: '20%',
+            sortable: true,
+            searchable: true,
+            render: (item) => `${item.personFirstName} ${item.personLastName}` },
+        { key: 'positionName', title: 'سمت', width: '15%', sortable: true, searchable: true },
+        { key: 'companyCompanyName', title: 'شرکت', width: '20%', sortable: true, searchable: true },
     ];
 
     return (
-        <>
-            <Button variant="primary" onClick={() => setShowCreateModal(true)}>
-                جدید
-            </Button>
-
-            <SimpleTable
+        <div className="table-container">
+            <div>
+                <Button variant="primary" onClick={() => setShowModal(true)}>
+                    افزودن عضو جدید
+                </Button>
+                <CreateBoardMemberForm
+                    onAddBoardMember={handleAddBoardMember}
+                    show={showModal}
+                    onHide={() => setShowModal(false)}
+                />
+            </div>
+            <Table
                 columns={columns}
-                data={boardMembers}
+                fetchData={getAllBoardMembers}
                 onEdit={(boardMember) => {
-                    setSelectedBoardMember(boardMember);
-                    setShowEditModal(true);
+                    setEditingBoardMember(boardMember);
+                    setEditShowModal(true);
                 }}
-                onDelete={handleDeleteMember}
+                onDelete={handleDeleteBoardMember}
+                refreshTrigger={refreshTrigger}
             />
 
-
-            <CreateBoardMemberForm
-                show={showCreateModal}
-                onHide={()=>setShowCreateModal(false)}
-                onAddBoardMember={handleCreateModalClose}
-
-            />
-            {selectedBoardMember && (
+            {editingBoardMember && (
                 <EditBoardMemberForm
-                    show={showEditModal}
-                    boardMember={selectedBoardMember}
-                    onHide={() => setShowEditModal(false)}
+                    boardMember={editingBoardMember}
                     onUpdateMemberBoard={handleUpdateBoardMember}
+                    show={showEditModal}
+                    onHide={() => {
+                        setEditingBoardMember(null);
+                        setEditShowModal(false);
+                    }}
                 />
             )}
-
-        </>
+        </div>
     );
 };
 

@@ -1,5 +1,4 @@
 import React, { useRef, useState } from 'react';
-import Attachment from '../../services/attachmentService';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Button from "../../utils/Button";
@@ -10,39 +9,33 @@ const FileInput = ({ label, letterId, reload }) => {
     const fileInputRef = useRef(null);
     const http = useHttp();
 
-    const upload = async (data) => {
-        return await http.post("/attachments/upload", data);
+    const upload = async (formData) => {
+        try {
+            const res = await http.post(`/attachments/upload?letterId=${letterId}`, formData);
+            console.log(res.data);
+            toast.success('فایل با موفقیت بارگذاری شد.', {
+                position: toast.POSITION.BOTTOM_RIGHT,
+                className: 'foo-bar'
+            });
+            if (fileInputRef.current) {
+                fileInputRef.current.value = "";
+            }
+            reload();
+        } catch (error) {
+            console.error('خطا در بارگذاری فایل :', error);
+        }
     };
 
     const onFileChangeHandler = async (e) => {
         const files = e.target.files;
-        let fileNames = [];
-        for (let i = 0; i < files.length; i++) {
-            fileNames.push(files[i].name);
-        }
+        const fileNames = Array.from(files).map(file => file.name);
         setSelectedFileName(fileNames.join(', ') || 'فایلی انتخاب نشده است');
 
         const formData = new FormData();
         formData.append('letterId', letterId);
-        for (let i = 0; i < files.length; i++) {
-            formData.append('file', files[i]);
-        }
+        Array.from(files).forEach(file => formData.append('file', file));
 
-        upload(formData)
-            .then(res => {
-                console.log(res.data);
-                toast.success('فایل با موفقیت بارگذاری شد.', {
-                    position: toast.POSITION.BOTTOM_RIGHT,
-                    className: 'foo-bar'
-                });
-                if (fileInputRef.current) {
-                    fileInputRef.current.value = "";
-                }
-                reload();
-            })
-            .catch(error => {
-                console.error('خطا در بارگذاری فایل :', error);
-            });
+        await upload(formData);
     };
 
     const onButtonClickHandler = () => {
