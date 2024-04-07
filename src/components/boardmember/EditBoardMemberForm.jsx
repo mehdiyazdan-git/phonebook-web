@@ -9,7 +9,6 @@ import useHttp from "../../hooks/useHttp";
 const EditBoardMemberForm = ({ boardMember,show,onHide,onUpdateMemberBoard}) => {
     const [formError, setFormError] = useState(''); // State to store form error message
     const http = useHttp();
-    console.log(boardMember)
     const [submitting, setSubmitting] = React.useState(false);
     const searchCompany = async (searchQuery) => {
         return await http.get(`/companies/search?searchQuery=${searchQuery}`).then(response => response.data);
@@ -24,7 +23,7 @@ const EditBoardMemberForm = ({ boardMember,show,onHide,onUpdateMemberBoard}) => 
         return await http.get(`/persons/search?searchQuery=${searchQuery}`).then(response => response.data);
     };
     const getAllPositions = async () => {
-        return await http.get("/positions").then(response => response.data);
+        return await http.get("/positions/select").then(response => response.data);
     };
     const searchPositions = async (searchQuery) => {
         return await http.get(`/positions/search?searchQuery=${searchQuery}`).then(response => response.data);
@@ -32,21 +31,20 @@ const EditBoardMemberForm = ({ boardMember,show,onHide,onUpdateMemberBoard}) => 
     const onSubmit = async (data) => {
         setSubmitting(true);
         setFormError('');
-
         try {
             const errorMessage = await onUpdateMemberBoard(data);
             if (errorMessage) {
+                console.log(errorMessage)
                 const cleanMessage = errorMessage.replace('400 BAD_REQUEST', '').trim();
                 setFormError(cleanMessage);
             } else {
-                onHide(); // Assuming onHide is a prop that closes the modal/form
-                setFormError(''); // Clear any previous errors
+                onHide();
             }
         } catch (error) {
-            console.error('Error updating board member:', error);
-            setFormError("An unexpected error occurred"); // Set a generic error message
+            console.error('Error creating board member:', error);
+            setFormError(error.response.data.message.replace('400 BAD_REQUEST', '').trim());
         } finally {
-            setSubmitting(false); // Assuming you have a state hook for this
+            setSubmitting(false);
         }
     };
 

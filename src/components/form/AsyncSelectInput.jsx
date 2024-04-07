@@ -4,7 +4,7 @@ import {Controller} from "react-hook-form";
 import {ConnectForm} from "../../utils/formComponents/ConnectForm";
 import {getCustomSelectStyles} from "../../utils/formComponents/customStyles";
 
-const AsyncSelectInput = ({name,apiFetchFunction,defaultValue}) => {
+const AsyncSelectInput = ({name,apiFetchFunction,defaultValue,isDisabled}) => {
     const [options, setOptions] = useState([]);
     const [_defaultValue,_setDefaultValue] = useState(defaultValue)
 
@@ -71,6 +71,7 @@ const AsyncSelectInput = ({name,apiFetchFunction,defaultValue}) => {
                             defaultOptions
                             placeholder={"جستجو..."}
                             styles={getCustomSelectStyles()}
+                            isDisabled={isDisabled}
                         />
                     )}
             />}

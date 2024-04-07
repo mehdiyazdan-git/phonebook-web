@@ -2,7 +2,6 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { BASE_URL } from '../config/config';
 import { useAuth } from '../components/hooks/useAuth';
-import { v4 as uuidv4 } from 'uuid';
 
 const useHttp = () => {
     const auth = useAuth();
@@ -18,7 +17,6 @@ const useHttp = () => {
             if (auth?.accessToken) {
                 config.headers.Authorization = `Bearer ${auth.accessToken}`;
             }
-            config.headers['X-Request-ID'] = uuidv4();
             return config;
         },
         (error) => {

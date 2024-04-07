@@ -3,7 +3,7 @@ import {extensionToType} from "../../../utils/documentUtils";
 import useHttp from "../../../hooks/useHttp";
 
 
-const DropZoneUploader = ({personId,companyId, refreshTrigger, setRefreshTrigger,onHide}) => {
+const DropZoneUploader = ({personId,companyId,letterId, refreshTrigger, setRefreshTrigger,onHide}) => {
     const [uploadProgress, setUploadProgress] = useState(null);
     const [uploadComplete, setUploadComplete] = useState(false);
     const [dragging, setDragging] = useState(false);
@@ -20,6 +20,8 @@ const DropZoneUploader = ({personId,companyId, refreshTrigger, setRefreshTrigger
         formData.append('personId', personId);
         if (companyId !== undefined)
         formData.append('companyId', companyId);
+        if (letterId !== undefined)
+            formData.append('letterId', letterId);
 
         try {
             for (let progress = 0; progress <= 100; progress += 2) {
