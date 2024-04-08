@@ -30,35 +30,26 @@ const useHttp = () => {
             return response;
         },
         async (error) => {
-            if (!error.response) {
-                // No response received from the server
-                navigate('/login');
-            }
+            const originalRequest = error.config;
 
-            // Handle 401 Unauthorized
-            if (error.response.status === 401 && !error.config._retry) {
-                error.config._retry = true;
+            if (error.response && error.response.status === 401 && !originalRequest._retry) {
+                originalRequest._retry = true;
                 try {
-                    const refreshTokenResponse = await axios.post(`${BASE_URL}/v1/auth/refresh-token`, {
-                        refreshToken: auth?.refreshToken,
+                    const response = await axios.post('/auth/refresh', {
+                        refreshToken: auth.refreshToken,
                     });
 
-                    if (refreshTokenResponse.status === 200) {
-                        auth.setAccessToken(refreshTokenResponse.data.accessToken);
-                        error.config.headers.Authorization = `Bearer ${refreshTokenResponse.data.accessToken}`;
-                        return instance(error.config);
-                    }
-                } catch (refreshError) {
-                    navigate('/login');
-                    return Promise.reject(refreshError);
+                    const { accessToken } = response.data;
+
+                    auth.setAccessToken(accessToken);
+
+                    return instance(originalRequest);
+
+                } catch (error) {
+                    // Handle refresh token error
+                    return Promise.reject(error);
                 }
             }
-
-            // Handle 403 Forbidden or other errors
-            if (error.response.status === 403 || error.response.status >= 500) {
-                navigate('/login');
-            }
-
             return Promise.reject(error);
         }
     );

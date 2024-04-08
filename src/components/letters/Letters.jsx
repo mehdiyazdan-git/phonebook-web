@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import "./letter.css";
 import Button from "../../utils/Button";
 import moment from "jalali-moment";
 import Table from "../table/Table";
 import NewLetterForm from "./NewLetterForm";
 import EditLetterForm from "./EditLetterForm";
-import { useParams } from "react-router-dom";
+import {useLocation, useParams} from "react-router-dom";
 import useHttp from "../../hooks/useHttp";
 import YearSelect from "../year/YearSelector";
 
@@ -23,14 +23,15 @@ const Letters = () => {
     const [showModal, setShowModal] = useState(false);
     const [showEditModal, setEditShowModal] = useState(false);
 
-    // Fetch the current year when the component mounts
+    const location = useLocation();
+    const letterType = location.pathname.split('/').pop();
+
+    // Refresh the component each time the location changes or year changes
     useEffect(() => {
-        const getCurrentYear = async () => {
-            const response = await http.get('/years/select');
-            setYear({ value: response.data.id, label: response.data.name });
-        };
-        getCurrentYear();
-    }, [http]);
+        setRefreshTrigger(prev => !prev);
+    }, [location, year]); // Add year as a dependency
+
+
 
     const getAllByCompanyId = async (companyId, queryParams) => {
         return await http.get(`/letters/pageable?companyId=${Number(companyId)}&yearId=${year ? Number(year.value) : 3}&${queryParams.toString()}`);
@@ -49,8 +50,21 @@ const Letters = () => {
     };
 
     const fetchData = async (queryParams) => {
-        return await getAllByCompanyId(Number(companyId), queryParams.toString()).then(r => r.data);
+        // Ensure the year value is incorporated in your fetch query
+        if (year) {
+            queryParams.set('yearId', year); // Example of adding year to query parameters
+        }
+        queryParams.set('letterType', letterType.toUpperCase());
+
+        if (companyId) {
+            // If companyId is available, fetch letters for this sender
+            return await getAllByCompanyId(Number(companyId), queryParams).then(r => r.data);
+        } else {
+            // Otherwise, fetch all letters
+            return await getAllByCompanyId(queryParams).then(r => r.data);
+        }
     };
+
 
     const handleAddLetter = async (newLetter) => {
         newLetter.letterType = "DRAFT";

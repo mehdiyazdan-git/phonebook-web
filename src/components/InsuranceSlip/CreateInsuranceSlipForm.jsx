@@ -2,7 +2,7 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 import { yupResolver } from "@hookform/resolvers/yup";
-import {Col, Modal, Row} from 'react-bootstrap';
+import { Col, Modal, Row } from 'react-bootstrap';
 import { Form } from "../../utils/Form";
 import { TextInput } from "../../utils/formComponents/TextInput";
 import { useYupValidationResolver } from "../../hooks/useYupValidationResolver";
@@ -12,7 +12,7 @@ import useHttp from "../../hooks/useHttp";
 import AsyncSelectInput from "../form/AsyncSelectInput";
 import NumberInput from "../../utils/formComponents/NumberInput";
 
-const CreateShareHolderForm = ({ shareholder, onAddShareHolder, show, onHide, companyId }) => {
+const CreateInsuranceSlipForm = ({ insuranceSlip, onAddInsuranceSlip, show, onHide, companyId }) => {
     const validationSchema = Yup.object().shape({
         personId: Yup.number().required('شناسه شخص الزامیست.'),
         numberOfShares: Yup.number().required('تعداد سهام الزامیست.').positive('تعداد سهام باید مثبت باشد.'),
@@ -47,7 +47,7 @@ const CreateShareHolderForm = ({ shareholder, onAddShareHolder, show, onHide, co
 
     const onSubmit = (data) => {
         console.log("on form submit: ", data);
-        onAddShareHolder(data);
+        onAddInsuranceSlip(data);
         reset({
             id: '',
             personId: '',
@@ -68,13 +68,13 @@ const CreateShareHolderForm = ({ shareholder, onAddShareHolder, show, onHide, co
             <Modal.Body style={{ backgroundColor: "rgba(240,240,240,0.3)" }}>
                 <div className="container modal-form">
                     <Form
-                        defaultValues={shareholder}
+                        defaultValues={insuranceSlip}
                         onSubmit={onSubmit}
                         resolver={resolver}
                     >
                         <Row>
                             <Col>
-                                <label>{"سهامدار"}</label>
+                                <label>{"بیمه‌گزار"}</label>
                                 <AsyncSelectInput
                                     name={"personId"}
                                     apiFetchFunction={getPersonSelect}
@@ -119,4 +119,4 @@ const CreateShareHolderForm = ({ shareholder, onAddShareHolder, show, onHide, co
     );
 };
 
-export default CreateShareHolderForm;
+export default CreateInsuranceSlipForm;

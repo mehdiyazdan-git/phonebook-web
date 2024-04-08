@@ -1,0 +1,18 @@
+.drop-zone svg {
+    pointer-events: none;
+}
+
+.custom-file-input {
+    opacity: 0;
+    top:0;
+    left: 0;
+    z-index: 10;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+
+.custom-file-input::file-selector-button {
+    visibility: hidden;
+}

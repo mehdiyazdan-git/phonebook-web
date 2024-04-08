@@ -1,0 +1,52 @@
+/* FileUploadForm.css */
+.file-upload-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.file-input {
+    border: 2px dashed #ccc;
+    padding: 1rem;
+    text-align: center;
+    cursor: pointer;
+    background-color: #f8f8f8;
+    transition: border-color 0.3s ease-in-out;
+}
+
+.file-input:hover {
+    border-color: #007bff;
+}
+
+.file-preview-container {
+    width: 100%; /* Define the width or max-width as needed */
+    height: 300px; /* Define the height */
+    overflow: hidden; /* Ensures that content doesn't overflow */
+    border: 1px solid #ccc; /* Optional: adds a border around the preview area */
+    display: flex; /* Utilizes Flexbox for centering */
+    justify-content: center; /* Centers horizontally */
+    align-items: center; /* Centers vertically */
+    margin-top: 1rem; /* Adds some space above the preview */
+}
+
+.file-preview-image, .file-preview-pdf {
+    max-width: 100%; /* Ensures the content is no wider than the container */
+    max-height: 100%; /* Ensures the content is no taller than the container */
+    object-fit: contain; /* Maintains aspect ratio and fits content within the container */
+}
+
+.submit-button {
+    padding: 0.5rem 1rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 0.3rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.submit-button:hover {
+    background-color: #0056b3;
+}

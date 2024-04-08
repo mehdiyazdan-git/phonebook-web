@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
-import {Col, Modal, Row} from "react-bootstrap";
+import { Col, Modal, Row } from "react-bootstrap";
 import * as Yup from "yup";
 import Button from "../../utils/Button";
 import { TextInput } from "../../utils/formComponents/TextInput";
@@ -12,9 +12,8 @@ import NumberInput from "../../utils/formComponents/NumberInput";
 import AsyncSelectInput from "../form/AsyncSelectInput";
 import useHttp from "../../hooks/useHttp";
 import { saveAs } from 'file-saver';
-import {parseInt} from "lodash";
 
-const EditShareHolderForm = ({ shareholder, onUpdateShareHolder, show, onHide }) => {
+const EditInsuranceSlipForm = ({ insuranceSlip, onUpdateInsuranceSlip, show, onHide }) => {
     const validationSchema = Yup.object().shape({
         personId: Yup.number().required('شناسه شخص الزامیست.'),
         numberOfShares: Yup.number().required('تعداد سهام الزامیست.').positive('تعداد سهام باید مثبت باشد.'),
@@ -41,7 +40,7 @@ const EditShareHolderForm = ({ shareholder, onUpdateShareHolder, show, onHide })
 
     const onSubmitFile = async (formData) => {
         try {
-            const response = await http.post(`/shareholders/${Number(shareholder.id)}/upload-file`, formData, {
+            const response = await http.post(`/insurance-slips/${Number(insuranceSlip.id)}/upload-file`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -59,11 +58,11 @@ const EditShareHolderForm = ({ shareholder, onUpdateShareHolder, show, onHide })
 
     const onSubmit = (data) => {
         console.log("on form submit: ", data);
-        onUpdateShareHolder(data);
+        onUpdateInsuranceSlip(data);
         onHide();
     };
     const downloadScannedCertificate = () => {
-        http.get(`/shareholders/${shareholder.id}/download-file`,{ responseType: 'blob' })
+        http.get(`/insurance-slips/${insuranceSlip.id}/download-file`,{ responseType: 'blob' })
             .then((response) => response.data)
             .then((blobData) => {
                 const fileBlob = new Blob([blobData], { type: fileType });
@@ -76,7 +75,7 @@ const EditShareHolderForm = ({ shareholder, onUpdateShareHolder, show, onHide })
     };
 
     useEffect(() => {
-        console.log("on form pop-up: ", shareholder);
+        console.log("on form pop-up: ", insuranceSlip);
     });
 
     return (
@@ -87,7 +86,7 @@ const EditShareHolderForm = ({ shareholder, onUpdateShareHolder, show, onHide })
             <Modal.Body style={{ backgroundColor: "rgba(240,240,240,0.3)" }}>
                 <div className="container modal-form">
                     <Form
-                        defaultValues={shareholder}
+                        defaultValues={insuranceSlip}
                         onSubmit={onSubmit}
                         resolver={resolver}
                     >
@@ -97,12 +96,12 @@ const EditShareHolderForm = ({ shareholder, onUpdateShareHolder, show, onHide })
                                 <AsyncSelectInput
                                     name={"companyId"}
                                     apiFetchFunction={getCompanySelect}
-                                    defaultValue={Number(shareholder.companyId)}
+                                    defaultValue={Number(insuranceSlip.companyId)}
                                 />
                             </Col>
 
                             <Col>
-                                <label>{"سهامدار"}</label>
+                                <label>{"بیمه‌گزار"}</label>
                                 <AsyncSelectInput
                                     name={"personId"}
                                     apiFetchFunction={getPersonSelect}
@@ -146,7 +145,7 @@ const EditShareHolderForm = ({ shareholder, onUpdateShareHolder, show, onHide })
                     </Form>
                     <Row>
                         <FileUploadForm onSubmit={onSubmitFile}/>
-                        {shareholder.hasFile && (
+                        {insuranceSlip.hasFile && (
                             <Button onClick={downloadScannedCertificate} variant="primary">
                                 Download Scanned Certificate
                             </Button>
@@ -159,4 +158,4 @@ const EditShareHolderForm = ({ shareholder, onUpdateShareHolder, show, onHide })
     );
 };
 
-export default EditShareHolderForm;
+export default EditInsuranceSlipForm;

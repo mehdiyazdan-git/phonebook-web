@@ -11,10 +11,11 @@ import FileUploadForm from "../../utils/formComponents/FileUploadForm";
 import NumberInput from "../../utils/formComponents/NumberInput";
 import AsyncSelectInput from "../form/AsyncSelectInput";
 import useHttp from "../../hooks/useHttp";
+import FilePreviewDownload from "../../utils/formComponents/FilePreviewDownload";
 import { saveAs } from 'file-saver';
 import {parseInt} from "lodash";
 
-const EditShareHolderForm = ({ shareholder, onUpdateShareHolder, show, onHide }) => {
+const EditTaxPaymentSlipForm = ({ taxPaymentSlip, onUpdateTaxPaymentSlip, show, onHide }) => {
     const validationSchema = Yup.object().shape({
         personId: Yup.number().required('شناسه شخص الزامیست.'),
         numberOfShares: Yup.number().required('تعداد سهام الزامیست.').positive('تعداد سهام باید مثبت باشد.'),
@@ -41,7 +42,7 @@ const EditShareHolderForm = ({ shareholder, onUpdateShareHolder, show, onHide })
 
     const onSubmitFile = async (formData) => {
         try {
-            const response = await http.post(`/shareholders/${Number(shareholder.id)}/upload-file`, formData, {
+            const response = await http.post(`/tax-payment-slips/${Number(taxPaymentSlip.id)}/upload-file`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -59,11 +60,11 @@ const EditShareHolderForm = ({ shareholder, onUpdateShareHolder, show, onHide })
 
     const onSubmit = (data) => {
         console.log("on form submit: ", data);
-        onUpdateShareHolder(data);
+        onUpdateTaxPaymentSlip(data);
         onHide();
     };
     const downloadScannedCertificate = () => {
-        http.get(`/shareholders/${shareholder.id}/download-file`,{ responseType: 'blob' })
+        http.get(`/tax-payment-slips/${taxPaymentSlip.id}/download-file`,{ responseType: 'blob' })
             .then((response) => response.data)
             .then((blobData) => {
                 const fileBlob = new Blob([blobData], { type: fileType });
@@ -76,7 +77,7 @@ const EditShareHolderForm = ({ shareholder, onUpdateShareHolder, show, onHide })
     };
 
     useEffect(() => {
-        console.log("on form pop-up: ", shareholder);
+        console.log("on form pop-up: ", taxPaymentSlip);
     });
 
     return (
@@ -87,7 +88,7 @@ const EditShareHolderForm = ({ shareholder, onUpdateShareHolder, show, onHide })
             <Modal.Body style={{ backgroundColor: "rgba(240,240,240,0.3)" }}>
                 <div className="container modal-form">
                     <Form
-                        defaultValues={shareholder}
+                        defaultValues={taxPaymentSlip}
                         onSubmit={onSubmit}
                         resolver={resolver}
                     >
@@ -97,7 +98,7 @@ const EditShareHolderForm = ({ shareholder, onUpdateShareHolder, show, onHide })
                                 <AsyncSelectInput
                                     name={"companyId"}
                                     apiFetchFunction={getCompanySelect}
-                                    defaultValue={Number(shareholder.companyId)}
+                                    defaultValue={Number(taxPaymentSlip.companyId)}
                                 />
                             </Col>
 
@@ -146,7 +147,7 @@ const EditShareHolderForm = ({ shareholder, onUpdateShareHolder, show, onHide })
                     </Form>
                     <Row>
                         <FileUploadForm onSubmit={onSubmitFile}/>
-                        {shareholder.hasFile && (
+                        {taxPaymentSlip.hasFile && (
                             <Button onClick={downloadScannedCertificate} variant="primary">
                                 Download Scanned Certificate
                             </Button>
@@ -159,4 +160,4 @@ const EditShareHolderForm = ({ shareholder, onUpdateShareHolder, show, onHide })
     );
 };
 
-export default EditShareHolderForm;
+export default EditTaxPaymentSlipForm;

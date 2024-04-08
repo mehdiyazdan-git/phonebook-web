@@ -12,7 +12,7 @@ import useHttp from "../../hooks/useHttp";
 import AsyncSelectInput from "../form/AsyncSelectInput";
 import NumberInput from "../../utils/formComponents/NumberInput";
 
-const CreateShareHolderForm = ({ shareholder, onAddShareHolder, show, onHide, companyId }) => {
+const CreateTaxPaymentSlipForm = ({ taxPaymentSlip, onAddTaxPaymentSlip, show, onHide, companyId }) => {
     const validationSchema = Yup.object().shape({
         personId: Yup.number().required('شناسه شخص الزامیست.'),
         numberOfShares: Yup.number().required('تعداد سهام الزامیست.').positive('تعداد سهام باید مثبت باشد.'),
@@ -47,7 +47,7 @@ const CreateShareHolderForm = ({ shareholder, onAddShareHolder, show, onHide, co
 
     const onSubmit = (data) => {
         console.log("on form submit: ", data);
-        onAddShareHolder(data);
+        onAddTaxPaymentSlip(data);
         reset({
             id: '',
             personId: '',
@@ -68,7 +68,7 @@ const CreateShareHolderForm = ({ shareholder, onAddShareHolder, show, onHide, co
             <Modal.Body style={{ backgroundColor: "rgba(240,240,240,0.3)" }}>
                 <div className="container modal-form">
                     <Form
-                        defaultValues={shareholder}
+                        defaultValues={taxPaymentSlip}
                         onSubmit={onSubmit}
                         resolver={resolver}
                     >
@@ -119,4 +119,4 @@ const CreateShareHolderForm = ({ shareholder, onAddShareHolder, show, onHide, co
     );
 };
 
-export default CreateShareHolderForm;
+export default CreateTaxPaymentSlipForm;

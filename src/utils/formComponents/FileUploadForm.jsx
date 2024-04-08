@@ -1,40 +1,90 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import "./FileUploadForm.css";
 
-function FileUploadForm({ onSubmit }) {
+function FileUploadForm({ id, onSubmit }) {
     const [file, setFile] = useState(null);
     const [preview, setPreview] = useState(null);
+    const [isUploaded, setIsUploaded] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        if (id) {
+            setIsLoading(true);
+            fetch(`/api/files/${id}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.blob();
+                })
+                .then(blob => {
+                    const fileObject = new File([blob], `fetchedFile.${blob.type.split('/')[1]}`, { type: blob.type });
+                    setFile(fileObject);
+                    setPreview(URL.createObjectURL(blob));
+                })
+                .catch(error => {
+                    console.error("Fetching file failed", error);
+                    // Add any additional error handling here
+                })
+                .finally(() => setIsLoading(false));
+        }
+    }, [id]);
 
     const handleFileChange = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            setFile(file);
-            setPreview(URL.createObjectURL(file));
+        const selectedFile = event.target.files[0];
+        if (selectedFile) {
+            setFile(selectedFile);
+            setPreview(URL.createObjectURL(selectedFile));
+            setIsUploaded(false);
         }
     };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        if (file && onSubmit) {
+        if (file) {
             const formData = new FormData();
             formData.append('file', file);
-            await onSubmit(formData);
+            setIsLoading(true);
+            try {
+                await onSubmit(formData);
+                setIsUploaded(true);
+            } catch (error) {
+                console.error('Upload failed', error);
+                // Add any additional error handling here
+            } finally {
+                setIsLoading(false);
+            }
         }
     };
 
-    return (
-        <form onSubmit={handleSubmit}>
-            <input type="file" accept="image/*,application/pdf" onChange={handleFileChange} />
-            {preview && (
-                <div style={{ maxWidth: '30%', maxHeight: '100px', overflow: 'hidden' }}>
+    const renderPreview = () => {
+        if (isLoading) {
+            return <p>Loading...</p>;
+        }
+        if (isUploaded || (id && preview)) {
+            return (
+                <div className="file-preview-container">
                     {file.type.startsWith('image/') ? (
-                        <img src={preview} alt="Uploaded" style={{ width: '100%', height: 'auto', objectFit: 'contain' }} />
+                        <img src={preview} alt="Uploaded" className="file-preview-image" />
                     ) : (
-                        <embed src={preview} type="application/pdf" style={{ width: '100%', height: '300px', objectFit: 'contain' }} />
+                        <embed src={preview} type={file.type} className="file-preview-pdf" />
                     )}
                 </div>
+            );
+        }
+        return null;
+    };
+
+    return (
+        <div className="file-preview-container">
+                    <input type="file" accept="image/*,application/pdf" onChange={handleFileChange} />
+            {renderPreview()}
+            {!isUploaded && !id && (
+                <form onSubmit={handleSubmit}>
+                    <button type="submit">Submit</button>
+                </form>
             )}
-            <button type="submit">Submit</button>
-        </form>
+        </div>
     );
 }
 
