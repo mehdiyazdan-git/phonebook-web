@@ -12,8 +12,6 @@ const Sidebar = styled.aside`
   overflow-y: auto;
 `;
 
-
-
 const SidebarLink = styled(NavLink)`
   display: block;
   padding: 0.5rem;
@@ -41,7 +39,7 @@ const SidebarMenu = () => {
         <Sidebar>
             <SidebarLink to={`/persons`}>لیست اشخاص</SidebarLink>
             <SidebarLink to={`/customers`}>لیست گیرندگان</SidebarLink>
-            <SidebarLink to={`/companies`}>شرکت های زیر مجموعه</SidebarLink>
+            <SidebarLink to={`/companies`}>لیست شرکت ها</SidebarLink>
             <SidebarLink to="/admin">پنل ادمین</SidebarLink>
         </Sidebar>
     );

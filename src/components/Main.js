@@ -34,8 +34,9 @@ import CreateUserForm from "./users/CreateUserForm";
 import EditUserForm from "./users/EditUserForm";
 import UserContainer from "./admin/UserContainer";
 import AdminPanel from "./admin/AdminPanel";
-import AppSettings from "./AppSettings/AppSettings";
 import ShareHolders from "./ShareHolder/ShareHolders";
+import InsuranceSlips from "./InsuranceSlip/InsuranceSlips";
+import TaxPaymentSlips from "./TaxPaymentSlip/TaxPaymentSlips";
 
 const Main = () => {
 
@@ -91,6 +92,8 @@ const Main = () => {
                                 <Route path="outgoing/create" element={<NewLetterForm/>}/>
                                 <Route path="board-members" index element={<BoardMembers/>}/>
                                 <Route path="shareholders" element={<ShareHolders/>}/>
+                                <Route path="insurance-documents" element={<InsuranceSlips/>}/>
+                                <Route path="tax-documents" element={<TaxPaymentSlips/>}/>
                                 <Route path="*" element={<NotFoundPage/>}/>
                             </Route>
                         </Route>

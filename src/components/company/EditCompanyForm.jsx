@@ -16,26 +16,8 @@ const EditCompanyForm = () => {
     const http = useHttp();
     const validationSchema = Yup.object().shape({
         taxEconomicCode: Yup.string().required('کد اقتصادی الزامیست.'),
-        taxFileNumber: Yup.string().required('شماره پرونده مالیاتی الزامیست.'),
-        taxFileClass: Yup.string().required('طبقه پرونده مالیاتی الزامیست.'),
-        taxTrackingID: Yup.string().required('شناسه رهگیری مالیاتی الزامیست.'),
-        taxPortalUsername: Yup.string().required('نام کاربری پرتال مالیاتی الزامیست.'),
-        taxPortalPassword: Yup.string().required('رمز عبور پرتال مالیاتی الزامیست.'),
-        taxDepartment: Yup.string().required('اداره مالیاتی الزامیست.'),
         companyName: Yup.string().required('نام شرکت الزامیست.'),
         nationalId: Yup.string().required('شناسه ملی الزامیست.'),
-        registrationNumber: Yup.string().required('شماره ثبت الزامیست.'),
-        registrationDate: Yup.string().required('تاریخ ثبت الزامیست.'),
-        address: Yup.string().required('آدرس الزامیست.'),
-        postalCode: Yup.string().required('کد پستی الزامیست.'),
-        phoneNumber: Yup.string().required('شماره تلفن الزامیست.'),
-        faxNumber: Yup.string().required('شماره فکس الزامیست.'),
-        softwareUsername: Yup.string().required('نام کاربری نرم‌افزار الزامیست.'),
-        softwarePassword: Yup.string().required('رمز عبور نرم‌افزار الزامیست.'),
-        softwareCallCenter: Yup.string().required('مرکز تماس نرم‌افزار الزامیست.'),
-        insurancePortalUsername: Yup.string().required('نام کاربری پرتال بیمه الزامیست.'),
-        insurancePortalPassword: Yup.string().required('رمز عبور پرتال بیمه الزامیست.'),
-        insuranceBranch: Yup.string().required('شعبه بیمه الزامیست.'),
     });
 
     const resolver = useYupValidationResolver(validationSchema);

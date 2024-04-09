@@ -5,6 +5,7 @@ import FiscalYear from "../year/FiscalYear";
 import Positions from "../position/Positions";
 import BoardMembers from "../boardmember/BoardMembers";
 import AppSettings from "../AppSettings/AppSettings";
+import Companies from "../company/Companies";
 
 
 const LayoutWrapper = styled.div`
@@ -63,6 +64,9 @@ const AdminPanel = () => {
                     <SidebarLink onClick={() => handleTabClick('users')} className={activeTab === 'users' ? 'active' : ''}>
                         کاربران
                     </SidebarLink>
+                    <SidebarLink onClick={() => handleTabClick('companies')} className={activeTab === 'companies' ? 'active' : ''}>
+                        شرکت ها
+                    </SidebarLink>
                     <SidebarLink onClick={() => handleTabClick('year')} className={activeTab === 'year' ? 'active' : ''}>
                        تنظیمات سال و شماره نامه
                     </SidebarLink>
@@ -75,6 +79,7 @@ const AdminPanel = () => {
                 </Sidebar>
                 <Content>
                     {activeTab === 'users' && <Users />}
+                    {activeTab === 'companies' && <Companies />}
                     {activeTab === 'year' && <FiscalYear />}
                     {activeTab === 'positions' && <Positions />}
                     {activeTab === 'board-members' && <BoardMembers />}

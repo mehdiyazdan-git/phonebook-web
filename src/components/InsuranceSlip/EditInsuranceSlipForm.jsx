@@ -11,15 +11,17 @@ import FileUploadForm from "../../utils/formComponents/FileUploadForm";
 import NumberInput from "../../utils/formComponents/NumberInput";
 import AsyncSelectInput from "../form/AsyncSelectInput";
 import useHttp from "../../hooks/useHttp";
+import DateInput from "../../utils/formComponents/DateInput";
 import { saveAs } from 'file-saver';
 
 const EditInsuranceSlipForm = ({ insuranceSlip, onUpdateInsuranceSlip, show, onHide }) => {
     const validationSchema = Yup.object().shape({
-        personId: Yup.number().required('شناسه شخص الزامیست.'),
-        numberOfShares: Yup.number().required('تعداد سهام الزامیست.').positive('تعداد سهام باید مثبت باشد.'),
-        percentageOwnership: Yup.number().required('درصد مالکیت الزامیست.').min(0, 'درصد مالکیت نمی‌تواند منفی باشد.').max(100, 'درصد مالکیت نمی‌تواند بیشتر از ۱۰۰ باشد.'),
-        sharePrice: Yup.number().required('قیمت سهم الزامیست.').positive('قیمت سهم باید مثبت باشد.'),
-        shareType: Yup.string().required('نوع سهم الزامیست.'),
+        issueDate: Yup.date().required('تاریخ صدور الزامیست.'),
+        slipNumber: Yup.string().required('شماره فیش الزامیست.'),
+        type: Yup.string().required('نوع الزامیست.'),
+        amount: Yup.number().required('مبلغ الزامیست.').positive('مبلغ باید مثبت باشد.'),
+        startDate: Yup.date().required('تاریخ شروع الزامیست.'),
+        endDate: Yup.date().required('تاریخ پایان الزامیست.'),
         companyId: Yup.number().required('شناسه شرکت الزامیست.'),
     });
 
@@ -33,9 +35,6 @@ const EditInsuranceSlipForm = ({ insuranceSlip, onUpdateInsuranceSlip, show, onH
 
     const getCompanySelect = async (queryParam) => {
         return await http.get(`/companies/select?queryParam=${queryParam ? queryParam : ''}`);
-    };
-    const getPersonSelect = async () => {
-        return await http.get(`/persons/select`);
     };
 
     const onSubmitFile = async (formData) => {
@@ -92,6 +91,38 @@ const EditInsuranceSlipForm = ({ insuranceSlip, onUpdateInsuranceSlip, show, onH
                     >
                         <Row>
                             <Col>
+                                <DateInput name="issueDate" label={"تاریخ صدور"} />
+                            </Col>
+                            <Col>
+                                <TextInput name="slipNumber" label={"شماره فیش"} />
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col>
+                                <SelectInput
+                                    name="type"
+                                    label={"نوع"}
+                                    options={[
+                                        { value: 'INSURANCE_PREMIUM', label: 'حق بیمه' },
+                                        { value: 'PENALTY', label: 'جریمه' }
+                                    ]}
+                                />
+
+                            </Col>
+                            <Col>
+                                <NumberInput name="amount" label={"مبلغ"} />
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col>
+                                <DateInput name="startDate" label={"تاریخ شروع"} />
+                            </Col>
+                            <Col>
+                                <DateInput name="endDate" label={"تاریخ پایان"} />
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col>
                                 <label>{"شرکت"}</label>
                                 <AsyncSelectInput
                                     name={"companyId"}
@@ -99,42 +130,7 @@ const EditInsuranceSlipForm = ({ insuranceSlip, onUpdateInsuranceSlip, show, onH
                                     defaultValue={Number(insuranceSlip.companyId)}
                                 />
                             </Col>
-
-                            <Col>
-                                <label>{"بیمه‌گزار"}</label>
-                                <AsyncSelectInput
-                                    name={"personId"}
-                                    apiFetchFunction={getPersonSelect}
-                                />
-                            </Col>
                         </Row>
-                        <Row>
-                            <Col>
-                                <NumberInput name="numberOfShares" label={"تعداد سهام"} />
-                            </Col>
-                            <Col>
-                                <NumberInput name="sharePrice" label={"قیمت سهم"} />
-                            </Col>
-
-                        </Row>
-                        <Row>
-                            <Col>
-                                <TextInput name="percentageOwnership" label={"درصد مالکیت"} />
-                            </Col>
-                            <Col>
-                                <SelectInput
-                                    name="shareType"
-                                    label={"نوع سهم"}
-                                    options={[{ value: 'REGISTERED', label: 'ثبت شده' }, { value: 'BEARER', label: 'حامل' }]}
-                                />
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col>
-                                <TextInput name="id" label={"شناسه"} disabled={true} />
-                            </Col>
-                        </Row>
-
 
                         <Button variant="success" type="submit">
                             ویرایش

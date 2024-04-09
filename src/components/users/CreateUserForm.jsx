@@ -10,7 +10,11 @@ import Button from "../../utils/Button";
 const schema = yup.object({
     firstname: yup.string().required('نام الزامیست.'),
     lastname: yup.string().required('نام خانوادگی الزامیست.'),
-    email: yup.string().email('ایمیل نامعتبر است.').required('ایمیل الزامیست.'),
+    username: yup.string()
+        .min(3, 'نام کاربری باید حداقل 3 کاراکتر باشد.')
+        .max(20, 'نام کاربری می تواند حداکثر 20 کاراکتر باشد.')
+        .required('نام کاربری الزامیست.'),
+    email: yup.string().email('ایمیل نامعتبر است.'),
     password: yup.string().min(6, 'رمز عبور باید حداقل 6 کاراکتر باشد.').required('رمز عبور الزامیست.'),
     role: yup.string().required('نقش الزامیست.')
 });
@@ -30,6 +34,7 @@ const CreateUserForm = ({ onAddUser, show, onHide }) => {
                     defaultValues={{
                         firstname: '',
                         lastname: '',
+                        username: '',
                         email: '',
                         password: '',
                         role: ''
@@ -39,6 +44,7 @@ const CreateUserForm = ({ onAddUser, show, onHide }) => {
                 >
                     <TextInput name="firstname" label="نام" />
                     <TextInput name="lastname" label="نام خانوادگی" />
+                    <TextInput name="username" label="نام کاربری" />
                     <TextInput name="email" label="ایمیل" />
                     <TextInput name="password" label="رمز عبور" type="password" />
                     <SelectInput

@@ -7,8 +7,19 @@ import { TextInput } from '../../utils/formComponents/TextInput';
 import Button from '../../utils/Button';
 
 const schema = yup.object({
-    name: yup.string().required('نام سال الزامیست.')
+    name: yup.number()
+        .required('نام سال الزامیست.')
+        .label('نام سال')
+        .min(1000, 'نام سال باید یک عدد 4 رقمی باشد.')
+        .max(9999, 'نام سال باید یک عدد 4 رقمی باشد.')
+        .transform(v => parseInt(v, 10) || undefined), // Optional type conversion (use with caution)
+    startingLetterNumber: yup.number()
+        .required('شروع شماره نامه الزامیست.')
+        .positive('شروع شماره نامه باید یک عدد مثبت باشد.')
+        .integer('شروع شماره نامه باید یک عدد صحیح باشد.'),
 });
+
+
 
 const CreateYearForm = ({ onAddYear, show, onHide }) => {
     const onSubmit = (data) => {
@@ -28,6 +39,7 @@ const CreateYearForm = ({ onAddYear, show, onHide }) => {
                     resolver={yupResolver(schema)}
                 >
                     <TextInput name="name" label="نام سال" />
+                    <TextInput name="startingLetterNumber" label="شروع شماره نامه" />
 
                     <Button variant="primary" type="submit">
                         افزودن سال

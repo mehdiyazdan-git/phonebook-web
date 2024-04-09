@@ -12,33 +12,26 @@ import {verifyIranianLegalId} from "@persian-tools/persian-tools";
 import {LegalIdInput} from "../../utils/formComponents/LegalIdInput";
 
 const EditCustomerForm = ({ customer, onUpdateCustomer, show, onHide }) => {
+
     const validationSchema = Yup.object().shape({
         name: Yup.string().required('نام الزامیست.'),
         nationalIdentity: Yup.string()
-            .required('شناسه ملی الزامیست.')
+            .nullable()
             .test(
                 'is-valid-legal-id',
                 'شناسه ملی نامعتبر است.',
-                value => value ? verifyIranianLegalId(value) : false
+                value => !value || verifyIranianLegalId(value)
             ),
-        registerCode: Yup.string().required('کد ثبت الزامیست.'),
-        registerDate: Yup.string().required('تاریخ ثبت الزامیست.'),
-        address: Yup.string().required('آدرس الزامیست.'),
-        phoneNumber: Yup.string()
-            .required('شماره تلفن الزامیست.')
-            .matches(/^0[1-8][1-9]-?\d{7}$/, 'شماره تلفن ثابت نامعتبر است.'),
     });
 
     const resolver = useYupValidationResolver(validationSchema);
 
     const onSubmit = (data) => {
-        const formattedDate = moment(new Date(data.registerDate)).format('YYYY-MM-DD');
-        const formDate = {
-            ...data,
-            registerDate: formattedDate
+        if (data.registerDate) {
+            data.registerDate = moment(new Date(data.registerDate)).format('YYYY-MM-DD');
         }
-        console.log("on form submit: ", formDate)
-        onUpdateCustomer(formDate)
+        console.log("on form submit: ", data)
+        onUpdateCustomer(data)
         onHide();
     };
     useEffect(() => {

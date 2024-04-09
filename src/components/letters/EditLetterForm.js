@@ -13,7 +13,7 @@ import useHttp from "../../hooks/useHttp";
 import LetterDocumentList from "./LetterDocumentList";
 
 
-const headerStyle = {backgroundColor: 'rgba(63,51,106,0.6)',};
+const headerStyle = {backgroundColor: 'rgba(45,92,23,0.49)',};
 const titleStyle = {fontFamily: 'IRANSansBold', fontSize: '0.8rem', color: '#fff',};
 const bodyStyle = {backgroundColor: 'rgba(240,240,240,0.3)',};
 
@@ -24,18 +24,14 @@ const EditLetterForm = ({letter, onUpdateLetter, show, onHide,letterType}) => {
         return await http.get(`/companies/select?queryParam=${queryParam ? queryParam : ''}`);
     };
 
-    const search = async (searchQuery) => {
-        return await http.get(`/search?searchQuery=${searchQuery}`).then(response => response.data);
-    };
     const getCustomerSelect = async () => {
         return await http.get(`/customers/select`)
     };
     const getLetterById = async (id) => {
         return await http.get(`/letters/${id}`).then((response) => {
-            const letterData = response.data;
             // Reverse the letterNumber string
-            letterData.letterNumber = letterData.letterNumber.split('/').reverse().join('/');
-            return letterData;
+            // letterData.letterNumber = letterData.letterNumber.split('/').reverse().join('/');
+            return response.data;
         });
     };
 
@@ -62,7 +58,7 @@ const EditLetterForm = ({letter, onUpdateLetter, show, onHide,letterType}) => {
             <Modal.Body style={bodyStyle}>
                 <Form
                     onSubmit={onSubmit}
-                    defaultValues={async() => getLetterById(letter.id)}
+                    defaultValues={() => getLetterById(letter.id)}
                     resolver={resolver}>
                     <FormContainer>
                         <div className="mt-1">

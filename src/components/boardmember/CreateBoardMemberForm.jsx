@@ -1,37 +1,30 @@
-import React, { useState } from 'react';
-import { Form } from "../../utils/Form";
-import AsyncSelectInput from "../../utils/formComponents/AsyncSelectInput";
+import React, {useState} from 'react';
+import {Form} from "../../utils/Form";
+import AsyncSelectInput from "../form/AsyncSelectInput";
 import Button from "../../utils/Button";
 import { Alert, Modal } from "react-bootstrap";
 import useHttp from "../../hooks/useHttp";
 
-const CreateBoardMemberForm = ({ show, onHide, onAddBoardMember }) => {
+const CreateBoardMemberForm = ({ show, onHide, onAddBoardMember,companyId }) => {
     const [formError, setFormError] = useState('');
     const [submitting, setSubmitting] = useState(false);
     const http = useHttp();
-
-    const searchCompany = async (searchQuery) => {
-        return await http.get(`/companies/search?searchQuery=${searchQuery}`).then(response => response.data);
-    };
     const getCompanySelect = async (queryParam) => {
-        return await http.get(`/companies/select?queryParam=${queryParam ? queryParam : ''}`).then(response => response.data);
+        return await http.get(`/companies/select?queryParam=${queryParam ? queryParam.toString() : ''}`);
     };
-    const getPersonSelect = async () => {
-        return await http.get(`/persons/select`).then(r => r.data);
+    const getPersonSelect = async (queryParam) => {
+        return await http.get(`/persons/select?queryParam=${queryParam ? queryParam.toString() : ''}`)  ;
     };
-    const searchPersons = async (searchQuery) => {
-        return await http.get(`/persons/search?searchQuery=${searchQuery}`).then(response => response.data);
+    const getAllPositions = async (queryParam) => {
+        return await http.get(`/positions/select?queryParam=${queryParam ? queryParam.toString() : ''}`)
     };
-    const getAllPositions = async () => {
-        return await http.get("/positions/select").then(response => response.data);
-    };
-    const searchPositions = async (searchQuery) => {
-        return await http.get(`/positions/search?searchQuery=${searchQuery}`).then(response => response.data);
-    };
+
 
     const handleClose = () => {
-        onHide();
         setFormError('');
+        setSubmitting(false);
+        onHide();
+        
     };
 
     const onSubmit = async (data) => {
@@ -55,33 +48,38 @@ const CreateBoardMemberForm = ({ show, onHide, onAddBoardMember }) => {
 
     return (
         <Modal show={show} onHide={handleClose}>
-            <Modal.Header closeButton>
-                <Modal.Title style={{ fontFamily: "IRANSansBold", fontSize: "0.8rem", color: "#fff" }}>Create Board Member</Modal.Title>
+            <Modal.Header style={{ backgroundColor: "rgba(46, 75, 108, 0.8)" }}>
+                <Modal.Title
+                    style={{ fontFamily: "IRANSansBold", fontSize: "0.8rem", color: "#ee942d" }}>
+                    {`ایجاد عضو جدید `}
+                </Modal.Title>
             </Modal.Header>
             <Modal.Body style={{ backgroundColor: "rgba(240,240,240,0.3)" }}>
                 <div className="container modal-form">
-                    <Form onSubmit={onSubmit}>
+                    <Form
+                        onSubmit={onSubmit}
+                        defaultValues={{
+                            "personId": '',
+                            "companyId": companyId,
+                            "positionId": ''
+                        }}
+                    >
                         <div>
                             <label className="label">شرکت</label>
                             <AsyncSelectInput
-                                defaultOptions={[]}
                                 name={"companyId"}
-                                fetchCallBack={getCompanySelect}
-                                searchCallback={searchCompany}
+                                apiFetchFunction={getCompanySelect}
+                                isDisabled={true}
                             />
                             <label className="label">شخص</label>
                             <AsyncSelectInput
-                                defaultOptions={[]}
                                 name={"personId"}
-                                fetchCallBack={getPersonSelect}
-                                searchCallback={searchPersons}
+                                apiFetchFunction={getPersonSelect}
                             />
                             <label className="label">سمت</label>
                             <AsyncSelectInput
-                                defaultOptions={[]}
                                 name={"positionId"}
-                                fetchCallBack={getAllPositions}
-                                searchCallback={searchPositions}
+                                apiFetchFunction={getAllPositions}
                             />
                         </div>
                         <div>

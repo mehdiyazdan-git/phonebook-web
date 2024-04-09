@@ -8,6 +8,7 @@ import EditLetterForm from "./EditLetterForm";
 import {useLocation, useParams} from "react-router-dom";
 import useHttp from "../../hooks/useHttp";
 import YearSelect from "../year/YearSelector";
+import ButtonContainer from "../../utils/formComponents/ButtonContainer";
 
 
 const toShamsi = (date) => {
@@ -17,7 +18,6 @@ const toShamsi = (date) => {
 const Letters = () => {
     const http = useHttp();
     const { companyId } = useParams();
-    const [year, setYear] = useState(null);
     const [editingLetter, setEditingLetter] = useState(null);
     const [refreshTrigger, setRefreshTrigger] = useState(false);
     const [showModal, setShowModal] = useState(false);
@@ -25,6 +25,16 @@ const Letters = () => {
 
     const location = useLocation();
     const letterType = location.pathname.split('/').pop();
+
+    const initialYear = JSON.parse(sessionStorage.getItem('selectedYear'));
+    const [year, setYear] = useState(initialYear);
+
+    // Store the year in session storage when it changes
+    useEffect(() => {
+        if (year !== null) {
+            sessionStorage.setItem('selectedYear', JSON.stringify(year));
+        }
+    }, [year]);
 
     // Refresh the component each time the location changes or year changes
     useEffect(() => {
@@ -50,18 +60,14 @@ const Letters = () => {
     };
 
     const fetchData = async (queryParams) => {
-        // Ensure the year value is incorporated in your fetch query
         if (year) {
-            queryParams.set('yearId', year); // Example of adding year to query parameters
+            queryParams.set('yearId', year.value); // Ensure year value is used in fetch query
         }
         queryParams.set('letterType', letterType.toUpperCase());
-
         if (companyId) {
-            // If companyId is available, fetch letters for this sender
-            return await getAllByCompanyId(Number(companyId), queryParams).then(r => r.data);
+            return await http.get(`/letters/pageable?companyId=${companyId}&${queryParams.toString()}`).then(r => r.data);
         } else {
-            // Otherwise, fetch all letters
-            return await getAllByCompanyId(queryParams).then(r => r.data);
+            return await http.get(`/letters/pageable?${queryParams.toString()}`).then(r => r.data);
         }
     };
 
@@ -95,7 +101,7 @@ const Letters = () => {
             width: '5%',
             sortable: true,
             searchable: true,
-            render: (item) => item.letterNumber.split('/').reverse().join('/')
+            // render: (item) => item.letterNumber.split('/').reverse().join('/')
         },
         {
             key: 'creationDate',
@@ -109,7 +115,7 @@ const Letters = () => {
         { key: 'content', title: 'موضوع نامه', width: '30%', sortable: true, searchable: true },
         {
             key: 'customerName',
-            title: 'نام طرف مقابل',
+            title: letterType === "outgoing" ? 'گیرنده' : 'فرستنده',
             width: '20%',
             sortable: true,
             searchable: true
@@ -118,15 +124,21 @@ const Letters = () => {
 
     return (
         <div className="table-container">
-            <Button variant="primary" onClick={() => setShowModal(true)}>
-                جدید
-            </Button>
-            <YearSelect value={year} onChange={setYear} />
+            <div className={'d-flex justify-content-start align-content-center mt-3'}>
+                <Button variant="primary" onClick={() => setShowModal(true)}>
+                    جدید
+                </Button>
+                <div className={"d-flex justify-content-end align-content-center"}>
+                    <label className={"label align-content-center m-1 mx-3"}>انتخاب سال</label>
+                    <YearSelect value={year} onChange={setYear}/>
+                </div>
+            </div>
             <NewLetterForm
                 onAddLetter={handleAddLetter}
                 show={showModal}
                 onHide={() => setShowModal(false)}
-                companyId={companyId}
+                companyId={Number(companyId)}
+                letterType={letterType}
             />
             <Table
                 columns={columns}
@@ -147,6 +159,7 @@ const Letters = () => {
                         setEditingLetter(null);
                         setEditShowModal(false);
                     }}
+                    letterType={letterType}
                 />
             )}
         </div>

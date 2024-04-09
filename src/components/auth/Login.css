@@ -3,7 +3,7 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background: linear-gradient(to left, #53aef4, #b27ef4);
+    background-image: url("/src/components/assets/img/login-background.jpg");
 }
 
 .login-form {

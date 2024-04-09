@@ -5,12 +5,13 @@ function useDeepCompareEffect(callback, dependencies) {
     const currentDependenciesRef = useRef();
 
     if (!isEqual(currentDependenciesRef.current, dependencies)) {
-        console.log('Dependencies changed:', { old: currentDependenciesRef.current, new: dependencies });
         currentDependenciesRef.current = dependencies;
     }
 
     useEffect(() => {
-        console.log('Effect triggered:', currentDependenciesRef.current);
+        if (currentDependenciesRef.current) {
+            callback();
+        }
         callback();
     }, [currentDependenciesRef.current]);
 }

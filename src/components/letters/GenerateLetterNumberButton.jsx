@@ -35,12 +35,13 @@ const GenerateLetterNumberButton = () => {
     const generateLetterNumber = () => {
         const companyId = getValues('companyId');
         const company = defaultCompanies.find((company) => company.id === companyId) || {};
-        const yearName = getCurrentYear();
+
+        const year = JSON.parse(sessionStorage.getItem('selectedYear')) || getCurrentYear();
         const letterNumberParts = [
-            persianToArabicDigits(yearName.toString()),
-            company.letterPrefix, // Changed from sender to company
-            persianToArabicDigits((company.letterCounter + 1).toString()), // Changed from sender to company
-        ].reverse(); // Reverse the parts for RTL context
+            persianToArabicDigits(year["label"].toString()),
+            company.letterPrefix,
+            persianToArabicDigits((company.letterCounter + 1 + year.startingLetterNumber).toString()),
+        ].reverse();
         setValue('letterNumber', letterNumberParts.join('/'));
     };
 
@@ -54,5 +55,4 @@ const GenerateLetterNumberButton = () => {
         </button>
     );
 };
-
 export default GenerateLetterNumberButton;

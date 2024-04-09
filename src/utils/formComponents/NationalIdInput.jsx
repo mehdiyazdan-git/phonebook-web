@@ -57,7 +57,7 @@ export function NationalIdInput({ name, label, style, ...rest }) {
                                             }}
                                         />
                                         {message && (
-                                            <p style={{ color: messageColor, fontSize: '0.6rem', marginTop: '0.25rem' }}>
+                                            <p style={{ color: messageColor, fontSize: '0.6rem', marginTop: '0.25rem',fontFamily: "IRANSans" }}>
                                                 {message}
                                             </p>
                                         )}

@@ -39,17 +39,29 @@ const BoardMembers = () => {
     };
 
     const handleAddBoardMember = async (newBoardMember) => {
-        const response = await createBoardMember(newBoardMember);
-        if (response.status === 201) {
-            setRefreshTrigger(!refreshTrigger);
+        try{
+            const response = await createBoardMember(newBoardMember);
+            console.log(response)
+            if (response.status === 201) {
+                setShowModal(false);
+                setRefreshTrigger(!refreshTrigger);
+            }
+        }catch(error){
+            console.error(error);
+            return error.response.data
         }
     };
 
     const handleUpdateBoardMember = async (updatedBoardMember) => {
-        const response = await updateBoardMember(updatedBoardMember.id, updatedBoardMember);
-        if (response.status === 200) {
-            setRefreshTrigger(!refreshTrigger);
-            setEditingBoardMember(null);
+        try{
+            const response = await updateBoardMember(updatedBoardMember.id, updatedBoardMember);
+            if (response.status === 200) {
+                setRefreshTrigger(!refreshTrigger);
+                setEditingBoardMember(null);
+            }
+        }catch(error){
+            console.error(error);
+            return error.response.data
         }
     };
 
@@ -81,6 +93,7 @@ const BoardMembers = () => {
                     onAddBoardMember={handleAddBoardMember}
                     show={showModal}
                     onHide={() => setShowModal(false)}
+                    companyId={Number(companyId)}
                 />
             </div>
             <Table

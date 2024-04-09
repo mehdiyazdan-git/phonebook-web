@@ -20,7 +20,6 @@ const NewPersonForm = ({onAddPerson, show, onHide}) => {
     const validationSchema = Yup.object().shape({
         firstName: Yup.string().required('نام الزامیست.'),
         lastName: Yup.string().required('نام خانوادگی الزامیست.'),
-        fatherName: Yup.string().required('نام پدر الزامیست.'),
         nationalId: Yup.string()
             .required('کد ملی الزامیست.')
             .test(
@@ -28,11 +27,6 @@ const NewPersonForm = ({onAddPerson, show, onHide}) => {
                 'کد ملی نامعتبر است.',
                 value => verifyIranianNationalId(value)
             ),
-        registrationNumber: Yup.string().required('شماره شناسنامه الزامیست.'),
-        birthDate: Yup.string().required('تاریخ تولد الزامیست.'),
-        address: Yup.string().required('آدرس الزامیست.'),
-        postalCode: Yup.string().required('کد پستی الزامیست.'),
-        phoneNumber: Yup.string().required('شماره تماس الزامیست.'),
     });
 
 

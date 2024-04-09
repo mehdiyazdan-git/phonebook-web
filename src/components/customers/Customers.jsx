@@ -9,6 +9,8 @@ import useHttp from "../../hooks/useHttp";
 import { saveAs } from 'file-saver';
 import FileUpload from "../../utils/formComponents/FileUpload";
 import DownloadTemplate from "../../utils/formComponents/DownloadTemplate";
+import ButtonContainer from "../../utils/formComponents/ButtonContainer";
+import Modal from "react-bootstrap/Modal";
 
 
 const toShamsi = (date) => {
@@ -20,6 +22,8 @@ const Customers = () => {
     const [showModal, setShowModal] = useState(false);
     const [showEditModal, setEditShowModal] = useState(false);
     const [refreshTrigger, setRefreshTrigger] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [showErrorModal, setShowErrorModal] = useState(false);
     const http = useHttp();
 
 
@@ -38,21 +42,45 @@ const Customers = () => {
      const removeCustomer = async (id) => {
         return await http.delete(`/customers/${id}`);
     };
-
+    const ErrorModal = ({ show, handleClose, errorMessage }) => {
+        return (
+            <Modal show={show} onHide={handleClose} centered>
+                <Modal.Body className="text-center" style={{ fontFamily: "IRANSans",fontSize: "0.8rem", padding: "20px",fontWeight: "bold"}}>
+                    <div className="text-danger">{errorMessage}</div>
+                    <button className="btn btn-primary btn-sm mt-4" onClick={handleClose}>
+                        بستن
+                    </button>
+                </Modal.Body>
+            </Modal>
+        );
+    };
 
 
     const handleAddCustomer = async (newCustomer) => {
-        const response = await createCustomer(newCustomer);
-        if (response.status === 201) {
-            setRefreshTrigger(!refreshTrigger); // Toggle the refresh trigger
+        try {
+            const response = await createCustomer(newCustomer);
+            if (response.status === 201) {
+                setRefreshTrigger(!refreshTrigger); // Refresh the table data
+                setShowModal(false);
+            }
+        } catch (error) {
+            setErrorMessage(error.response.data);
+            setShowErrorModal(true);
         }
     };
 
+
     const handleUpdateCustomer = async (updatedCustomer) => {
-        const response = await updateCustomer(updatedCustomer.id, updatedCustomer);
-        if (response.status === 200) {
-            setRefreshTrigger(!refreshTrigger); // Toggle the refresh trigger
-            setEditingCustomer(null);
+        try {
+            const response = await updateCustomer(updatedCustomer.id, updatedCustomer);
+            if (response.status === 200) {
+                setRefreshTrigger(!refreshTrigger); // Refresh the table data
+                setEditShowModal(false);
+            }
+        } catch (error) {
+            console.error(error);
+            setErrorMessage(error.response.data);
+            setShowErrorModal(true);
         }
     };
 
@@ -84,17 +112,16 @@ const Customers = () => {
 
     return (
         <div className="table-container">
-            <div>
+            <ButtonContainer lastChild={<FileUpload uploadUrl={"/customers/import"}/>}>
                 <Button variant="primary" onClick={() => setShowModal(true)}>
                     جدید
                 </Button>
-                <Button variant="secondary" onClick={downloadExcelFile}>
+                <Button variant="success" onClick={downloadExcelFile}>
                     دانلود به Excel
                 </Button>
-                <FileUpload uploadUrl={"/customers/import"}/>
                 <DownloadTemplate
                     downloadUrl="/customers/template"
-                    buttonLabel="دانلود الگوی مشتری"
+                    buttonLabel="فرمت بارگذاری"
                     fileName="customer_template.xlsx"
                 />
                 <CreateCustomerForm
@@ -102,7 +129,7 @@ const Customers = () => {
                     show={showModal}
                     onHide={() => setShowModal(false)}
                 />
-            </div>
+            </ButtonContainer>
             <Table
                 columns={columns}
                 fetchData={getAllCustomers}
@@ -111,7 +138,7 @@ const Customers = () => {
                     setEditShowModal(true);
                 }}
                 onDelete={handleDeleteCustomer}
-                refreshTrigger={refreshTrigger} // Pass the refresh trigger
+                refreshTrigger={refreshTrigger}
             />
 
             {editingCustomer && (
@@ -125,6 +152,11 @@ const Customers = () => {
                     }}
                 />
             )}
+            <ErrorModal
+                show={showErrorModal}
+                handleClose={() => setShowErrorModal(false)}
+                errorMessage={errorMessage}
+            />
         </div>
     );
 };

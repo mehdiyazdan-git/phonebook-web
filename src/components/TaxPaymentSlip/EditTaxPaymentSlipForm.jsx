@@ -1,27 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
-import {Col, Modal, Row} from "react-bootstrap";
+import { Col, Modal, Row } from "react-bootstrap";
 import * as Yup from "yup";
 import Button from "../../utils/Button";
 import { TextInput } from "../../utils/formComponents/TextInput";
 import { Form } from "../../utils/Form";
 import { useYupValidationResolver } from "../../hooks/useYupValidationResolver";
 import SelectInput from "../../utils/formComponents/SelectInput";
-import FileUploadForm from "../../utils/formComponents/FileUploadForm";
+import DateInput from "../../utils/formComponents/DateInput";
 import NumberInput from "../../utils/formComponents/NumberInput";
 import AsyncSelectInput from "../form/AsyncSelectInput";
 import useHttp from "../../hooks/useHttp";
-import FilePreviewDownload from "../../utils/formComponents/FilePreviewDownload";
-import { saveAs } from 'file-saver';
-import {parseInt} from "lodash";
 
 const EditTaxPaymentSlipForm = ({ taxPaymentSlip, onUpdateTaxPaymentSlip, show, onHide }) => {
     const validationSchema = Yup.object().shape({
-        personId: Yup.number().required('شناسه شخص الزامیست.'),
-        numberOfShares: Yup.number().required('تعداد سهام الزامیست.').positive('تعداد سهام باید مثبت باشد.'),
-        percentageOwnership: Yup.number().required('درصد مالکیت الزامیست.').min(0, 'درصد مالکیت نمی‌تواند منفی باشد.').max(100, 'درصد مالکیت نمی‌تواند بیشتر از ۱۰۰ باشد.'),
-        sharePrice: Yup.number().required('قیمت سهم الزامیست.').positive('قیمت سهم باید مثبت باشد.'),
-        shareType: Yup.string().required('نوع سهم الزامیست.'),
+        issueDate: Yup.date().required('تاریخ صدور الزامیست.'),
+        slipNumber: Yup.string().required('شماره فیش الزامیست.'),
+        type: Yup.string().required('نوع فیش الزامیست.'),
+        amount: Yup.number().required('مبلغ الزامیست.').positive('مبلغ باید مثبت باشد.'),
+        period: Yup.string().required('دوره مالی الزامیست.'),
         companyId: Yup.number().required('شناسه شرکت الزامیست.'),
     });
 
@@ -29,51 +26,14 @@ const EditTaxPaymentSlipForm = ({ taxPaymentSlip, onUpdateTaxPaymentSlip, show, 
 
     const http = useHttp();
 
-    const [fileData, setFileData] = useState(null);
-    const [fileName, setFileName] = useState('');
-    const [fileType, setFileType] = useState('');
-
     const getCompanySelect = async (queryParam) => {
         return await http.get(`/companies/select?queryParam=${queryParam ? queryParam : ''}`);
     };
-    const getPersonSelect = async () => {
-        return await http.get(`/persons/select`);
-    };
-
-    const onSubmitFile = async (formData) => {
-        try {
-            const response = await http.post(`/tax-payment-slips/${Number(taxPaymentSlip.id)}/upload-file`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
-            console.log('File uploaded successfully:', response.data);
-            // Update the file preview data
-            const file = formData.get("file");
-            setFileData(file);
-            setFileName(file.name);
-            setFileType(file.type);
-        } catch (error) {
-            console.error('Error uploading file:', error);
-        }
-    }
 
     const onSubmit = (data) => {
         console.log("on form submit: ", data);
         onUpdateTaxPaymentSlip(data);
         onHide();
-    };
-    const downloadScannedCertificate = () => {
-        http.get(`/tax-payment-slips/${taxPaymentSlip.id}/download-file`,{ responseType: 'blob' })
-            .then((response) => response.data)
-            .then((blobData) => {
-                const fileBlob = new Blob([blobData], { type: fileType });
-                const fileUrl = URL.createObjectURL(fileBlob);
-                saveAs(fileUrl, fileName);
-            })
-            .catch((error) => {
-                console.error('Error downloading file:', error);
-            });
     };
 
     useEffect(() => {
@@ -94,6 +54,37 @@ const EditTaxPaymentSlipForm = ({ taxPaymentSlip, onUpdateTaxPaymentSlip, show, 
                     >
                         <Row>
                             <Col>
+                                <DateInput name="issueDate" label={"تاریخ صدور"} />
+                            </Col>
+                            <Col>
+                                <TextInput name="slipNumber" label={"شماره فیش"} />
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col>
+                                <SelectInput
+                                    name="type"
+                                    label={"نوع فیش"}
+                                    options={[
+                                        { value: 'CORPORATE_INCOME_TAX', label: 'فیش پرداخت مالیات عملکرد اشخاص حقوقی' },
+                                        { value: 'PAYROLL_TAX', label: 'فیش پرداخت مالیات بر حقوق' },
+                                        { value: 'VALUE_ADDED_TAX', label: 'فیش پرداخت مالیات بر ارزش افزوده' },
+                                        { value: 'QUARTERLY_TRANSACTIONS', label: 'فیش پرداخت معاملات فصلی' },
+                                        { value: 'PROPERTY_RENT_TAX', label: 'فیش پرداخت مالیات اجاره املاک' },
+                                        { value: 'PROPERTY_TRANSFER_TAX', label: 'فیش پرداخت مالیات نقل و انتقال املاک' },
+                                        { value: 'OTHER_FEES_AND_CHARGES', label: 'فیش پرداخت سایر عوارض و وجوه' }
+                                    ]}
+                                />
+                            </Col>
+                            <Col>
+                                <NumberInput name="amount" label={"مبلغ"} />
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col>
+                                <TextInput name="period" label={"دوره مالی"} />
+                            </Col>
+                            <Col>
                                 <label>{"شرکت"}</label>
                                 <AsyncSelectInput
                                     name={"companyId"}
@@ -101,42 +92,7 @@ const EditTaxPaymentSlipForm = ({ taxPaymentSlip, onUpdateTaxPaymentSlip, show, 
                                     defaultValue={Number(taxPaymentSlip.companyId)}
                                 />
                             </Col>
-
-                            <Col>
-                                <label>{"سهامدار"}</label>
-                                <AsyncSelectInput
-                                    name={"personId"}
-                                    apiFetchFunction={getPersonSelect}
-                                />
-                            </Col>
                         </Row>
-                        <Row>
-                            <Col>
-                                <NumberInput name="numberOfShares" label={"تعداد سهام"} />
-                            </Col>
-                            <Col>
-                                <NumberInput name="sharePrice" label={"قیمت سهم"} />
-                            </Col>
-
-                        </Row>
-                        <Row>
-                            <Col>
-                                <TextInput name="percentageOwnership" label={"درصد مالکیت"} />
-                            </Col>
-                            <Col>
-                                <SelectInput
-                                    name="shareType"
-                                    label={"نوع سهم"}
-                                    options={[{ value: 'REGISTERED', label: 'ثبت شده' }, { value: 'BEARER', label: 'حامل' }]}
-                                />
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col>
-                                <TextInput name="id" label={"شناسه"} disabled={true} />
-                            </Col>
-                        </Row>
-
 
                         <Button variant="success" type="submit">
                             ویرایش
@@ -145,15 +101,6 @@ const EditTaxPaymentSlipForm = ({ taxPaymentSlip, onUpdateTaxPaymentSlip, show, 
                             انصراف
                         </Button>
                     </Form>
-                    <Row>
-                        <FileUploadForm onSubmit={onSubmitFile}/>
-                        {taxPaymentSlip.hasFile && (
-                            <Button onClick={downloadScannedCertificate} variant="primary">
-                                Download Scanned Certificate
-                            </Button>
-                        )}
-
-                    </Row>
                 </div>
             </Modal.Body>
         </Modal>

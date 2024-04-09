@@ -11,14 +11,16 @@ import SelectInput from "../../utils/formComponents/SelectInput";
 import useHttp from "../../hooks/useHttp";
 import AsyncSelectInput from "../form/AsyncSelectInput";
 import NumberInput from "../../utils/formComponents/NumberInput";
+import DateInput from "../../utils/formComponents/DateInput";
 
 const CreateInsuranceSlipForm = ({ insuranceSlip, onAddInsuranceSlip, show, onHide, companyId }) => {
     const validationSchema = Yup.object().shape({
-        personId: Yup.number().required('شناسه شخص الزامیست.'),
-        numberOfShares: Yup.number().required('تعداد سهام الزامیست.').positive('تعداد سهام باید مثبت باشد.'),
-        percentageOwnership: Yup.number().required('درصد مالکیت الزامیست.').min(0, 'درصد مالکیت نمی‌تواند منفی باشد.').max(100, 'درصد مالکیت نمی‌تواند بیشتر از ۱۰۰ باشد.'),
-        sharePrice: Yup.number().required('قیمت سهم الزامیست.').positive('قیمت سهم باید مثبت باشد.'),
-        shareType: Yup.string().required('نوع سهم الزامیست.'),
+        issueDate: Yup.date().required('تاریخ صدور الزامیست.'),
+        slipNumber: Yup.string().required('شماره فیش الزامیست.'),
+        type: Yup.string().required('نوع الزامیست.'),
+        amount: Yup.number().required('مبلغ الزامیست.').positive('مبلغ باید مثبت باشد.'),
+        startDate: Yup.date().required('تاریخ شروع الزامیست.'),
+        endDate: Yup.date().required('تاریخ پایان الزامیست.'),
         companyId: Yup.number().required('شناسه شرکت الزامیست.'),
     });
     const http = useHttp();
@@ -26,21 +28,18 @@ const CreateInsuranceSlipForm = ({ insuranceSlip, onAddInsuranceSlip, show, onHi
     const getCompanySelect = async (queryParam) => {
         return await http.get(`/companies/select?queryParam=${queryParam ? queryParam : ''}`);
     };
-    const getPersonSelect = async () => {
-        return await http.get(`/persons/select`);
-    };
 
     const resolver = useYupValidationResolver(validationSchema);
     const { reset } = useForm({
         defaultValues: {
             id: '',
-            personId: '',
-            numberOfShares: '',
-            percentageOwnership: '',
-            sharePrice: '',
-            shareType: '',
+            issueDate: '',
+            slipNumber: '',
+            type: '',
+            amount: '',
+            startDate: '',
+            endDate: '',
             companyId: Number(companyId),
-            scannedShareCertificate: '',
         },
         resolver: yupResolver(validationSchema),
     });
@@ -50,13 +49,13 @@ const CreateInsuranceSlipForm = ({ insuranceSlip, onAddInsuranceSlip, show, onHi
         onAddInsuranceSlip(data);
         reset({
             id: '',
-            personId: '',
-            numberOfShares: '',
-            percentageOwnership: '',
-            sharePrice: '',
-            shareType: '',
+            issueDate: '',
+            slipNumber: '',
+            type: '',
+            amount: '',
+            startDate: '',
+            endDate: '',
             companyId: '',
-            scannedShareCertificate: '',
         });
         onHide();
     };
@@ -74,28 +73,37 @@ const CreateInsuranceSlipForm = ({ insuranceSlip, onAddInsuranceSlip, show, onHi
                     >
                         <Row>
                             <Col>
-                                <label>{"بیمه‌گزار"}</label>
-                                <AsyncSelectInput
-                                    name={"personId"}
-                                    apiFetchFunction={getPersonSelect}
+                                <DateInput name="issueDate" label={"تاریخ صدور"} />
+                            </Col>
+                            <Col>
+                                <TextInput name="slipNumber" label={"شماره فیش"} />
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col>
+                                <SelectInput
+                                    name="type"
+                                    label={"نوع"}
+                                    options={[
+                                        { value: 'INSURANCE_PREMIUM', label: 'حق بیمه' },
+                                        { value: 'PENALTY', label: 'جریمه' }
+                                    ]}
                                 />
+
                             </Col>
                             <Col>
-                                <NumberInput name="numberOfShares" label={"تعداد سهام"} />
+                                <NumberInput name="amount" label={"مبلغ"} />
                             </Col>
                         </Row>
                         <Row>
                             <Col>
-                                <TextInput name="percentageOwnership" label={"درصد مالکیت"} />
+                                <DateInput name="startDate" label={"تاریخ شروع"} />
                             </Col>
                             <Col>
-                                <NumberInput name="sharePrice" label={"قیمت سهم"} />
+                                <DateInput name="endDate" label={"تاریخ پایان"} />
                             </Col>
                         </Row>
                         <Row>
-                            <Col>
-                                <SelectInput name="shareType" label={"نوع سهم"} options={[{ value: 'REGISTERED', label: 'ثبت شده' }, { value: 'BEARER', label: 'حامل' }]} />
-                            </Col>
                             <Col>
                                 <label>{"شرکت"}</label>
                                 <AsyncSelectInput
@@ -113,7 +121,6 @@ const CreateInsuranceSlipForm = ({ insuranceSlip, onAddInsuranceSlip, show, onHi
                         </Button>
                     </Form>
                 </div>
-
             </Modal.Body>
         </Modal>
     );

@@ -7,6 +7,7 @@ import moment from "jalali-moment";
 import Table from "../table/Table";
 import useHttp from "../../hooks/useHttp";
 import { saveAs } from 'file-saver';
+import Modal from "react-bootstrap/Modal";
 
 const toShamsi = (date) => {
     return date ? moment(date, 'YYYY-MM-DD').format('jYYYY/jMM/jDD') : '';
@@ -18,6 +19,13 @@ const Companies = () => {
     const [showEditModal, setEditShowModal] = useState(false);
     const [refreshTrigger, setRefreshTrigger] = useState(false);
     const http = useHttp();
+
+    const [errorMessage, setErrorMessage] = useState('');
+
+
+    const [showErrorModal, setShowErrorModal] = useState(false);
+
+    const handleCloseErrorModal = () => setShowErrorModal(false);
 
      const getAllCompanies = async (queryParams) => {
         return await http.get(`/companies?${queryParams.toString()}`).then(r => r.data);
@@ -34,37 +42,65 @@ const Companies = () => {
         return await http.delete(`/companies/${id}`);
     };
 
-     const search = async (searchQuery) => {
-        return await http.get(`/companies/search?searchQuery=${searchQuery}`).then(response => response.data);
+    const ErrorModal = ({ show, handleClose, errorMessage }) => {
+        return (
+            <Modal show={show} onHide={handleClose} centered>
+                <Modal.Body className="text-center" style={{ fontFamily: "IRANSans",fontSize: "0.8rem", padding: "20px",fontWeight: "bold"}}>
+                    <div className="text-danger">{errorMessage}</div>
+                    <button className="btn btn-primary btn-sm mt-4" onClick={handleClose}>
+                        بستن
+                    </button>
+                </Modal.Body>
+            </Modal>
+        );
     };
 
     const handleAddCompany = async (newCompany) => {
-        const response = await createCompany(newCompany);
-        if (response.status === 201) {
-            setRefreshTrigger(!refreshTrigger); // Toggle the refresh trigger
-        }
+       try {
+            const response = await createCompany(newCompany);
+            if (response.status === 201) {
+                setRefreshTrigger(!refreshTrigger); // Toggle the refresh trigger
+                setShowModal(false);
+            } else {
+                setErrorMessage(response.data);
+                setShowErrorModal(true);
+            }
+        } catch (error) {
+            console.error('Error adding company:', error);
+            setErrorMessage(error.response.data);
+            setShowErrorModal(true);
+       }
     };
 
     const handleUpdateCompany = async (updatedCompany) => {
-        const response = await updateCompany(updatedCompany.id, updatedCompany);
-        if (response.status === 200) {
-            setRefreshTrigger(!refreshTrigger); // Toggle the refresh trigger
-            setEditingCompany(null);
+        try {
+            const response = await updateCompany(updatedCompany.id, updatedCompany);
+            if (response.status === 200) {
+                setRefreshTrigger(!refreshTrigger); // Toggle the refresh trigger
+                setEditShowModal(false);
+            } else {
+                setErrorMessage(response.data);
+                setShowErrorModal(true);
+            }
+        } catch (error) {
+            console.error('Error updating company:', error);
+            setErrorMessage(error.response.data);
+            setShowErrorModal(true);
         }
-    };
+    }
 
     const handleDeleteCompany = async (id) => {
-        await removeCompany(id);
-        setRefreshTrigger(!refreshTrigger); // Refresh the table data
+        const response = await removeCompany(id);
+        if (response.status === 204) {
+            setRefreshTrigger(!refreshTrigger); // Toggle the refresh trigger
+        }
+        // displaying modal error managed inside generic table.
     };
 
     const columns = [
         { key: 'id', title: 'شناسه', width: '5%', sortable: true },
-        { key: 'companyName', title: 'نام شرکت', width: '15%', sortable: true, searchable: true },
-        { key: 'nationalId', title: 'شناسه ملی', width: '15%', sortable: true, searchable: true },
-        { key: 'registrationNumber', title: 'شماره ثبت', width: '15%', sortable: true, searchable: true },
-        { key: 'registrationDate', title: 'تاریخ ثبت', width: '10%', sortable: true, searchable: true, type: 'date', render: (item) => toShamsi(item.registrationDate) },
-        { key: 'address', title: 'آدرس', width: '15%', sortable: true, searchable: true },
+        { key: 'companyName', title: 'نام شرکت', width: '40%', sortable: true, searchable: true },
+        { key: 'nationalId', title: 'شناسه ملی', width: '10%', sortable: true, searchable: true },
         { key: 'phoneNumber', title: 'شماره تلفن', width: '10%', sortable: true, searchable: true },
         { key: 'faxNumber', title: 'شماره فکس', width: '10%', sortable: true, searchable: true },
         // Add more columns as needed
@@ -119,6 +155,11 @@ const Companies = () => {
                     }}
                 />
             )}
+            <ErrorModal
+                show={showErrorModal}
+                handleClose={() => setShowErrorModal(false)}
+                errorMessage={errorMessage}
+            />
         </div>
     );
 };

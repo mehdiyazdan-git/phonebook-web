@@ -10,25 +10,27 @@ const DateInput = ({ name,label, ...rest }) => {
         <div>
             <label className="label">{label}</label>
             <ConnectForm>
-                {({ control }) => (
+                {({ control,setValue }) => (
                     <Controller
                         control={control}
                         name={name}
                         render={({field,
                                          fieldState: { invalid,
-                                         isDirty,
                                          error }
                                      ,   formState: { errors }
                                  })=>(
                             <DatePicker
                                 value={field?.value ?new Date(field?.value) : ''}
                                 name={field.name}
+                                editable={true}
+                                type={"search"}
                                 placeholder={invalid && error.message}
                                 calendar={persian}
                                 locale={persian_fa}
                                 onChange={(date, { input, isTyping }) => {
-                                    field.onChange(date?.isValid ? date.toDate() : "");
+                                    setValue(field.name, date?.isValid ? date.toDate() : "");
                                 }}
+
                                 inputClass={invalid ? "date-picker-input red-placeholder" : "table-search-input"}
                                 style={{
                                     border: invalid ? '1px solid red' : '1px solid #ccc',

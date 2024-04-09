@@ -7,46 +7,45 @@ import { TextInput } from "../../utils/formComponents/TextInput";
 import DateInput from "../../utils/formComponents/DateInput";
 import { Form } from "../../utils/Form";
 import { useYupValidationResolver } from "../../hooks/useYupValidationResolver";
-import moment from "jalali-moment";
+
+
+function parseAndFormatDate(dateString) {
+    const dateObj = new Date(dateString);
+    const year = dateObj.getFullYear();
+    const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+    const day = dateObj.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
 
 const NewCompanyForm = ({ onAddCompany, show, onHide }) => {
 
     const validationSchema = Yup.object().shape({
         taxEconomicCode: Yup.string().required('کد اقتصادی الزامیست.'),
-        taxFileNumber: Yup.string().required('شماره پرونده مالیاتی الزامیست.'),
-        taxFileClass: Yup.string().required('طبقه پرونده مالیاتی الزامیست.'),
-        taxTrackingID: Yup.string().required('شناسه رهگیری مالیاتی الزامیست.'),
-        taxPortalUsername: Yup.string().required('نام کاربری پرتال مالیاتی الزامیست.'),
-        taxPortalPassword: Yup.string().required('رمز عبور پرتال مالیاتی الزامیست.'),
-        taxDepartment: Yup.string().required('اداره مالیاتی الزامیست.'),
         companyName: Yup.string().required('نام شرکت الزامیست.'),
         nationalId: Yup.string().required('شناسه ملی الزامیست.'),
-        registrationNumber: Yup.string().required('شماره ثبت الزامیست.'),
-        registrationDate: Yup.string().required('تاریخ ثبت الزامیست.'),
-        address: Yup.string().required('آدرس الزامیست.'),
-        postalCode: Yup.string().required('کد پستی الزامیست.'),
-        phoneNumber: Yup.string().required('شماره تلفن الزامیست.'),
-        faxNumber: Yup.string().required('شماره فکس الزامیست.'),
-        softwareUsername: Yup.string().required('نام کاربری نرم‌افزار الزامیست.'),
-        softwarePassword: Yup.string().required('رمز عبور نرم‌افزار الزامیست.'),
-        softwareCallCenter: Yup.string().required('مرکز تماس نرم‌افزار الزامیست.'),
-        insurancePortalUsername: Yup.string().required('نام کاربری پرتال بیمه الزامیست.'),
-        insurancePortalPassword: Yup.string().required('رمز عبور پرتال بیمه الزامیست.'),
-        insuranceBranch: Yup.string().required('شعبه بیمه الزامیست.'),
     });
 
     const resolver = useYupValidationResolver(validationSchema);
 
     const onSubmit = (data) => {
-        const formattedDate = moment(new Date(data.registrationDate)).format('YYYY-MM-DD');
-        const formData = {
-            ...data,
-            registrationDate: formattedDate
+        const trimmedData = Object.keys(data).reduce((acc, key) => {
+            if (typeof data[key] === 'string') {
+                acc[key] = data[key].trim();
+            } else {
+                acc[key] = data[key];
+            }
+            return acc;
+        }, {});
+
+        if (trimmedData.registrationDate && typeof trimmedData.registrationDate === 'object') {
+            trimmedData.registrationDate = parseAndFormatDate(trimmedData.registrationDate);
         }
-        console.log("on form submit: ", formData);
-        onAddCompany(formData);
+
+        onAddCompany(trimmedData);
         onHide();
     };
+
 
     return (
         <Modal size={"lg"} show={show}>

@@ -9,6 +9,7 @@ import FileUpload from "../../utils/formComponents/FileUpload";
 import DownloadTemplate from "../../utils/formComponents/DownloadTemplate";
 import {useParams} from "react-router-dom";
 import {formatNumber} from "../../utils/util-functions";
+import ButtonContainer from "../../utils/formComponents/ButtonContainer";
 
 const ShareHolders = () => {
     const {companyId} = useParams();
@@ -19,7 +20,16 @@ const ShareHolders = () => {
     const http = useHttp();
 
     const getAllShareHolders = async (queryParams) => {
-        return await http.get(`/shareholders?companyId=${Number(companyId)}&${queryParams.toString()}`).then(r => r.data);
+        const url = `/shareholders?companyId=${Number(companyId)}&${queryParams.toString()}`;
+        console.log(url)
+        try {
+            const response = await http.get(url);
+            console.log(response.data)
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching shareHolders:', error);
+            return [];
+        }
     };
 
     const createShareHolder = async (data) => {
@@ -53,6 +63,13 @@ const ShareHolders = () => {
         await removeShareHolder(id);
         setRefreshTrigger(!refreshTrigger);
     };
+    const convertToPersianCaption = (caption) => {
+        const persianCaptions = {
+            REGISTERED: "با نام",
+            BEARER: "بی نام",
+        };
+        return persianCaptions[caption] || caption;
+    };
 
     const columns = [
         { key: 'id', title: 'شناسه', width: '5%', sortable: true, searchable: true },
@@ -75,7 +92,18 @@ const ShareHolders = () => {
             searchable: true,
             render: (item) => formatNumber(item.sharePrice)
         },
+        {
+            key: 'shareType',
+            title: 'نوع سهم',
+            width: '10%',
+            sortable: true,
+            searchable: true ,
+            render: (item) => convertToPersianCaption(item.shareType),
+            type : 'select',
+            options : [{ value: 'REGISTERED', label: 'با نام' },{ value: 'BEARER', label: 'بی نام' }]
+        },
     ];
+
 
 
     async function downloadExcelFile() {
@@ -92,18 +120,6 @@ const ShareHolders = () => {
     return (
         <div className="table-container">
             <div>
-                <Button variant="primary" onClick={() => setShowModal(true)}>
-                    جدید
-                </Button>
-                <Button variant="secondary" onClick={downloadExcelFile}>
-                    دانلود به Excel
-                </Button>
-                <FileUpload uploadUrl={"/shareholders/import"}/>
-                <DownloadTemplate
-                    downloadUrl="/shareholders/template"
-                    buttonLabel="دانلود الگوی سهامدار"
-                    fileName="shareholder_template.xlsx"
-                />
                 <CreateShareHolderForm
                     onAddShareHolder={handleAddShareHolder}
                     show={showModal}
@@ -133,6 +149,19 @@ const ShareHolders = () => {
                     }}
                 />
             )}
+            <ButtonContainer lastChild={<FileUpload uploadUrl={"/shareholders/import"}/>}>
+                <Button variant="primary" onClick={() => setShowModal(true)}>
+                    جدید
+                </Button>
+                <Button variant="secondary" onClick={downloadExcelFile}>
+                    دانلود به Excel
+                </Button>
+                <DownloadTemplate
+                    downloadUrl="/shareholders/template"
+                    buttonLabel="دانلود الگوی سهامدار"
+                    fileName="shareholder_template.xlsx"
+                />
+            </ButtonContainer>
         </div>
     );
 };

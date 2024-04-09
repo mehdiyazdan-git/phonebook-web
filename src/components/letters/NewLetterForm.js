@@ -58,6 +58,15 @@ const NewLetterForm = ({show, onHide, onAddLetter, companyId,letterType}) => {
             });
     }, []);
 
+    const getYearId = () => {
+        const currentYear = getCurrentYear();
+        const selectedYear = JSON.parse(sessionStorage.getItem('selectedYear'));
+        if (selectedYear) {
+            return selectedYear["value"];
+        } else {
+            return currentYear;
+        }
+    }
 
 
     return (
@@ -75,7 +84,7 @@ const NewLetterForm = ({show, onHide, onAddLetter, companyId,letterType}) => {
                         letterNumber: null,
                         customerId: '',
                         companyId: Number(companyId),
-                        yearId: getCurrentYear(),
+                        yearId: getYearId(),
                         letterState: 'DRAFT',
                         letterTypeId: letterType === "incoming" ? 1 : 2
                     }}
@@ -109,7 +118,6 @@ const NewLetterForm = ({show, onHide, onAddLetter, companyId,letterType}) => {
                             </FormRow>
                             <FormRow>
                                 <Col><TextInput name="content" label="موضوع نامه"/></Col>
-                                <Col><TextInput name="companyId" label="شناسه"/></Col>
                             </FormRow>
                         </div>
                         <Button variant={"primary"} type="submit">ایجاد</Button>

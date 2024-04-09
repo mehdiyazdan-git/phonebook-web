@@ -2,7 +2,7 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 import { yupResolver } from "@hookform/resolvers/yup";
-import {Col, Modal, Row} from 'react-bootstrap';
+import { Col, Modal, Row } from 'react-bootstrap';
 import { Form } from "../../utils/Form";
 import { TextInput } from "../../utils/formComponents/TextInput";
 import { useYupValidationResolver } from "../../hooks/useYupValidationResolver";
@@ -11,14 +11,15 @@ import SelectInput from "../../utils/formComponents/SelectInput";
 import useHttp from "../../hooks/useHttp";
 import AsyncSelectInput from "../form/AsyncSelectInput";
 import NumberInput from "../../utils/formComponents/NumberInput";
+import DateInput from "../../utils/formComponents/DateInput";
 
 const CreateTaxPaymentSlipForm = ({ taxPaymentSlip, onAddTaxPaymentSlip, show, onHide, companyId }) => {
     const validationSchema = Yup.object().shape({
-        personId: Yup.number().required('شناسه شخص الزامیست.'),
-        numberOfShares: Yup.number().required('تعداد سهام الزامیست.').positive('تعداد سهام باید مثبت باشد.'),
-        percentageOwnership: Yup.number().required('درصد مالکیت الزامیست.').min(0, 'درصد مالکیت نمی‌تواند منفی باشد.').max(100, 'درصد مالکیت نمی‌تواند بیشتر از ۱۰۰ باشد.'),
-        sharePrice: Yup.number().required('قیمت سهم الزامیست.').positive('قیمت سهم باید مثبت باشد.'),
-        shareType: Yup.string().required('نوع سهم الزامیست.'),
+        issueDate: Yup.date().required('تاریخ صدور الزامیست.'),
+        slipNumber: Yup.string().required('شماره فیش الزامیست.'),
+        type: Yup.string().required('نوع فیش الزامیست.'),
+        amount: Yup.number().required('مبلغ الزامیست.').positive('مبلغ باید مثبت باشد.'),
+        period: Yup.string().required('دوره مالی الزامیست.'),
         companyId: Yup.number().required('شناسه شرکت الزامیست.'),
     });
     const http = useHttp();
@@ -26,21 +27,17 @@ const CreateTaxPaymentSlipForm = ({ taxPaymentSlip, onAddTaxPaymentSlip, show, o
     const getCompanySelect = async (queryParam) => {
         return await http.get(`/companies/select?queryParam=${queryParam ? queryParam : ''}`);
     };
-    const getPersonSelect = async () => {
-        return await http.get(`/persons/select`);
-    };
 
     const resolver = useYupValidationResolver(validationSchema);
     const { reset } = useForm({
         defaultValues: {
             id: '',
-            personId: '',
-            numberOfShares: '',
-            percentageOwnership: '',
-            sharePrice: '',
-            shareType: '',
+            issueDate: '',
+            slipNumber: '',
+            type: '',
+            amount: '',
+            period: '',
             companyId: Number(companyId),
-            scannedShareCertificate: '',
         },
         resolver: yupResolver(validationSchema),
     });
@@ -50,13 +47,12 @@ const CreateTaxPaymentSlipForm = ({ taxPaymentSlip, onAddTaxPaymentSlip, show, o
         onAddTaxPaymentSlip(data);
         reset({
             id: '',
-            personId: '',
-            numberOfShares: '',
-            percentageOwnership: '',
-            sharePrice: '',
-            shareType: '',
+            issueDate: '',
+            slipNumber: '',
+            type: '',
+            amount: '',
+            period: '',
             companyId: '',
-            scannedShareCertificate: '',
         });
         onHide();
     };
@@ -74,27 +70,36 @@ const CreateTaxPaymentSlipForm = ({ taxPaymentSlip, onAddTaxPaymentSlip, show, o
                     >
                         <Row>
                             <Col>
-                                <label>{"سهامدار"}</label>
-                                <AsyncSelectInput
-                                    name={"personId"}
-                                    apiFetchFunction={getPersonSelect}
+                                <DateInput name="issueDate" label={"تاریخ صدور"} />
+                            </Col>
+                            <Col>
+                                <TextInput name="slipNumber" label={"شماره فیش"} />
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col>
+                                <SelectInput
+                                    name="type"
+                                    label={"نوع فیش"}
+                                    options={[
+                                        { value: 'CORPORATE_INCOME_TAX', label: 'فیش پرداخت مالیات عملکرد اشخاص حقوقی' },
+                                        { value: 'PAYROLL_TAX', label: 'فیش پرداخت مالیات بر حقوق' },
+                                        { value: 'VALUE_ADDED_TAX', label: 'فیش پرداخت مالیات بر ارزش افزوده' },
+                                        { value: 'QUARTERLY_TRANSACTIONS', label: 'فیش پرداخت معاملات فصلی' },
+                                        { value: 'PROPERTY_RENT_TAX', label: 'فیش پرداخت مالیات اجاره املاک' },
+                                        { value: 'PROPERTY_TRANSFER_TAX', label: 'فیش پرداخت مالیات نقل و انتقال املاک' },
+                                        { value: 'OTHER_FEES_AND_CHARGES', label: 'فیش پرداخت سایر عوارض و وجوه' }
+                                    ]}
                                 />
+
                             </Col>
                             <Col>
-                                <NumberInput name="numberOfShares" label={"تعداد سهام"} />
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col>
-                                <TextInput name="percentageOwnership" label={"درصد مالکیت"} />
-                            </Col>
-                            <Col>
-                                <NumberInput name="sharePrice" label={"قیمت سهم"} />
+                                <NumberInput name="amount" label={"مبلغ"} />
                             </Col>
                         </Row>
                         <Row>
                             <Col>
-                                <SelectInput name="shareType" label={"نوع سهم"} options={[{ value: 'REGISTERED', label: 'ثبت شده' }, { value: 'BEARER', label: 'حامل' }]} />
+                                <TextInput name="period" label={"دوره مالی"} />
                             </Col>
                             <Col>
                                 <label>{"شرکت"}</label>

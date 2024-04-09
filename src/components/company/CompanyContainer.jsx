@@ -87,6 +87,13 @@ const Tabs = () => {
             <Tab isActive={activeTab === 'shareholders'} onClick={() => setActiveTab('shareholders')}>
                 <SidebarLink to="shareholders">سهامداران</SidebarLink>
             </Tab>
+            <Tab isActive={activeTab === 'insurance-documents'} onClick={() => setActiveTab('insurance-documents')}>
+                <SidebarLink to="insurance-documents">مدارک بیمه</SidebarLink>
+            </Tab>
+            <Tab isActive={activeTab === 'tax-documents'} onClick={() => setActiveTab('tax-documents')}>
+                <SidebarLink to="tax-documents">مدارک مالیات</SidebarLink>
+            </Tab>
+
         </TabContainer>
     );
 

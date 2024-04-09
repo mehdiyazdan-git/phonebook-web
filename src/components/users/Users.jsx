@@ -4,6 +4,7 @@ import useHttp from '../../hooks/useHttp';
 import EditUserForm from "./EditUserForm";
 import CreateUserForm from "./CreateUserForm";
 import Button from "../../utils/Button";
+import Modal from "react-bootstrap/Modal";
 
 const Users = () => {
     const [editingUser, setEditingUser] = useState(null);
@@ -11,6 +12,8 @@ const Users = () => {
     const [showEditModal, setEditShowModal] = useState(false);
     const [refreshTrigger, setRefreshTrigger] = useState(false);
     const http = useHttp();
+    const [errorMessage, setErrorMessage] = useState('');
+    const [showErrorModal, setShowErrorModal] = useState(false);
 
     const getAllUsers = async (queryParams) => {
         return await http.get(`/users?${queryParams.toString()}`).then((r) => r.data);
@@ -29,17 +32,29 @@ const Users = () => {
     };
 
     const handleAddUser = async (newUser) => { // Function name updated
-        const response = await createUser(newUser); // Variable name updated
-        if (response.status === 201) {
-            setRefreshTrigger(!refreshTrigger); // Toggle the refresh trigger
+        try {
+            const response = await createUser(newUser);
+            if (response.status === 201) {
+                setRefreshTrigger(!refreshTrigger); // Toggle the refresh trigger
+                setShowModal(false);
+            }
+        } catch (error) {
+            setErrorMessage(error.response.data);
+            setShowErrorModal(true);
         }
     };
 
-    const handleUpdateUser = async (updatedUser) => { // Already correct
-        const response = await updateUser(updatedUser.id, updatedUser);
-        if (response.status === 200) {
-            setRefreshTrigger(!refreshTrigger); // Toggle the refresh trigger
-            setEditingUser(null);
+    const handleUpdateUser = async (updatedUser) => { // Function name updated
+        try {
+            const response = await updateUser(updatedUser.id, updatedUser);
+            if (response.status === 200) {
+                setRefreshTrigger(!refreshTrigger); // Toggle the refresh trigger
+                setEditingUser(null);
+                setEditShowModal(false);
+            }
+        } catch (error) {
+            setErrorMessage(error.response.data);
+            setShowErrorModal(true);
         }
     };
 
@@ -57,6 +72,21 @@ const Users = () => {
         { key: 'email', title: 'ایمیل', width: '20%', sortable: true, searchable: true },
         { key: 'role', title: 'نقش', width: '15%', sortable: true, searchable: true },
     ];
+
+    const ErrorModal = ({ show, handleClose, errorMessage }) => {
+        return (
+            <Modal show={show} onHide={handleClose} centered>
+                <Modal.Body className="text-center" style={{ fontFamily: "IRANSans",fontSize: "0.8rem", padding: "20px",fontWeight: "bold"}}>
+                    <div className="text-danger">{errorMessage}</div>
+                    <button className="btn btn-primary btn-sm mt-4" onClick={handleClose}>
+                        بستن
+                    </button>
+                </Modal.Body>
+            </Modal>
+        );
+    };
+
+
 
     return (
         <div className="table-container">
@@ -92,6 +122,11 @@ const Users = () => {
                     }}
                 />
             )}
+            <ErrorModal
+                show={showErrorModal}
+                handleClose={() => setShowErrorModal(false)}
+                errorMessage={errorMessage}
+            />
         </div>
     );
 };

@@ -9,6 +9,9 @@ import useHttp from "../../hooks/useHttp";
 import { saveAs } from 'file-saver';
 import FileUpload from "../../utils/formComponents/FileUpload";
 import DownloadTemplate from "../../utils/formComponents/DownloadTemplate";
+import ButtonContainer from "../../utils/formComponents/ButtonContainer";
+import {SiMicrosoftexcel} from "react-icons/si";
+import Modal from "react-bootstrap/Modal";
 
 
 
@@ -23,6 +26,10 @@ const Persons = () => {
     const [showEditModal, setEditShowModal] = useState(false);
     const [refreshTrigger, setRefreshTrigger] = useState(false);
     const http = useHttp();
+    const [errorMessage, setErrorMessage] = useState('');
+    const [showErrorModal, setShowErrorModal] = useState(false);
+
+
     const getAllPersons = async (queryParams) => {
         return await http.get(`/persons?${queryParams.toString()}`).then(r => r.data);
     }
@@ -38,18 +45,36 @@ const Persons = () => {
 
 
     const handleAddPerson = async (newPerson) => {
-        const response = await createPerson(newPerson);
-        if (response.status === 201) {
-            setRefreshTrigger(!refreshTrigger); // Toggle the refresh trigger
+        try {
+            const response = await createPerson(newPerson);
+            if (response.status === 201) {
+                setRefreshTrigger(!refreshTrigger);
+                setShowModal(false);
+            } else {
+                setErrorMessage(response.data);
+                setShowErrorModal(true);
+            }
+        } catch (error) {
+            setErrorMessage(error.response.data);
+            setShowErrorModal(true);
         }
     };
 
     const handleUpdatePerson = async (updatedPerson) => {
-        const response = await updatePerson(updatedPerson.id, updatedPerson);
-        if (response.status === 200) {
-            setRefreshTrigger(!refreshTrigger); // Toggle the refresh trigger
-            setEditingPerson(null);
-        }
+       try {
+           const response = await updatePerson(updatedPerson.id, updatedPerson);
+           if (response.status === 200) {
+               setRefreshTrigger(!refreshTrigger);
+               setEditingPerson(null);
+               setEditShowModal(false);
+           } else {
+               setErrorMessage(response.data);
+               setShowErrorModal(true);
+           }
+       } catch (error) {
+           setErrorMessage(error.response.data);
+           setShowErrorModal(true);
+       }
     };
 
     const handleDeletePerson = async (id) => {
@@ -67,6 +92,18 @@ const Persons = () => {
                 console.error('Error downloading file:', error);
             });
     }
+    const ErrorModal = ({ show, handleClose, errorMessage }) => {
+        return (
+            <Modal show={show} onHide={handleClose} centered>
+                <Modal.Body className="text-center" style={{ fontFamily: "IRANSans",fontSize: "0.8rem", padding: "20px",fontWeight: "bold"}}>
+                    <div className="text-danger">{errorMessage}</div>
+                    <button className="btn btn-primary btn-sm mt-4" onClick={handleClose}>
+                        بستن
+                    </button>
+                </Modal.Body>
+            </Modal>
+        );
+    };
 
 
 
@@ -86,24 +123,27 @@ const Persons = () => {
             type: 'date',
             render: (item) => toShamsi(item.birthDate)
         },
-        {key: 'registrationNumber', title: 'شماره ثبت', width: '10%', sortable: true, searchable: true},
+        {key: 'registrationNumber', title: 'شماره شناسنامه', width: '10%', sortable: true, searchable: true},
         {key: 'postalCode', title: 'کد پستی', width: '10%', sortable: true, searchable: true},
     ];
 
     return (
         <div className="table-container">
-            <span style={{fontFamily: "IRANSansBold", fontSize: "1.2rem"}}>لیست افراد</span>
-            <div>
+            <ButtonContainer lastChild={<FileUpload uploadUrl={"/persons/import"}/>}>
                 <Button variant="primary" onClick={() => setShowModal(true)}>
                     جدید
                 </Button>
-                <Button variant="secondary" onClick={downloadExcelFile}>
-                    دانلود به Excel
-                </Button>
-                <FileUpload uploadUrl={"/persons/import"}/>
+                <SiMicrosoftexcel
+                    onClick={downloadExcelFile}
+                    size={"2.2rem"}
+                    className={"m-1"}
+                    color={"#41941a"}
+                    type="button"
+                />
+
                 <DownloadTemplate
                     downloadUrl="/persons/template"
-                    buttonLabel="دانلود الگوی فرد"
+                    buttonLabel="فرمت بارگذاری"
                     fileName="person_template.xlsx"
                 />
                 <NewPersonForm
@@ -111,7 +151,7 @@ const Persons = () => {
                     show={showModal}
                     onHide={() => setShowModal(false)}
                 />
-            </div>
+            </ButtonContainer>
             <Table
                 columns={columns}
                 fetchData={getAllPersons}
@@ -134,6 +174,11 @@ const Persons = () => {
                     }}
                 />
             )}
+            <ErrorModal
+                show={showErrorModal}
+                handleClose={() => setShowErrorModal(false)}
+                errorMessage={errorMessage}
+            />
         </div>
     );
 };

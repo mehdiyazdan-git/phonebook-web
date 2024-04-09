@@ -8,7 +8,14 @@ import { saveAs } from 'file-saver';
 import FileUpload from "../../utils/formComponents/FileUpload";
 import DownloadTemplate from "../../utils/formComponents/DownloadTemplate";
 import {useParams} from "react-router-dom";
+import moment from "jalali-moment";
 import {formatNumber} from "../../utils/util-functions";
+import ButtonContainer from "../../utils/formComponents/ButtonContainer";
+
+
+const toShamsi = (date) => {
+    return date ? moment(date, 'YYYY-MM-DD').format('jYYYY/jMM/jDD') : '';
+};
 
 const TaxPaymentSlips = () => {
     const {companyId} = useParams();
@@ -19,7 +26,14 @@ const TaxPaymentSlips = () => {
     const http = useHttp();
 
     const getAllTaxPaymentSlips = async (queryParams) => {
-        return await http.get(`/tax-payment-slips?companyId=${Number(companyId)}&${queryParams.toString()}`).then(r => r.data);
+        const url = `/tax-payment-slips?companyId=${Number(companyId)}&${queryParams.toString()}`;
+        try {
+            const response = await http.get(url);
+            return response.data;
+        } catch (error) {
+            console.error(error);
+            return [];
+        }
     };
 
     const createTaxPaymentSlip = async (data) => {
@@ -54,28 +68,46 @@ const TaxPaymentSlips = () => {
         setRefreshTrigger(!refreshTrigger);
     };
 
+    const convertToPersianCaption = (caption) => {
+        const persianCaptions = {
+            CORPORATE_INCOME_TAX: "عملکرد",
+            PAYROLL_TAX: "حقوق",
+            VALUE_ADDED_TAX: "ارزش افزوده",
+            QUARTERLY_TRANSACTIONS: "معاملات فصلی",
+            PROPERTY_RENT_TAX: "اجاره املاک",
+            PROPERTY_TRANSFER_TAX: "نقل و انتقال املاک",
+            OTHER_FEES_AND_CHARGES: "سایر عوارض و وجوه"
+        };
+        return persianCaptions[caption] || caption;
+    };
+    const options=[
+            { value: 'CORPORATE_INCOME_TAX', label: 'فیش پرداخت مالیات عملکرد اشخاص حقوقی' },
+            { "value": 'PAYROLL_TAX', "label": 'فیش پرداخت مالیات بر حقوق' },
+            { value: 'VALUE_ADDED_TAX', label: 'فیش پرداخت مالیات بر ارزش افزوده' },
+            { value: 'QUARTERLY_TRANSACTIONS', label: 'فیش پرداخت معاملات فصلی' },
+            { value: 'PROPERTY_RENT_TAX', label: 'فیش پرداخت مالیات اجاره املاک' },
+            { value: 'PROPERTY_TRANSFER_TAX', label: 'فیش پرداخت مالیات نقل و انتقال املاک' },
+            { value: 'OTHER_FEES_AND_CHARGES', label: 'فیش پرداخت سایر عوارض و وجوه' }
+]
+
     const columns = [
         { key: 'id', title: 'شناسه', width: '5%', sortable: true, searchable: true },
-        { key: 'personFirstName', title: 'نام', width: '10%', sortable: true, searchable: true },
-        { key: 'personLastName', title: 'نام خانوادگی', width: '10%', sortable: true, searchable: true },
-        { key: 'numberOfShares', title: 'تعداد سهام', width: '10%', sortable: true, searchable: true },
+        { key: 'issueDate', title: 'تاریخ صدور', width: '10%', sortable: true, searchable: true, type: 'date', render: (item) => toShamsi(item.issueDate) },
+        { key: 'slipNumber', title: 'شماره فیش', width: '10%', sortable: true, searchable: true },
         {
-            key: 'percentageOwnership',
-            title: 'درصد مالکیت',
+            key: 'type',
+            title: 'نوع فیش',
             width: '10%',
             sortable: true,
             searchable: true,
-            render: (item) => ` % ${item.percentageOwnership}`
+            render: (item) => convertToPersianCaption(item.type),
+            type : 'select',
+            options : options
         },
-        {
-            key: 'sharePrice',
-            title: 'قیمت سهم',
-            width: '10%',
-            sortable: true,
-            searchable: true,
-            render: (item) => formatNumber(item.sharePrice)
-        },
+        { key: 'amount', title: 'مبلغ', width: '10%', sortable: true, searchable: true, render: (item) => formatNumber(item.amount) },
+        { key: 'period', title: 'دوره مالی', width: '10%', sortable: true, searchable: true },
     ];
+
 
 
     async function downloadExcelFile() {
@@ -92,18 +124,6 @@ const TaxPaymentSlips = () => {
     return (
         <div className="table-container">
             <div>
-                <Button variant="primary" onClick={() => setShowModal(true)}>
-                    جدید
-                </Button>
-                <Button variant="secondary" onClick={downloadExcelFile}>
-                    دانلود به Excel
-                </Button>
-                <FileUpload uploadUrl={"/tax-payment-slips/import"}/>
-                <DownloadTemplate
-                    downloadUrl="/tax-payment-slips/template"
-                    buttonLabel="دانلود الگوی فیش پرداخت"
-                    fileName="tax_payment_slip_template.xlsx"
-                />
                 <CreateTaxPaymentSlipForm
                     onAddTaxPaymentSlip={handleAddTaxPaymentSlip}
                     show={showModal}
@@ -133,6 +153,19 @@ const TaxPaymentSlips = () => {
                     }}
                 />
             )}
+            <ButtonContainer lastChild={<FileUpload uploadUrl={"/tax-payment-slips/import"}/>}>
+                <Button variant="primary" onClick={() => setShowModal(true)}>
+                    جدید
+                </Button>
+                <Button variant="secondary" onClick={downloadExcelFile}>
+                    دانلود به Excel
+                </Button>
+                <DownloadTemplate
+                    downloadUrl="/tax-payment-slips/template"
+                    buttonLabel="دانلود الگوی فیش پرداخت"
+                    fileName="tax_payment_slip_template.xlsx"
+                />
+            </ButtonContainer>
         </div>
     );
 };

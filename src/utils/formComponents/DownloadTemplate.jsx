@@ -1,6 +1,7 @@
 import React from 'react';
 import { saveAs } from 'file-saver';
 import useHttp from "../../hooks/useHttp";
+import Button from "../Button";
 
 const DownloadTemplate = ({ downloadUrl, buttonLabel, fileName }) => {
     const http = useHttp();
@@ -19,7 +20,7 @@ const DownloadTemplate = ({ downloadUrl, buttonLabel, fileName }) => {
     };
 
     return (
-        <button onClick={handleDownload}>{buttonLabel}</button>
+        <Button variant={"success"} type="button" onClick={handleDownload}>{buttonLabel}</Button>
     );
 };
 

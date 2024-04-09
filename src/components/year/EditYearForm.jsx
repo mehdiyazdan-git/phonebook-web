@@ -7,7 +7,16 @@ import { useYupValidationResolver } from '../../hooks/useYupValidationResolver';
 import Button from '../../utils/Button';
 
 const schema = yup.object({
-    name: yup.string().required('نام سال الزامیست.')
+    name: yup.number()
+        .label('نام سال')
+        .transform(v => parseInt(v, 10) || undefined) // Optional type conversion (use with caution)
+        .min(1000, 'نام سال باید یک عدد 4 رقمی باشد.')
+        .max(9999, 'نام سال باید یک عدد 4 رقمی باشد.')
+        .required('نام سال الزامیست.'),
+    startingLetterNumber: yup.number()
+        .required('شروع شماره نامه الزامیست.')
+        .positive('شروع شماره نامه باید یک عدد مثبت باشد.')
+        .integer('شروع شماره نامه باید یک عدد صحیح باشد.'),
 });
 
 const EditYearForm = ({ year, onUpdateYear, show, onHide }) => {
@@ -34,6 +43,7 @@ const EditYearForm = ({ year, onUpdateYear, show, onHide }) => {
                     >
                         <TextInput name="id" label={'شناسه'} disabled={true} />
                         <TextInput name="name" label={'نام سال'} />
+                        <TextInput name="startingLetterNumber" label="شروع شماره نامه" />
                         <Button variant="success" type="submit">
                             ویرایش
                         </Button>

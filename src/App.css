@@ -1,5 +1,5 @@
 body {
-    background-image: url('/src/components/assets/img/default.jpg'); /* Adjust the path as needed */
+    background-image: url("/src/components/assets/img/login-background.jpg"); /* Adjust the path as needed */
     background-size: cover; /* Adjust as needed */
     /* Other background properties can be added here (e.g., background-repeat, background-position) */
 }
