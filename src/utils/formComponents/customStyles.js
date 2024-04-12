@@ -13,7 +13,9 @@ export const getCustomSelectStyles = (error) => ({
     option: (provided) => ({
         ...provided,
         fontSize: '0.75rem',
-        color: "black"
+        color: "black",
+        fontFamily: 'IRANSans',
+        fontsize: '0.75rem',
     }),
     placeholder: (provided) => ({
         ...provided,

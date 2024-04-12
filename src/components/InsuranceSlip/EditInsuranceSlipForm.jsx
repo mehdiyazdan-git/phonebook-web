@@ -77,6 +77,17 @@ const EditInsuranceSlipForm = ({ insuranceSlip, onUpdateInsuranceSlip, show, onH
         console.log("on form pop-up: ", insuranceSlip);
     });
 
+    const DownloadLink = ({fileName, fileExtension}) => {
+        const handleClick = () => {
+            downloadScannedCertificate();
+        };
+        return (
+            <button onClick={handleClick}>
+                {`دانلود فایل ضمیمه (${fileName}.${fileExtension})`}
+            </button>
+        );
+    };
+
     return (
         <Modal size={"lg"} show={show}>
             <Modal.Header style={{ backgroundColor: "rgba(63,51,106,0.6)" }}>
@@ -139,6 +150,10 @@ const EditInsuranceSlipForm = ({ insuranceSlip, onUpdateInsuranceSlip, show, onH
                             انصراف
                         </Button>
                     </Form>
+                    <hr />
+                    <h4>فایل های ضمیمه</h4>
+                    <DownloadLink fileName={insuranceSlip.fileName} fileExtension={insuranceSlip.fileExtension} />
+
                     <Row>
                         <FileUploadForm onSubmit={onSubmitFile}/>
                         {insuranceSlip.hasFile && (

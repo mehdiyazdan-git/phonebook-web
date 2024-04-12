@@ -57,6 +57,22 @@ const Main = () => {
             <Routes>
                 <Route element={<RequireAuth />}>
                     <Route path="/" element={<App/>}>
+                        <Route path="/companies" element={<CompanyPage/>}>
+                            <Route path=":companyId" element={<CompanyContainer/>}>
+                                <Route path="edit" element={<EditCompanyForm/>}/>
+                                <Route path="outgoing" element={<Letters/>}/>
+                                <Route path="incoming" element={<Letters/>}/>
+                                <Route path="documents" element={<CompanyDocumentList/>}/>
+                                <Route path="create" element={<NewCompanyForm/>}/>
+                                <Route path="outgoing/create" element={<NewLetterForm/>}/>
+                                <Route path="board-members" index element={<BoardMembers/>}/>
+                                <Route path="shareholders" element={<ShareHolders/>}/>
+                                <Route path="insurance-documents" element={<InsuranceSlips/>}/>
+                                <Route path="tax-documents" element={<TaxPaymentSlips/>}/>
+                                <Route path="*" element={<NotFoundPage/>}/>
+                            </Route>
+                        </Route>
+
                         <Route path="/persons" index element={<Persons/>}/>
                         <Route path="/persons/create" element={<NewPersonForm/>}/>
                         <Route path="/persons/:personId/edit" element={<EditPersonForm/>}/>
@@ -80,23 +96,6 @@ const Main = () => {
                         <Route path="/board-members" index element={<BoardMembers/>}/>
                         <Route path="/board-members/create" element={<CreateBoardMemberForm/>}/>
                         <Route path="/board-members/:boardMemberId/edit" element={<EditBoardMemberForm/>}/>
-
-
-                        <Route path="/companies" element={<CompanyPage/>}>
-                            <Route path=":companyId" element={<CompanyContainer/>}>
-                                <Route path="edit" element={<EditCompanyForm/>}/>
-                                <Route path="outgoing" element={<Letters/>}/>
-                                <Route path="incoming" element={<Letters/>}/>
-                                <Route path="documents" element={<CompanyDocumentList/>}/>
-                                <Route path="create" element={<NewCompanyForm/>}/>
-                                <Route path="outgoing/create" element={<NewLetterForm/>}/>
-                                <Route path="board-members" index element={<BoardMembers/>}/>
-                                <Route path="shareholders" element={<ShareHolders/>}/>
-                                <Route path="insurance-documents" element={<InsuranceSlips/>}/>
-                                <Route path="tax-documents" element={<TaxPaymentSlips/>}/>
-                                <Route path="*" element={<NotFoundPage/>}/>
-                            </Route>
-                        </Route>
 
                         <Route path="/admin" element={<AdminPanel/>}>
                             <Route path="" element={<UserContainer/>}>

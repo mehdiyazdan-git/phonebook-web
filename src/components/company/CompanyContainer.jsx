@@ -59,6 +59,7 @@ const Tabs = () => {
 
     useEffect(() => {
         sessionStorage.setItem(`${params.companyId}-activeTab`, activeTab);
+        sessionStorage.setItem('selectedCompanyId', params.companyId);
     }, [activeTab, params.companyId]);
 
     useEffect(() => {

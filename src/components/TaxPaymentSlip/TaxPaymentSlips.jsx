@@ -11,6 +11,7 @@ import {useParams} from "react-router-dom";
 import moment from "jalali-moment";
 import {formatNumber} from "../../utils/util-functions";
 import ButtonContainer from "../../utils/formComponents/ButtonContainer";
+import IconAttach from "../assets/icons/IconAttach";
 
 
 const toShamsi = (date) => {
@@ -67,6 +68,24 @@ const TaxPaymentSlips = () => {
         await removeTaxPaymentSlip(id);
         setRefreshTrigger(!refreshTrigger);
     };
+    const onUploadFile = async (id,formData) => {
+      return await http.post(`/tax-payment-slips/${id}/upload-file`, formData)
+            .then(response => {
+                if (response.status === 201){
+                    setRefreshTrigger(!refreshTrigger);
+                    return response;
+                }}
+            )
+    }
+    const onFileDelete = async (id) => {
+       return await http.delete(`/tax-payment-slips/${id}/delete-file`)
+            .then((response) => {
+                if (response.status === 204) {
+                    setRefreshTrigger(!refreshTrigger);
+                    return response;
+                }
+            })
+    };
 
     const convertToPersianCaption = (caption) => {
         const persianCaptions = {
@@ -106,6 +125,9 @@ const TaxPaymentSlips = () => {
         },
         { key: 'amount', title: 'مبلغ', width: '10%', sortable: true, searchable: true, render: (item) => formatNumber(item.amount) },
         { key: 'period', title: 'دوره مالی', width: '10%', sortable: true, searchable: true },
+        { key: 'fileName', title: 'نام فایل', width: '10%', sortable: true, searchable: true },
+        { key: 'fileName', title: 'فایل', width: '2%', render : (item) => item.fileName !== null  ? <IconAttach/> : '' },
+
     ];
 
 
@@ -151,6 +173,8 @@ const TaxPaymentSlips = () => {
                         setEditingTaxPaymentSlip(null);
                         setEditShowModal(false);
                     }}
+                    onUploadFile={onUploadFile}
+                    onFileDelete={onFileDelete}
                 />
             )}
             <ButtonContainer lastChild={<FileUpload uploadUrl={"/tax-payment-slips/import"}/>}>

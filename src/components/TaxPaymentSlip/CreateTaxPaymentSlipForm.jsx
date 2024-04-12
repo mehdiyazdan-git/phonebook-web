@@ -13,7 +13,7 @@ import AsyncSelectInput from "../form/AsyncSelectInput";
 import NumberInput from "../../utils/formComponents/NumberInput";
 import DateInput from "../../utils/formComponents/DateInput";
 
-const CreateTaxPaymentSlipForm = ({ taxPaymentSlip, onAddTaxPaymentSlip, show, onHide, companyId }) => {
+const CreateTaxPaymentSlipForm = ({ onAddTaxPaymentSlip, show, onHide, companyId }) => {
     const validationSchema = Yup.object().shape({
         issueDate: Yup.date().required('تاریخ صدور الزامیست.'),
         slipNumber: Yup.string().required('شماره فیش الزامیست.'),
@@ -61,10 +61,18 @@ const CreateTaxPaymentSlipForm = ({ taxPaymentSlip, onAddTaxPaymentSlip, show, o
             <Modal.Header style={{ backgroundColor: "rgba(46, 75, 108, 0.8)" }}>
                 <Modal.Title style={{ fontFamily: "IRANSansBold", fontSize: "0.8rem", color: "#fff" }}>جدید</Modal.Title>
             </Modal.Header>
-            <Modal.Body style={{ backgroundColor: "rgba(240,240,240,0.3)" }}>
+            <Modal.Body  className="glass-effect">
                 <div className="container modal-form">
                     <Form
-                        defaultValues={taxPaymentSlip}
+                        defaultValues={{
+                            id: '',
+                            issueDate: new Date(),
+                            slipNumber: '',
+                            type: '',
+                            amount: '',
+                            period: '',
+                            companyId: Number(companyId),
+                        }}
                         onSubmit={onSubmit}
                         resolver={resolver}
                     >
@@ -107,6 +115,7 @@ const CreateTaxPaymentSlipForm = ({ taxPaymentSlip, onAddTaxPaymentSlip, show, o
                                     name={"companyId"}
                                     apiFetchFunction={getCompanySelect}
                                     defaultValue={Number(companyId)}
+                                    isDisabled={true}
                                 />
                             </Col>
                         </Row>

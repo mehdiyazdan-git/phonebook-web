@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Col, Modal, Row } from "react-bootstrap";
+import {Col, Modal, Row} from "react-bootstrap";
 import * as Yup from "yup";
 import Button from "../../utils/Button";
 import { TextInput } from "../../utils/formComponents/TextInput";
@@ -11,8 +11,10 @@ import DateInput from "../../utils/formComponents/DateInput";
 import NumberInput from "../../utils/formComponents/NumberInput";
 import AsyncSelectInput from "../form/AsyncSelectInput";
 import useHttp from "../../hooks/useHttp";
+import FileComponent from "../file/FileComponent";
 
-const EditTaxPaymentSlipForm = ({ taxPaymentSlip, onUpdateTaxPaymentSlip, show, onHide }) => {
+const EditTaxPaymentSlipForm = ({ taxPaymentSlip, onUpdateTaxPaymentSlip, show, onHide ,onUploadFile,onFileDelete}) => {
+    const http = useHttp();
     const validationSchema = Yup.object().shape({
         issueDate: Yup.date().required('تاریخ صدور الزامیست.'),
         slipNumber: Yup.string().required('شماره فیش الزامیست.'),
@@ -21,10 +23,7 @@ const EditTaxPaymentSlipForm = ({ taxPaymentSlip, onUpdateTaxPaymentSlip, show, 
         period: Yup.string().required('دوره مالی الزامیست.'),
         companyId: Yup.number().required('شناسه شرکت الزامیست.'),
     });
-
     const resolver = useYupValidationResolver(validationSchema);
-
-    const http = useHttp();
 
     const getCompanySelect = async (queryParam) => {
         return await http.get(`/companies/select?queryParam=${queryParam ? queryParam : ''}`);
@@ -35,10 +34,6 @@ const EditTaxPaymentSlipForm = ({ taxPaymentSlip, onUpdateTaxPaymentSlip, show, 
         onUpdateTaxPaymentSlip(data);
         onHide();
     };
-
-    useEffect(() => {
-        console.log("on form pop-up: ", taxPaymentSlip);
-    });
 
     return (
         <Modal size={"lg"} show={show}>
@@ -101,10 +96,16 @@ const EditTaxPaymentSlipForm = ({ taxPaymentSlip, onUpdateTaxPaymentSlip, show, 
                             انصراف
                         </Button>
                     </Form>
+                    <hr/>
+                    <FileComponent
+                        taxPaymentSlip={taxPaymentSlip}
+                        onUploadFile={onUploadFile}
+                        onFileDelete={onFileDelete}
+                        downloadUrl={`/tax-payment-slips/${taxPaymentSlip.id}/download-file`}
+                    />
                 </div>
             </Modal.Body>
         </Modal>
     );
 };
-
 export default EditTaxPaymentSlipForm;

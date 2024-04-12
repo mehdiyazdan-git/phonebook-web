@@ -152,4 +152,12 @@ html, body, #root {
     font-size: 0.8rem;
 }
 
+.glass-effect {
+    background-color: transparent;
+    backdrop-filter: blur(8px);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+
 

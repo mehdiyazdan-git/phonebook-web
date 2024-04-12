@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from "styled-components";
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import {NavLink, Outlet, useLocation, useNavigate} from "react-router-dom";
 import NewCompanyForm from "./NewCompanyForm";
 import Button from "../../utils/Button";
 import useHttp from "../../hooks/useHttp";
@@ -56,6 +56,7 @@ const CompanyPage = () => {
     const navigate = useNavigate();
     const [showModal, setShowModal] = useState(false);
     const http = useHttp();
+    const location = useLocation();
 
     const getCompanySelect = async (queryParam) => {
         return await http.get(`/companies/select?queryParam=${queryParam ? queryParam : ''}`);
@@ -69,18 +70,42 @@ const CompanyPage = () => {
         setCompanies([...companies, response.data]);
     };
 
+
     useEffect(() => {
         async function loadData() {
             return await getCompanySelect().then(response => response.data);
         }
-
         loadData().then(data => {
             setCompanies(data);
             if (data.length > 0) {
                 navigate(`${data[0].id}`);
             }
+            sessionStorage.setItem('company-location', location.pathname);
         });
     }, []);
+
+    // useEffect(() => {
+    //     async function loadData() {
+    //         return await getCompanySelect().then(response => response.data);
+    //     }
+    //     loadData().then(data => {
+    //         setCompanies(data);
+    //
+    //         // Check for previously selected company ID
+    //         const selectedCompanyId = sessionStorage.getItem('selectedCompanyId');
+    //         if (selectedCompanyId && data.some(company => company.id === selectedCompanyId)) {
+    //             navigate(`/companies/${selectedCompanyId}`); // Navigate to stored company
+    //         } else if (data.length > 0) {
+    //             navigate(`${data[0].id}`); // Fallback to first company
+    //             sessionStorage.setItem('selectedCompanyId', data[0].id); // Update session storage
+    //         }
+    //
+    //         sessionStorage.setItem('company-location', location.pathname); // Store company path
+    //     });
+    // }, []);
+
+
+
 
     async function downloadExcelFile() {
         await http.get('/companies/download-all-companies.xlsx',{ responseType: 'blob' })
