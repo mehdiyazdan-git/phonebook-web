@@ -12,6 +12,7 @@ import {formatNumber} from "../../utils/util-functions";
 import moment from "jalali-moment";
 import {Col, Row} from "react-bootstrap";
 import ButtonContainer from "../../utils/formComponents/ButtonContainer";
+import IconAttach from "../assets/icons/IconAttach";
 
 const toShamsi = (date) => {
     return date ? moment(date, 'YYYY-MM-DD').format('jYYYY/jMM/jDD') : '';
@@ -70,6 +71,25 @@ const InsuranceSlips = () => {
         await removeInsuranceSlip(id);
         setRefreshTrigger(!refreshTrigger);
     };
+
+    const onUploadFile = async (id,formData) => {
+        return await http.post(`/insurance-slips/${id}/upload-file`, formData)
+            .then(response => {
+                if (response.status === 201){
+                    setRefreshTrigger(!refreshTrigger);
+                    return response;
+                }}
+            )
+    }
+    const onFileDelete = async (id) => {
+        return await http.delete(`/insurance-slips/${id}/delete-file`)
+            .then((response) => {
+                if (response.status === 204) {
+                    setRefreshTrigger(!refreshTrigger);
+                    return response;
+                }
+            })
+    };
     const convertToPersianCaption = (caption) => {
         const persianCaptions = {
             'INSURANCE_PREMIUM': 'حق بیمه',
@@ -101,6 +121,8 @@ const options = [
         { key: 'amount', title: 'مبلغ(ریال)', width: '10%', sortable: true, searchable: true, render: (item) => formatNumber(item.amount) },
         { key: 'startDate', title: 'از تاریخ', width: '10%', sortable: true, searchable: true , type: 'date', render: (item) => toShamsi(item.startDate) },
         { key: 'endDate', title: 'تا تاریخ', width: '10%', sortable: true, searchable: true, type: 'date', render: (item) => toShamsi(item.endDate)  },
+        { key: 'fileName', title: 'نام فایل', width: '10%', sortable: true, searchable: true },
+        { key: 'fileName', title: 'فایل', width: '2%', render : (item) => item.fileName !== null  ? <IconAttach/> : '' },
     ];
 
 
@@ -149,6 +171,8 @@ const options = [
                         setEditingInsuranceSlip(null);
                         setEditShowModal(false);
                     }}
+                    onUploadFile={onUploadFile}
+                    onFileDelete={onFileDelete}
                 />
             )}
             <ButtonContainer lastChild={<FileUpload uploadUrl={"/insurance-slips/import"}/>}>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import {Col, Modal, Row} from "react-bootstrap";
 import * as Yup from "yup";
@@ -7,14 +7,12 @@ import { TextInput } from "../../utils/formComponents/TextInput";
 import { Form } from "../../utils/Form";
 import { useYupValidationResolver } from "../../hooks/useYupValidationResolver";
 import SelectInput from "../../utils/formComponents/SelectInput";
-import FileUploadForm from "../../utils/formComponents/FileUploadForm";
 import NumberInput from "../../utils/formComponents/NumberInput";
 import AsyncSelectInput from "../form/AsyncSelectInput";
 import useHttp from "../../hooks/useHttp";
-import { saveAs } from 'file-saver';
-import {parseInt} from "lodash";
+import FileComponent from "../file/FileComponent";
 
-const EditShareHolderForm = ({ shareholder, onUpdateShareHolder, show, onHide }) => {
+const EditShareHolderForm = ({ shareholder, onUpdateShareHolder, show, onHide, onUploadFile, onFileDelete }) => {
     const validationSchema = Yup.object().shape({
         personId: Yup.number().required('شناسه شخص الزامیست.'),
         numberOfShares: Yup.number().required('تعداد سهام الزامیست.').positive('تعداد سهام باید مثبت باشد.'),
@@ -28,10 +26,6 @@ const EditShareHolderForm = ({ shareholder, onUpdateShareHolder, show, onHide })
 
     const http = useHttp();
 
-    const [fileData, setFileData] = useState(null);
-    const [fileName, setFileName] = useState('');
-    const [fileType, setFileType] = useState('');
-
     const getCompanySelect = async (queryParam) => {
         return await http.get(`/companies/select?queryParam=${queryParam ? queryParam : ''}`);
     };
@@ -39,45 +33,25 @@ const EditShareHolderForm = ({ shareholder, onUpdateShareHolder, show, onHide })
         return await http.get(`/persons/select`);
     };
 
-    const onSubmitFile = async (formData) => {
-        try {
-            const response = await http.post(`/shareholders/${Number(shareholder.id)}/upload-file`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
-            console.log('File uploaded successfully:', response.data);
-            // Update the file preview data
-            const file = formData.get("file");
-            setFileData(file);
-            setFileName(file.name);
-            setFileType(file.type);
-        } catch (error) {
-            console.error('Error uploading file:', error);
-        }
-    }
-
     const onSubmit = (data) => {
         console.log("on form submit: ", data);
         onUpdateShareHolder(data);
         onHide();
     };
-    const downloadScannedCertificate = () => {
-        http.get(`/shareholders/${shareholder.id}/download-file`,{ responseType: 'blob' })
-            .then((response) => response.data)
-            .then((blobData) => {
-                const fileBlob = new Blob([blobData], { type: fileType });
-                const fileUrl = URL.createObjectURL(fileBlob);
-                saveAs(fileUrl, fileName);
-            })
-            .catch((error) => {
-                console.error('Error downloading file:', error);
-            });
-    };
 
     useEffect(() => {
         console.log("on form pop-up: ", shareholder);
     });
+
+    const defaultValues = {
+        id: shareholder.id,
+        personId: shareholder.personId,
+        numberOfShares: shareholder.numberOfShares,
+        percentageOwnership: shareholder.percentageOwnership,
+        sharePrice: shareholder.sharePrice,
+        shareType: shareholder.shareType,
+        companyId: shareholder.companyId,
+    }
 
     return (
         <Modal size={"lg"} show={show}>
@@ -87,7 +61,7 @@ const EditShareHolderForm = ({ shareholder, onUpdateShareHolder, show, onHide })
             <Modal.Body style={{ backgroundColor: "rgba(240,240,240,0.3)" }}>
                 <div className="container modal-form">
                     <Form
-                        defaultValues={shareholder}
+                        defaultValues={defaultValues}
                         onSubmit={onSubmit}
                         resolver={resolver}
                     >
@@ -144,15 +118,13 @@ const EditShareHolderForm = ({ shareholder, onUpdateShareHolder, show, onHide })
                             انصراف
                         </Button>
                     </Form>
-                    <Row>
-                        <FileUploadForm onSubmit={onSubmitFile}/>
-                        {shareholder.hasFile && (
-                            <Button onClick={downloadScannedCertificate} variant="primary">
-                                Download Scanned Certificate
-                            </Button>
-                        )}
-
-                    </Row>
+                    <hr/>
+                    <FileComponent
+                        taxPaymentSlip={shareholder}
+                        onUploadFile={onUploadFile}
+                        onFileDelete={onFileDelete}
+                        downloadUrl={`/shareholders/${shareholder.id}/download-file`}
+                    />
                 </div>
             </Modal.Body>
         </Modal>

@@ -177,18 +177,13 @@ const TaxPaymentSlips = () => {
                     onFileDelete={onFileDelete}
                 />
             )}
-            <ButtonContainer lastChild={<FileUpload uploadUrl={"/tax-payment-slips/import"}/>}>
+            <ButtonContainer>
                 <Button variant="primary" onClick={() => setShowModal(true)}>
                     جدید
                 </Button>
                 <Button variant="secondary" onClick={downloadExcelFile}>
                     دانلود به Excel
                 </Button>
-                <DownloadTemplate
-                    downloadUrl="/tax-payment-slips/template"
-                    buttonLabel="دانلود الگوی فیش پرداخت"
-                    fileName="tax_payment_slip_template.xlsx"
-                />
             </ButtonContainer>
         </div>
     );

@@ -34,6 +34,15 @@ const EditTaxPaymentSlipForm = ({ taxPaymentSlip, onUpdateTaxPaymentSlip, show, 
         onUpdateTaxPaymentSlip(data);
         onHide();
     };
+    const defaultValues = {
+        id: taxPaymentSlip.id,
+        issueDate: taxPaymentSlip.issueDate,
+        slipNumber: taxPaymentSlip.slipNumber,
+        type: taxPaymentSlip.type,
+        amount: taxPaymentSlip.amount,
+        period: taxPaymentSlip.period,
+        companyId: taxPaymentSlip.companyId,
+    }
 
     return (
         <Modal size={"lg"} show={show}>
@@ -43,7 +52,7 @@ const EditTaxPaymentSlipForm = ({ taxPaymentSlip, onUpdateTaxPaymentSlip, show, 
             <Modal.Body style={{ backgroundColor: "rgba(240,240,240,0.3)" }}>
                 <div className="container modal-form">
                     <Form
-                        defaultValues={taxPaymentSlip}
+                        defaultValues={defaultValues}
                         onSubmit={onSubmit}
                         resolver={resolver}
                     >

@@ -6,7 +6,7 @@ import Button from "../../utils/Button";
 
 const FileComponent = ({ taxPaymentSlip, onUploadFile, onFileDelete,downloadUrl }) => {
     const [file, setFile] = useState(null);
-    const  [ fileName,setFileName] = useState(null);
+    const  [ fileName,setFileName] = useState(taxPaymentSlip.fileName);
     const [maxUploadFileSize, setMaxUploadFileSize] = useState(null);
     const [fileUploaded, setFileUploaded] = useState(!!taxPaymentSlip.fileName);
     const [message, setMessage] = useState('');
@@ -22,6 +22,10 @@ const FileComponent = ({ taxPaymentSlip, onUploadFile, onFileDelete,downloadUrl 
                 console.error('Error fetching max upload file size:', error);
             });
     }, [http]);
+    // update fileName on form load
+    useEffect(() => {
+        setFileName(taxPaymentSlip.fileName);
+    }, [taxPaymentSlip]);
 
     const clearMessage = (duration = 5000) => {
         setTimeout(() => {
@@ -99,6 +103,9 @@ const FileComponent = ({ taxPaymentSlip, onUploadFile, onFileDelete,downloadUrl 
             </Button>
         );
     };
+    useEffect(() => {
+        setFileUploaded(!!taxPaymentSlip.fileName);
+    }, [taxPaymentSlip])
 
 
     const FileDownloadButton = () => {
@@ -172,7 +179,7 @@ const FileComponent = ({ taxPaymentSlip, onUploadFile, onFileDelete,downloadUrl 
                     justifyContent:"center",
                     alignItems:"center"}}
                 >
-                    {fileName || <span className="text-muted">فایلی انتخاب نشده است.</span>}
+                    {fileName}
                 </strong>}
             </span>
         );

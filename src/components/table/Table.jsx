@@ -71,22 +71,37 @@ const Table = ({ columns, fetchData, onEdit, onDelete, refreshTrigger }) => {
         }
     };
 
+    // ...
+
     useDeepCompareEffect(() => {
         const load = async () => {
-            const queryParams = new URLSearchParams({
-                page: currentPage.toString(),
-                size: pageSize.toString(),
-                sortBy: sortBy,
-                order: sortOrder,
-                ...search,
-            });
-            const response = await fetchData(queryParams);
-            setData(response.content);
-            setTotalPages(response.totalPages);
-            setTotalElements(response.totalElements);
+            try {
+                const queryParams = new URLSearchParams({
+                    page: currentPage.toString(),
+                    size: pageSize.toString(),
+                    sortBy: sortBy,
+                    order: sortOrder,
+                    ...search,
+                });
+                const response = await fetchData(queryParams);
+                setData(response.content);
+                setTotalPages(response.totalPages);
+                setTotalElements(response.totalElements);
+                // If successful, ensure the error message and modal are not displayed
+                setErrorMessage('');
+                setShowErrorModal(false);
+            } catch (error) {
+                // Handle errors by setting an error message and showing the error modal
+                const message = error.response?.data || 'An unexpected error occurred while fetching the data.';
+                setErrorMessage(message);
+                setShowErrorModal(true);
+            }
         };
         load();
     }, [currentPage, pageSize, search, sortBy, sortOrder, refreshTrigger]);
+
+// ...
+
 
     return (
         <>
