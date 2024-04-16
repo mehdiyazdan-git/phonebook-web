@@ -11,6 +11,7 @@ import AsyncSelectInput from "../form/AsyncSelectInput";
 import SearchInput from "./SearchInput";
 import SelectSearchInput from "../../utils/formComponents/SelectSearchInput";
 import Modal from "react-bootstrap/Modal";
+import {useNavigate} from "react-router-dom";
 
 const Table = ({ columns, fetchData, onEdit, onDelete, refreshTrigger }) => {
     const [data, setData] = useState([]);
@@ -24,6 +25,7 @@ const Table = ({ columns, fetchData, onEdit, onDelete, refreshTrigger }) => {
     const [selectedItem, setSelectedItem] = useState(null);
     const [errorMessage, setErrorMessage] = useState('');
     const [showErrorModal, setShowErrorModal] = useState(false);
+    const navigate = useNavigate();
 
     const initialSearchState = useMemo(() => columns.reduce((acc, column) => {
         if (column.searchable) {
@@ -59,34 +61,56 @@ const Table = ({ columns, fetchData, onEdit, onDelete, refreshTrigger }) => {
     const handleDeleteConfirm = async () => {
         if (selectedItem) {
             try {
-                await onDelete(selectedItem);
-                setShowConfirmationModal(false);
-                setSelectedItem(null);
-                setErrorMessage('');
+                const errorMessage = await onDelete(selectedItem);
+                if (errorMessage) {
+                    setErrorMessage(errorMessage);
+                    setShowErrorModal(true); // Show the error modal
+                } else {
+                    setShowConfirmationModal(false);
+                    setSelectedItem(null);
+                    setErrorMessage('');
+                }
             } catch (error) {
-                console.log(error)
-                setErrorMessage(error.response.data || 'Error occurred while deleting the item.');
-                setShowErrorModal(true); // Show the error modal
+                if (error.response){
+                    setErrorMessage(error.response.data);
+                    setShowErrorModal(true);
+                }
             }
         }
     };
 
+    // ...
+
     useDeepCompareEffect(() => {
         const load = async () => {
-            const queryParams = new URLSearchParams({
-                page: currentPage.toString(),
-                size: pageSize.toString(),
-                sortBy: sortBy,
-                order: sortOrder,
-                ...search,
-            });
-            const response = await fetchData(queryParams);
-            setData(response.content);
-            setTotalPages(response.totalPages);
-            setTotalElements(response.totalElements);
+            try {
+                const queryParams = new URLSearchParams({
+                    page: currentPage.toString(),
+                    size: pageSize.toString(),
+                    sortBy: sortBy,
+                    order: sortOrder,
+                    ...search,
+                });
+                const response = await fetchData(queryParams);
+                if (response.content){
+                    setData(response.content);
+                    setTotalPages(response.totalPages);
+                    setTotalElements(response.totalElements);
+                    setErrorMessage('');
+                    setShowErrorModal(false);
+                }
+            } catch (error) {
+                if (error.response){
+                    setErrorMessage(error.response.data || 'Error occurred while fetching data.');
+                    setShowErrorModal(true); // Show the error modal
+                }
+            }
         };
         load();
     }, [currentPage, pageSize, search, sortBy, sortOrder, refreshTrigger]);
+
+// ...
+
 
     return (
         <>

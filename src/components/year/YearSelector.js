@@ -6,10 +6,24 @@ const YearSelect = ({ onChange, value }) => {
     const http = useHttp();
 
     const getYearSelect = async () => {
-        const response = await http.get(`/years/select`);
-        console.log(response.data)
-        return response.data.map(year => ({ value: year.id, label: year.name, startingLetterNumber: year.startingLetterNumber }));
+        try {
+            const response = await http.get(`/years/select`);
+            console.log(response.data);
+            return response.data.map(year => ({
+                value: year.id,
+                label: year.name,
+                startingLetterNumber: year.startingLetterNumber
+            }));
+        } catch (error) {
+            if (error.message === "Request failed with status code 400") {
+                console.error("اطلاعات وارد شده صحیح نمی‌باشد.");
+                return [];
+            }
+            console.error('Error fetching years:', error);
+            return [];
+        }
     };
+
 
     const loadOptions = (inputValue, callback) => {
         getYearSelect().then(options => {

@@ -1,25 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import styled from "styled-components";
 import {NavLink, Outlet, useLocation, useNavigate} from "react-router-dom";
-import NewCompanyForm from "./NewCompanyForm";
-import Button from "../../utils/Button";
 import useHttp from "../../hooks/useHttp";
-import { saveAs } from 'file-saver';
-import {SiMicrosoftexcel} from "react-icons/si";
 import "./company.css"
-import DownloadExcelIcon from "../assets/icons/DownloadExcelIcon";
 
 const LayoutWrapper = styled.div`
   display: flex;
   flex-direction: row;
-  
 `;
 
 const Sidebar = styled.aside`
   width: 180px;
   background: rgba(52, 58, 64, 0.42);
   color: white;
-  height: 100%;
+  height: calc(100vh - 100px);
   overflow-y: auto; // Allows scrolling of the Sidebar independently if needed
 `;
 
@@ -54,7 +48,6 @@ const SidebarLink = styled(NavLink)`
 const CompanyPage = () => {
     const [companies, setCompanies] = useState([]);
     const navigate = useNavigate();
-    const [showModal, setShowModal] = useState(false);
     const http = useHttp();
     const location = useLocation();
 
@@ -62,79 +55,65 @@ const CompanyPage = () => {
         return await http.get(`/companies/select?queryParam=${queryParam ? queryParam : ''}`);
     };
 
-    const handleAddCompany = async (newCompany) => {
-        const response = await http.post("/companies",newCompany);
-        if (response.status === 201) {
-            setCompanies([...companies, response.data]);
-        }
-        setCompanies([...companies, response.data]);
-    };
-
-
     useEffect(() => {
         async function loadData() {
-            return await getCompanySelect().then(response => response.data);
-        }
-        loadData().then(data => {
-            setCompanies(data);
-            if (data.length > 0) {
-                navigate(`${data[0].id}`);
+            try {
+                const response = await getCompanySelect();
+                const data = response.data;
+                setCompanies(data);
+                if (!Array.isArray(data)) {
+                    if (!data.length > 0) {
+                        navigate(`${data[0].id}`)
+                    } else {
+                        navigate('/companies/empty-page',{
+                            state: { message: 'شرکتی وجود ندارد' },
+                            replace: true,
+                        })
+                    }
+                    sessionStorage.setItem('company-location', location.pathname);
+                }
+            } catch (error) {
+                if (error.request) {
+                    navigate('/login');
+                }
+                if (error.response){
+                    navigate('/companies/empty-page',{
+                        state: { message: 'شرکتی وجود ندارد' },
+                        replace: true,
+                    })
+                }
             }
-            sessionStorage.setItem('company-location', location.pathname);
-        });
+        }
+        loadData();
     }, []);
-
-    // useEffect(() => {
-    //     async function loadData() {
-    //         return await getCompanySelect().then(response => response.data);
-    //     }
-    //     loadData().then(data => {
-    //         setCompanies(data);
-    //
-    //         // Check for previously selected company ID
-    //         const selectedCompanyId = sessionStorage.getItem('selectedCompanyId');
-    //         if (selectedCompanyId && data.some(company => company.id === selectedCompanyId)) {
-    //             navigate(`/companies/${selectedCompanyId}`); // Navigate to stored company
-    //         } else if (data.length > 0) {
-    //             navigate(`${data[0].id}`); // Fallback to first company
-    //             sessionStorage.setItem('selectedCompanyId', data[0].id); // Update session storage
-    //         }
-    //
-    //         sessionStorage.setItem('company-location', location.pathname); // Store company path
-    //     });
-    // }, []);
-
-
-
-
-    async function downloadExcelFile() {
-        await http.get('/companies/download-all-companies.xlsx',{ responseType: 'blob' })
-            .then((response) => response.data)
-            .then((blobData) => {
-                saveAs(blobData, "companies.xlsx");
-            })
-            .catch((error) => {
-                console.error('Error downloading file:', error);
-            });
-    }
 
     return (
         <div>
             <LayoutWrapper>
                 <Sidebar>
-                    <Button variant="primary" onClick={() => setShowModal(true)}>
-                        جدید
-                    </Button>
-                    <DownloadExcelIcon downloadExcelFile={downloadExcelFile}/>
-                    <NewCompanyForm onAddCompany={handleAddCompany} show={showModal} onHide={() => setShowModal(false)}/>
-                    {companies.map(company =>
-                        <SidebarLink
-                            key={company.id}
-                            to={`${company.id}`}
-                        >
-                            {company.name}
-                        </SidebarLink>
-                    )}
+                    {Array.isArray(companies) && companies.length > 0 ?
+                        companies.map(company =>
+                            <SidebarLink
+                                key={company.id}
+                                to={`${company.id}`}
+                            >
+                                {company.name}
+                            </SidebarLink>
+                        ) : <div
+                            style={{
+                                marginTop:"20px",
+                                fontFamily:"IRANSansBold",
+                                fontSize:"0.8rem",
+                                borderRadius:"10px",
+                                backgroundColor:"#4c4c4c",
+                                color:"#b76513",
+                                textIndent:"5px",
+                                margin:""
+                        }}>
+                            {"هیچ رکوردی یافت نشد."}
+                    </div>
+                    }
+
                 </Sidebar>
                 <Content>
                     <Outlet/>

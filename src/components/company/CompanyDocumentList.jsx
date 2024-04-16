@@ -4,7 +4,7 @@ import {RiDeleteBin6Line} from "react-icons/ri";
 import { saveAs } from 'file-saver';
 import ConfirmationModal from "../table/ConfirmationModal";
 import DropZoneUploader from "../person/document/DropZoneUploader";
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import useHttp from "../../hooks/useHttp";
 import FileTypeIcon from "../assets/icons/FileTypeIcon";
 
@@ -15,15 +15,24 @@ const CompanyDocumentList = ({onHide }) => {
     const [selectedDocumentId, setSelectedDocumentId] = useState(null);
     const [showConfirmationModal, setShowConfirmationModal] = React.useState(false);
     const http = useHttp();
+    const navigate = useNavigate();
 
     const deleteDocument = async (id) => {
         return await http.delete(`/documents/${id}`);
     };
     useEffect(() => {
         const fetchData = async (companyId) => {
-            return  await http.get(`/documents/by-company-id/${companyId}`);
+            try {
+                const response = await http.get(`/documents/by-company-id/${companyId}`);
+                setDocuments(response.data);
+            } catch (error) {
+                navigate("/login");
+            }
         };
-        fetchData(Number(companyId)).then(response => setDocuments(response.data));
+
+        if (companyId) {
+            fetchData(Number(companyId));
+        }
     }, [companyId, http, refreshTrigger]);
 
     const handleDeleteConfirm = async () => {

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { extensionToType } from "../../../utils/documentUtils";
 import useHttp from "../../../hooks/useHttp";
+import {useNavigate} from "react-router-dom";
 
 const DropZoneUploader = ({ personId, companyId, letterId, refreshTrigger, setRefreshTrigger, onHide }) => {
     const [uploadProgress, setUploadProgress] = useState(null);
@@ -9,15 +10,22 @@ const DropZoneUploader = ({ personId, companyId, letterId, refreshTrigger, setRe
     const [fileSizeError, setFileSizeError] = useState(false);
     const [maxUploadFileSize, setMaxUploadFileSize] = useState(null);
     const http = useHttp();
+    const navigate = useNavigate(); // Initialize navigate function
 
     useEffect(() => {
-        // Fetch the maximum upload file size setting
         http.get('/settings/max-upload-file-size')
             .then(response => {
+                if (response && response.status === 403){
+                    navigate("/login")
+                }
                 setMaxUploadFileSize(response.data);
             })
             .catch(error => {
                 console.error('Error fetching max upload file size:', error);
+                if (error.response && error.response.status === 403){
+                    navigate("/login")
+                }
+
             });
     }, [http]);
 
@@ -41,13 +49,6 @@ const DropZoneUploader = ({ personId, companyId, letterId, refreshTrigger, setRe
             formData.append('letterId', letterId);
 
         try {
-            for (let progress = 0; progress <= 100; progress += 2) {
-                await new Promise(resolve => setTimeout(resolve, 50));
-                setUploadProgress(progress);
-            }
-
-            await new Promise(resolve => setTimeout(resolve, 500));
-
             await http.post('/documents', formData, {
                 onUploadProgress: (progressEvent) => {
                     const { loaded, total } = progressEvent;
@@ -65,6 +66,9 @@ const DropZoneUploader = ({ personId, companyId, letterId, refreshTrigger, setRe
             }, 3000);
         } catch (error) {
             console.error('Error uploading file:', error);
+            if (error.response && error.response.status === 403) {
+                navigate('/login'); // Redirect to login page on 403 error
+            }
         }
     };
 

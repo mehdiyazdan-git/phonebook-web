@@ -12,6 +12,9 @@ import {formatNumber} from "../../utils/util-functions";
 import moment from "jalali-moment";
 import {Col, Row} from "react-bootstrap";
 import ButtonContainer from "../../utils/formComponents/ButtonContainer";
+import IconAttach from "../assets/icons/IconAttach";
+import {SiMicrosoftexcel} from "react-icons/si";
+import NewPersonForm from "../person/NewPersonForm";
 
 const toShamsi = (date) => {
     return date ? moment(date, 'YYYY-MM-DD').format('jYYYY/jMM/jDD') : '';
@@ -70,6 +73,25 @@ const InsuranceSlips = () => {
         await removeInsuranceSlip(id);
         setRefreshTrigger(!refreshTrigger);
     };
+
+    const onUploadFile = async (id,formData) => {
+        return await http.post(`/insurance-slips/${id}/upload-file`, formData)
+            .then(response => {
+                if (response.status === 201){
+                    setRefreshTrigger(!refreshTrigger);
+                    return response;
+                }}
+            )
+    }
+    const onFileDelete = async (id) => {
+        return await http.delete(`/insurance-slips/${id}/delete-file`)
+            .then((response) => {
+                if (response.status === 204) {
+                    setRefreshTrigger(!refreshTrigger);
+                    return response;
+                }
+            })
+    };
     const convertToPersianCaption = (caption) => {
         const persianCaptions = {
             'INSURANCE_PREMIUM': 'حق بیمه',
@@ -101,6 +123,8 @@ const options = [
         { key: 'amount', title: 'مبلغ(ریال)', width: '10%', sortable: true, searchable: true, render: (item) => formatNumber(item.amount) },
         { key: 'startDate', title: 'از تاریخ', width: '10%', sortable: true, searchable: true , type: 'date', render: (item) => toShamsi(item.startDate) },
         { key: 'endDate', title: 'تا تاریخ', width: '10%', sortable: true, searchable: true, type: 'date', render: (item) => toShamsi(item.endDate)  },
+        { key: 'fileName', title: 'نام فایل', width: '10%', sortable: true, searchable: true },
+        { key: 'fileName', title: 'فایل', width: '2%', render : (item) => item.fileName !== null  ? <IconAttach/> : '' },
     ];
 
 
@@ -118,17 +142,32 @@ const options = [
 
     return (
         <div className="table-container">
-            <Row>
-                <Col>
-
-                </Col>
+            <ButtonContainer
+                lastChild={
+                    <FileUpload
+                        uploadUrl={"/insurance-slips/import"}
+                        setRefreshTrigger={setRefreshTrigger}
+                        refreshTrigger={refreshTrigger}
+                    />
+                }>
+                <Button variant="primary" onClick={() => setShowModal(true)}>
+                    جدید
+                </Button>
+                <Button variant="success" onClick={downloadExcelFile}>
+                    دانلود به Excel
+                </Button>
+                <DownloadTemplate
+                    downloadUrl="/insurance-slips/template"
+                    buttonLabel="فرمت بارگذاری"
+                    fileName="insurance_slip_template.xlsx"
+                />
                 <CreateInsuranceSlipForm
                     onAddInsuranceSlip={handleAddInsuranceSlip}
                     show={showModal}
                     onHide={() => setShowModal(false)}
                     companyId={Number(companyId)}
                 />
-            </Row>
+            </ButtonContainer>
             <Table
                 columns={columns}
                 fetchData={getAllInsuranceSlips}
@@ -149,21 +188,10 @@ const options = [
                         setEditingInsuranceSlip(null);
                         setEditShowModal(false);
                     }}
+                    onUploadFile={onUploadFile}
+                    onFileDelete={onFileDelete}
                 />
             )}
-            <ButtonContainer lastChild={<FileUpload uploadUrl={"/insurance-slips/import"}/>}>
-                <Button variant="primary" onClick={() => setShowModal(true)}>
-                    جدید
-                </Button>
-                <Button variant="success" onClick={downloadExcelFile}>
-                    دانلود به Excel
-                </Button>
-                <DownloadTemplate
-                    downloadUrl="/insurance-slips/template"
-                    buttonLabel="دانلود الگوی فیش بیمه"
-                    fileName="insurance_slip_template.xlsx"
-                />
-            </ButtonContainer>
         </div>
     );
 };

@@ -129,8 +129,18 @@ const Persons = () => {
 
     return (
         <div className="table-container">
-            <ButtonContainer lastChild={<FileUpload uploadUrl={"/persons/import"}/>}>
-                <Button variant="primary" onClick={() => setShowModal(true)}>
+            <ButtonContainer
+                lastChild={
+                        <FileUpload
+                            uploadUrl={"/persons/import"}
+                            setRefreshTrigger={setRefreshTrigger}
+                            refreshTrigger={refreshTrigger}
+                        />
+            }>
+                <Button
+                    variant="primary"
+                    onClick={() => setShowModal(true)}
+                >
                     جدید
                 </Button>
                 <SiMicrosoftexcel

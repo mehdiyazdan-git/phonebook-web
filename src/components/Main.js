@@ -37,9 +37,10 @@ import AdminPanel from "./admin/AdminPanel";
 import ShareHolders from "./ShareHolder/ShareHolders";
 import InsuranceSlips from "./InsuranceSlip/InsuranceSlips";
 import TaxPaymentSlips from "./TaxPaymentSlip/TaxPaymentSlips";
+import RequireRole from "./auth/RequireRole";
+import EmptyCompanyPage from "./company/EmptyCompanyPage";
 
 const Main = () => {
-
     const navigate = useNavigate();
     const [innerTimeout,setInnerTimeout] = useState(1200000);
 
@@ -69,6 +70,7 @@ const Main = () => {
                                 <Route path="shareholders" element={<ShareHolders/>}/>
                                 <Route path="insurance-documents" element={<InsuranceSlips/>}/>
                                 <Route path="tax-documents" element={<TaxPaymentSlips/>}/>
+                                <Route path="empty-page" element={<EmptyCompanyPage/>}/>
                                 <Route path="*" element={<NotFoundPage/>}/>
                             </Route>
                         </Route>
@@ -97,21 +99,14 @@ const Main = () => {
                         <Route path="/board-members/create" element={<CreateBoardMemberForm/>}/>
                         <Route path="/board-members/:boardMemberId/edit" element={<EditBoardMemberForm/>}/>
 
-                        <Route path="/admin" element={<AdminPanel/>}>
-                            <Route path="" element={<UserContainer/>}>
-                                <Route index path="users" element={<Users/>}/>
-                                <Route path="*" element={<NotFoundPage/>}/>
+                        <Route element={<RequireRole roles={['ADMIN']} />}>
+                            <Route path="/admin" element={<AdminPanel />}>
+                                <Route path="access-denied" element={<AccessDenied />} />
                             </Route>
-                            <Route path="year" index element={<FiscalYear/>}/>
+                            <Route path="*" element={<NotFoundPage />} />
                         </Route>
-
                         <Route path="/year" index element={<FiscalYear/>}/>
                     </Route>
-                    <Route path="users"
-                           element={
-                               (role && role ==="ADMIN")
-                                   ? <Users/>
-                                   : <AccessDenied />} />
                 </Route>
                 <Route path="/login" element={<Login />} />
                 <Route path="/server-error" element={<ServerConnectionError />} />

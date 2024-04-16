@@ -6,7 +6,7 @@ import Positions from "../position/Positions";
 import BoardMembers from "../boardmember/BoardMembers";
 import AppSettings from "../AppSettings/AppSettings";
 import Companies from "../company/Companies";
-
+import VirtualMachines from "../VirtualMachines/VirtualMachines";
 
 const LayoutWrapper = styled.div`
   display: flex;
@@ -17,7 +17,7 @@ const Sidebar = styled.aside`
   width: 180px;
   background: rgba(52, 58, 64, 0.42);
   color: white;
-  height: 70vh;
+  height: calc(100vh - 2.5rem);
   overflow-y: auto;
 `;
 
@@ -51,10 +51,11 @@ const SidebarLink = styled.div`
 `;
 
 const AdminPanel = () => {
-    const [activeTab, setActiveTab] = useState('users');
+    const [activeTab, setActiveTab] = useState(sessionStorage.getItem('activeTab') || 'users');
 
     const handleTabClick = (tab) => {
         setActiveTab(tab);
+        sessionStorage.setItem('activeTab', tab);  // Save the active tab to localStorage
     };
 
     return (
@@ -68,13 +69,16 @@ const AdminPanel = () => {
                         شرکت ها
                     </SidebarLink>
                     <SidebarLink onClick={() => handleTabClick('year')} className={activeTab === 'year' ? 'active' : ''}>
-                       تنظیمات سال و شماره نامه
+                        تنظیمات سال و شماره نامه
                     </SidebarLink>
                     <SidebarLink onClick={() => handleTabClick('positions')} className={activeTab === 'positions' ? 'active' : ''}>
                         سمت های هیئت مدیره
                     </SidebarLink>
                     <SidebarLink onClick={() => handleTabClick('settings')} className={activeTab === 'settings' ? 'active' : ''}>
                         تنظیمات
+                    </SidebarLink>
+                    <SidebarLink onClick={() => handleTabClick('virtual-machines')} className={activeTab === 'virtual-machines' ? 'active' : ''}>
+                        ماشین های مجازی
                     </SidebarLink>
                 </Sidebar>
                 <Content>
@@ -84,6 +88,7 @@ const AdminPanel = () => {
                     {activeTab === 'positions' && <Positions />}
                     {activeTab === 'board-members' && <BoardMembers />}
                     {activeTab === 'settings' && <AppSettings />}
+                    {activeTab === 'virtual-machines' && <VirtualMachines />}
                 </Content>
             </LayoutWrapper>
         </div>

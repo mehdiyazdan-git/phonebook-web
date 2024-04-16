@@ -56,40 +56,6 @@ const Login = () => {
                         setErrorMessage('سرور دچار مشکل شده است، لطفا بعدا دوباره تلاش کنید');
                         break;
 
-                    case 503:
-                        setErrorMessage('سرویس در حال تعمیر است، لطفا بعدا دوباره تلاش کنید');
-                        break;
-
-                    case 504:
-                        setErrorMessage('گزارش از سرور دریافت نشد، لطفا بعدا دوباره تلاش کنید');
-                        break;
-
-                    case 400:
-                        setErrorMessage('درخواست نامعتبر، لطفا دوباره تلاش کنید');
-                        break;
-
-                    case 403:
-                        setErrorMessage('دسترسی غیر مجاز، لطفا با مدیر سیستم تماس بگیرید');
-                        break;
-
-                    case 405:
-                        setErrorMessage('درخواست نامعتبر، لطفا دوباره تلاش کنید');
-                        break;
-
-                    case 408:
-                        setErrorMessage('درخواست تایم ان تمام شد، لطفا دوباره تلاش کنید');
-                        break;
-
-                    case 413:
-                        setErrorMessage('درخواست بیش از حد انداز شده است، لطفا دوباره تلاش کنید');
-                        break;
-
-                    case 429:
-                        setErrorMessage('تعداد درخواست های زیاد برای سرویس، لطفا بعدا دوباره تلاش کنید');
-                        break;
-                    default:
-                        setErrorMessage('خطایی رخ داده است، لطفاً دوباره تلاش کنید');
-                        break;
                 }
             } else if (error.request) {
                 setErrorMessage('خطا در اتصال به سرور، لطفاً دوباره تلاش کنید');

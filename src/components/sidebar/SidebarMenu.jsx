@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from "styled-components";
 import { NavLink } from "react-router-dom";
+import {useAuth} from "../hooks/useAuth";
 
 
 
@@ -34,13 +35,16 @@ const SidebarLink = styled(NavLink)`
 `;
 
 const SidebarMenu = () => {
+    const {role} = useAuth();
 
     return (
         <Sidebar>
             <SidebarLink to={`/persons`}>لیست اشخاص</SidebarLink>
             <SidebarLink to={`/customers`}>لیست گیرندگان</SidebarLink>
             <SidebarLink to={`/companies`}>لیست شرکت ها</SidebarLink>
-            <SidebarLink to="/admin">پنل ادمین</SidebarLink>
+            {role === 'ADMIN' && (
+                <SidebarLink to="/admin">پنل ادمین</SidebarLink>
+            )}
         </Sidebar>
     );
 };

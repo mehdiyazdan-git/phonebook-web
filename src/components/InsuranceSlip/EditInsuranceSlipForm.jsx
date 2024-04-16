@@ -7,14 +7,14 @@ import { TextInput } from "../../utils/formComponents/TextInput";
 import { Form } from "../../utils/Form";
 import { useYupValidationResolver } from "../../hooks/useYupValidationResolver";
 import SelectInput from "../../utils/formComponents/SelectInput";
-import FileUploadForm from "../../utils/formComponents/FileUploadForm";
 import NumberInput from "../../utils/formComponents/NumberInput";
 import AsyncSelectInput from "../form/AsyncSelectInput";
 import useHttp from "../../hooks/useHttp";
 import DateInput from "../../utils/formComponents/DateInput";
 import { saveAs } from 'file-saver';
+import FileComponent from "../file/FileComponent";
 
-const EditInsuranceSlipForm = ({ insuranceSlip, onUpdateInsuranceSlip, show, onHide }) => {
+const EditInsuranceSlipForm = ({ insuranceSlip, onUpdateInsuranceSlip, show, onHide,onUploadFile,onFileDelete }) => {
     const validationSchema = Yup.object().shape({
         issueDate: Yup.date().required('تاریخ صدور الزامیست.'),
         slipNumber: Yup.string().required('شماره فیش الزامیست.'),
@@ -36,24 +36,6 @@ const EditInsuranceSlipForm = ({ insuranceSlip, onUpdateInsuranceSlip, show, onH
     const getCompanySelect = async (queryParam) => {
         return await http.get(`/companies/select?queryParam=${queryParam ? queryParam : ''}`);
     };
-
-    const onSubmitFile = async (formData) => {
-        try {
-            const response = await http.post(`/insurance-slips/${Number(insuranceSlip.id)}/upload-file`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
-            console.log('File uploaded successfully:', response.data);
-            // Update the file preview data
-            const file = formData.get("file");
-            setFileData(file);
-            setFileName(file.name);
-            setFileType(file.type);
-        } catch (error) {
-            console.error('Error uploading file:', error);
-        }
-    }
 
     const onSubmit = (data) => {
         console.log("on form submit: ", data);
@@ -87,6 +69,16 @@ const EditInsuranceSlipForm = ({ insuranceSlip, onUpdateInsuranceSlip, show, onH
             </button>
         );
     };
+    const defaultValues= {
+        id: insuranceSlip.id,
+        issueDate: insuranceSlip.issueDate,
+        slipNumber: insuranceSlip.slipNumber,
+        type: insuranceSlip.type,
+        amount: insuranceSlip.amount,
+        startDate: insuranceSlip.startDate,
+        endDate: insuranceSlip.endDate,
+        companyId: insuranceSlip.companyId,
+    }
 
     return (
         <Modal size={"lg"} show={show}>
@@ -96,7 +88,7 @@ const EditInsuranceSlipForm = ({ insuranceSlip, onUpdateInsuranceSlip, show, onH
             <Modal.Body style={{ backgroundColor: "rgba(240,240,240,0.3)" }}>
                 <div className="container modal-form">
                     <Form
-                        defaultValues={insuranceSlip}
+                        defaultValues={defaultValues}
                         onSubmit={onSubmit}
                         resolver={resolver}
                     >
@@ -150,19 +142,13 @@ const EditInsuranceSlipForm = ({ insuranceSlip, onUpdateInsuranceSlip, show, onH
                             انصراف
                         </Button>
                     </Form>
-                    <hr />
-                    <h4>فایل های ضمیمه</h4>
-                    <DownloadLink fileName={insuranceSlip.fileName} fileExtension={insuranceSlip.fileExtension} />
-
-                    <Row>
-                        <FileUploadForm onSubmit={onSubmitFile}/>
-                        {insuranceSlip.hasFile && (
-                            <Button onClick={downloadScannedCertificate} variant="primary">
-                                Download Scanned Certificate
-                            </Button>
-                        )}
-
-                    </Row>
+                    <hr/>
+                    <FileComponent
+                        taxPaymentSlip={insuranceSlip}
+                        onUploadFile={onUploadFile}
+                        onFileDelete={onFileDelete}
+                        downloadUrl={`/insurance-slips/${insuranceSlip.id}/download-file`}
+                    />
                 </div>
             </Modal.Body>
         </Modal>

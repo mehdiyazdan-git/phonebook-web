@@ -90,11 +90,16 @@ const Companies = () => {
     }
 
     const handleDeleteCompany = async (id) => {
-        const response = await removeCompany(id);
-        if (response.status === 204) {
-            setRefreshTrigger(!refreshTrigger); // Toggle the refresh trigger
-        }
-        // displaying modal error managed inside generic table.
+       try {
+           const response = await removeCompany(id);
+           if (response.status === 204) {
+               setRefreshTrigger(!refreshTrigger); // Toggle the refresh trigger
+           }
+       }catch (error){
+           if (error.response){
+               return error.response.data;
+           }
+       }
     };
 
     const columns = [

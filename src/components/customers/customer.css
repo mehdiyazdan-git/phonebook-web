@@ -12,7 +12,7 @@
 
 .recipient-table th, .recipient-table td {
     padding: 8px;
-    border: 1px solid #ddd;
+    border: 1px solid #d1d0d0;
     text-align: right;
 }
 
@@ -24,9 +24,7 @@
 .recipient-table tr {
     background-color: rgba(250, 251, 254, 0.57);
 }
-/*.recipient-table tr:nth-child(even) {*/
-/*    background-color: #f9f9f9;*/
-/*}*/
+
 
 .recipient-table tr:hover {
     background-color: #f1f1f1;

@@ -9,6 +9,9 @@ import {useLocation, useParams} from "react-router-dom";
 import useHttp from "../../hooks/useHttp";
 import YearSelect from "../year/YearSelector";
 import ButtonContainer from "../../utils/formComponents/ButtonContainer";
+import DownloadTemplate from "../../utils/formComponents/DownloadTemplate";
+import { saveAs } from 'file-saver';
+import FileUpload from "../../utils/formComponents/FileUpload";
 
 
 const toShamsi = (date) => {
@@ -71,6 +74,17 @@ const Letters = () => {
         }
     };
 
+    async function downloadExcelFile() {
+        await http.get('/letters/export', { responseType: 'blob' })
+            .then((response) => response.data)
+            .then((blobData) => {
+                saveAs(blobData, "letters.xlsx");
+            })
+            .catch((error) => {
+                console.error('Error downloading file:', error);
+            });
+    }
+
 
     const handleAddLetter = async (newLetter) => {
         newLetter.letterType = "DRAFT";
@@ -124,7 +138,14 @@ const Letters = () => {
 
     return (
         <div className="table-container">
-            <div className={'d-flex justify-content-start align-content-center mt-3'}>
+            <ButtonContainer
+                lastChild={
+                    <FileUpload
+                        uploadUrl={"/letters/import"}
+                        setRefreshTrigger={setRefreshTrigger}
+                        refreshTrigger={refreshTrigger}
+                    />
+                }>
                 <Button variant="primary" onClick={() => setShowModal(true)}>
                     جدید
                 </Button>
@@ -132,7 +153,15 @@ const Letters = () => {
                     <label className={"label align-content-center m-1 mx-3"}>انتخاب سال</label>
                     <YearSelect value={year} onChange={setYear}/>
                 </div>
-            </div>
+                <Button variant="success" onClick={downloadExcelFile}>
+                    دانلود به Excel
+                </Button>
+                <DownloadTemplate
+                    downloadUrl="/letters/template"
+                    buttonLabel="فرمت بارگذاری"
+                    fileName="template_letters.xlsx"
+                />
+            </ButtonContainer>
             <NewLetterForm
                 onAddLetter={handleAddLetter}
                 show={showModal}

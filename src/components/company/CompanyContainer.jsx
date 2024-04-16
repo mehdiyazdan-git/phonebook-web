@@ -104,9 +104,7 @@ const CompanyContainer = () => {
     return (
         <div>
             <Tabs />
-            <div>
-                <Outlet />
-            </div>
+            <Outlet />
         </div>
     );
 };
