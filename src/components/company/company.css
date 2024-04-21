@@ -117,5 +117,22 @@
     filter: brightness(1.2); /* Increase brightness on hover */
     transition: color 0.3s, filter 0.3s; /* Smooth transition for color and brightness change */
 }
+/* Add this CSS in your component's CSS file or <style> section in your HTML */
+.tab-title {
+    font-family: 'IRANSans', sans-serif;
+}
+/* Stylesheet for customizing tabs */
+
+.tab-title {
+    font-family: 'IRANSansBold', sans-serif;
+    font-size: 0.8rem;
+    transition: background-color 0.3s, color 0.3s;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    background-color: transparent;
+}
+
+
 
 

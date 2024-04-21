@@ -4,7 +4,8 @@ import React, { useState } from "react";
 import IconPowerOff from "./components/assets/icons/IconPoweroff";
 import SidebarMenu from "./components/sidebar/SidebarMenu";
 import styled from "styled-components";
-import {useAuth} from "./components/hooks/useAuth";
+import {useAuth} from "./hooks/useAuth";
+import useHttp from "./hooks/useHttp";
 
 const LayoutWrapper = styled.div`
   display: flex;
@@ -53,12 +54,23 @@ const PageContentWrapper = styled.div`
 function App() {
     const navigate = useNavigate();
     const {currentUser} = useAuth();
+    const http = useHttp();
+    const auth = useAuth();
 
     const handleLogout = (event) => {
         event.preventDefault();
-        localStorage.removeItem("token");
-        navigate("/login");
-    };
+        http.post("/v1/auth/sign-out", {refreshToken : `Bearer ${auth.refreshToken}`
+    })
+            .then((res) => {
+                if (res.status === 204){
+                    localStorage.removeItem("token");
+                    navigate("/login");
+                    console.log(res);
+                }
+            }).catch((err) => {
+            console.log(err);
+        });
+        };
 
     return (
         <LayoutWrapper dir="rtl">

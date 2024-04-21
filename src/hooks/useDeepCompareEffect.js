@@ -1,5 +1,4 @@
-import {useEffect, useRef} from "react";
-import {isEqual} from "lodash";
+import { useEffect, useRef } from 'react';
 
 function useDeepCompareEffect(callback, dependencies) {
     const currentDependenciesRef = useRef();
@@ -8,11 +7,11 @@ function useDeepCompareEffect(callback, dependencies) {
         currentDependenciesRef.current = dependencies;
     }
 
-    useEffect(() => {
-        if (currentDependenciesRef.current) {
-            callback();
-        }
-        callback();
-    }, [currentDependenciesRef.current]);
+    useEffect(callback, [currentDependenciesRef.current]);
 }
+
+function isEqual(objA, objB) {
+    return JSON.stringify(objA) === JSON.stringify(objB);
+}
+
 export default useDeepCompareEffect;

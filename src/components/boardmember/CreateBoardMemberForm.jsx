@@ -4,6 +4,7 @@ import AsyncSelectInput from "../form/AsyncSelectInput";
 import Button from "../../utils/Button";
 import { Alert, Modal } from "react-bootstrap";
 import useHttp from "../../hooks/useHttp";
+import {bodyStyle, headerStyle, titleStyle} from "../../settings/styles";
 
 const CreateBoardMemberForm = ({ show, onHide, onAddBoardMember,companyId }) => {
     const [formError, setFormError] = useState('');
@@ -48,13 +49,13 @@ const CreateBoardMemberForm = ({ show, onHide, onAddBoardMember,companyId }) => 
 
     return (
         <Modal show={show} onHide={handleClose}>
-            <Modal.Header style={{ backgroundColor: "rgba(46, 75, 108, 0.8)" }}>
+            <Modal.Header style={headerStyle}>
                 <Modal.Title
-                    style={{ fontFamily: "IRANSansBold", fontSize: "0.8rem", color: "#ee942d" }}>
+                    style={titleStyle}>
                     {`ایجاد عضو جدید `}
                 </Modal.Title>
             </Modal.Header>
-            <Modal.Body style={{ backgroundColor: "rgba(240,240,240,0.3)" }}>
+            <Modal.Body style={bodyStyle}>
                 <div className="container modal-form">
                     <Form
                         onSubmit={onSubmit}

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import {useAuth} from "../hooks/useAuth";
+import {useAuth} from "../../hooks/useAuth";
 
 const FileUpload = ({ endpoint, onUploadSuccess, onUploadError, allowedExtensions = [], maxSize = 5242880 }) => {
     const [selectedFile, setSelectedFile] = useState(null);

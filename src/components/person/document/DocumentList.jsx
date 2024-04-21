@@ -66,39 +66,41 @@ const DocumentList = ({ personId,onHide }) => {
 
     return (
         <div className="p-0 m-0">
-            <table className="table table-bordered m-0" style={{fontFamily:"IRANSans",fontSize:"0.8rem"}}>
-                <thead>
-                <tr>
-                    <th>شناسه</th>
-                    <th>نام سند</th>
-                    <th>نوع سند</th>
-                    <th>عملیات</th>
-                </tr>
-                </thead>
-                <tbody>
-                {documents.map((document) => (
-                    <tr key={document.id}>
-                        <td width="50px">{document.id}</td>
-                        <td>{document.documentName}</td>
-                        <td>{document.fileExtension}</td>
-                        <td width="250px" className="m-0 p-0" style={{cursor:"pointer"}}>
-                            <IoCloudDownloadOutline className="mx-1" fontSize={"1.3rem"} color={"green"} onClick={() => handleDownload(document)} />
-                            <IoDocumentOutline  className="mx-1" fontSize={"1.3rem"} color={"#3795ed"} onClick={() => handleOpenInNewTab(document)} />
-                            <RiDeleteBin6Line
-                                className="mx-1"
-                                fontSize={"1.3rem"}
-                                color={"red"}
-                                onClick={() => {
-                                    setSelectedDocumentId(document.id)
-                                    setShowConfirmationModal(true)
-                                }}
-                            >
-                            </RiDeleteBin6Line>
-                        </td>
-                    </tr>
-                ))}
-                </tbody>
-            </table>
+           <div style={{padding:"0",margin:"0",overflowX:"auto",height:"400px",border:"1px solid #ddd"}}>
+               <table className="table table-bordered m-0" style={{fontFamily:"IRANSans",fontSize:"0.8rem"}}>
+                   <thead>
+                   <tr>
+                       <th>شناسه</th>
+                       <th>نام سند</th>
+                       <th>نوع سند</th>
+                       <th>عملیات</th>
+                   </tr>
+                   </thead>
+                   <tbody>
+                   {documents.map((document) => (
+                       <tr key={document.id}>
+                           <td width="50px">{document.id}</td>
+                           <td>{document.documentName}</td>
+                           <td>{document.fileExtension}</td>
+                           <td width="250px" className="m-0 p-0" style={{cursor:"pointer"}}>
+                               <IoCloudDownloadOutline className="mx-1" fontSize={"1.3rem"} color={"green"} onClick={() => handleDownload(document)} />
+                               <IoDocumentOutline  className="mx-1" fontSize={"1.3rem"} color={"#3795ed"} onClick={() => handleOpenInNewTab(document)} />
+                               <RiDeleteBin6Line
+                                   className="mx-1"
+                                   fontSize={"1.3rem"}
+                                   color={"red"}
+                                   onClick={() => {
+                                       setSelectedDocumentId(document.id)
+                                       setShowConfirmationModal(true)
+                                   }}
+                               >
+                               </RiDeleteBin6Line>
+                           </td>
+                       </tr>
+                   ))}
+                   </tbody>
+               </table>
+           </div>
             <DropZoneUploader
                 personId={personId}
                 refreshTrigger={refreshTrigger}

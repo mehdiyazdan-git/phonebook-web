@@ -1,10 +1,12 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { Modal } from 'react-bootstrap';
 import { Form } from '../../utils/Form';
 import { TextInput } from '../../utils/formComponents/TextInput';
 import * as yup from 'yup';
 import { useYupValidationResolver } from '../../hooks/useYupValidationResolver';
 import Button from '../../utils/Button';
+import useHttp from "../../hooks/useHttp";
+import {bodyStyle, headerStyle, titleStyle} from "../../settings/styles";
 
 const schema = yup.object({
     name: yup.number()
@@ -22,19 +24,42 @@ const schema = yup.object({
 const EditYearForm = ({ year, onUpdateYear, show, onHide }) => {
     const resolver = useYupValidationResolver(schema);
 
+    const [createAtJalali, setCreateAtJalali] = React.useState('');
+    const [lastModifiedAtJalali, setLastModifiedAtJalali] = React.useState('');
+    const [createByFullName, setCreateByFullName] = React.useState('');
+    const [lastModifiedByFullName, setLastModifiedByFullName] = React.useState('');
+
+    const http = useHttp();
+    const findYearById = async (yearId) => {
+        return await http.get(`/years/${yearId}`).then(r => r.data);
+    }
+
+    useEffect(() => {
+        if (year.id) {
+            findYearById(year.id).then(r => {
+                setCreateAtJalali(r.createAtJalali)
+                setLastModifiedAtJalali(r.lastModifiedAtJalali)
+                setCreateByFullName(r.createByFullName)
+                setLastModifiedByFullName(r.lastModifiedByFullName)
+            });
+        }
+    }, []);
+
+
     const onSubmit = (data) => {
         onUpdateYear(data);
         onHide(); // Hide the modal after submitting
     };
 
+
     return (
         <Modal size={'lg'} show={show}>
-            <Modal.Header style={{ backgroundColor: 'rgba(63,51,106,0.6)' }}>
-                <Modal.Title style={{ fontFamily: 'IRANSansBold', fontSize: '0.8rem', color: '#fff' }}>
+            <Modal.Header style={headerStyle}>
+                <Modal.Title style={titleStyle}>
                     ویرایش سال
                 </Modal.Title>
             </Modal.Header>
-            <Modal.Body style={{ backgroundColor: 'rgba(240,240,240,0.3)' }}>
+            <Modal.Body style={bodyStyle}>
                 <div className="container modal-form">
                     <Form
                         defaultValues={year}
@@ -52,6 +77,20 @@ const EditYearForm = ({ year, onUpdateYear, show, onHide }) => {
                         </Button>
                     </Form>
                 </div>
+                <hr/>
+               <div className="row mt-3 mb-0" style={{
+                   fontFamily: 'IRANSans',
+                   fontSize: '0.8rem',
+                   marginBottom:0
+               }}>
+                   <div className="col">
+                       <p>{`ایجاد : ${createByFullName}`} | {` ${createAtJalali}`}</p>
+                   </div>
+                   <div className="col">
+                       <p>{`آخرین ویرایش : ${lastModifiedByFullName}`} | {`${lastModifiedAtJalali}`}</p>
+                   </div>
+               </div>
+
             </Modal.Body>
         </Modal>
     );

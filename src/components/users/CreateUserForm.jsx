@@ -6,6 +6,7 @@ import {Form} from "../../utils/Form";
 import {TextInput} from "../../utils/formComponents/TextInput";
 import SelectInput from "../../utils/formComponents/SelectInput";
 import Button from "../../utils/Button";
+import {bodyStyle, headerStyle, titleStyle} from "../../settings/styles";
 
 const schema = yup.object({
     firstname: yup.string().required('نام الزامیست.'),
@@ -26,10 +27,10 @@ const CreateUserForm = ({ onAddUser, show, onHide }) => {
     };
     return (
         <Modal size="lg" show={show} onHide={onHide}>
-            <Modal.Header style={{ backgroundColor: "rgba(63,51,106,0.6)" }}>
-                <Modal.Title style={{ fontFamily: "IRANSansBold", fontSize: "0.8rem", color: "#fff" }}>افزودن کاربر جدید</Modal.Title>
+            <Modal.Header style={headerStyle}>
+                <Modal.Title style={titleStyle}>افزودن کاربر جدید</Modal.Title>
             </Modal.Header>
-            <Modal.Body>
+            <Modal.Body style={bodyStyle}>
                 <Form
                     defaultValues={{
                         firstname: '',

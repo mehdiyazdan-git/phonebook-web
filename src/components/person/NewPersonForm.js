@@ -11,6 +11,7 @@ import moment from "jalali-moment";
 import { verifyIranianNationalId } from "@persian-tools/persian-tools";
 import {NationalIdInput} from "../../utils/formComponents/NationalIdInput";
 import {PhoneNumberInput} from "../../utils/formComponents/PhoneNumberInput";
+import {bodyStyle, headerStyle, titleStyle} from "../../settings/styles";
 
 
 
@@ -38,7 +39,9 @@ const NewPersonForm = ({onAddPerson, show, onHide}) => {
             ...data,
             birthDate: formattedDate
         }
-        console.log("on form submit: ", formData);
+        if (formData.birthDate === 'Invalid date') {
+            formData.birthDate = '';
+        }
         onAddPerson(formData);
         onHide();
     };
@@ -46,11 +49,11 @@ const NewPersonForm = ({onAddPerson, show, onHide}) => {
 
     return (
         <Modal size={"lg"} show={show}>
-            <Modal.Header style={{backgroundColor: "rgba(63,51,106,0.6)"}}>
-                <Modal.Title style={{fontFamily: "IRANSansBold", fontSize: "0.8rem", color: "#fff"}}>ایجاد فرد
+            <Modal.Header style={headerStyle}>
+                <Modal.Title style={titleStyle}>ایجاد فرد
                     جدید</Modal.Title>
             </Modal.Header>
-            <Modal.Body style={{backgroundColor: "rgba(240,240,240,0.3)"}}>
+            <Modal.Body style={bodyStyle}>
                 <div className="container modal-form">
                     <Form
                         defaultValues={{

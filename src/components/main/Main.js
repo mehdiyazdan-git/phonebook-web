@@ -1,44 +1,43 @@
 import React, {useState} from 'react';
 import {Route, Routes, useNavigate} from "react-router-dom";
-import App from "../App";
-import NewPersonForm from "./person/NewPersonForm";
-import EditPersonForm from "./person/EditPersonForm";
-import NewLetterForm from "./letters/NewLetterForm";
-import EditLetterForm from "./letters/EditLetterForm";
-import NotFoundPage from "./senders/NotFoundPage";
-import FiscalYear from "./year/FiscalYear";
-import Letters from "./letters/Letters";
-import Persons from "./person/Persons";
-import NewCompanyForm from "./company/NewCompanyForm";
-import CreateCustomerForm from "./customers/CreateCustomerForm";
-import Customers from "./customers/Customers";
-import EditCustomerForm from "./customers/EditCustomerForm";
-import CompanyPage from "./company/CompanyPage";
-import CompanyContainer from "./company/CompanyContainer";
-import EditCompanyForm from "./company/EditCompanyForm";
-import Positions from "./position/Positions";
-import CreatePositionForm from "./position/CreatePositionForm";
-import EditPositionForm from "./position/EditPositionForm";
-import BoardMembers from "./boardmember/BoardMembers";
-import CreateBoardMemberForm from "./boardmember/CreateBoardMemberForm";
-import EditBoardMemberForm from "./boardmember/EditBoardMemberForm";
-import CompanyDocumentList from "./company/CompanyDocumentList";
-import RequireAuth from "./auth/RequireAuth";
-import Users from "./users/Users";
-import Login from "./auth/Login";
-import {useAuth} from "./hooks/useAuth";
-import AccessDenied from "./AccessDenied";
-import ServerConnectionError from "./ServerConnectionError";
-import {IdleTimeoutProvider} from "./contexts/IdleTimeoutProvider";
-import CreateUserForm from "./users/CreateUserForm";
-import EditUserForm from "./users/EditUserForm";
-import UserContainer from "./admin/UserContainer";
-import AdminPanel from "./admin/AdminPanel";
-import ShareHolders from "./ShareHolder/ShareHolders";
-import InsuranceSlips from "./InsuranceSlip/InsuranceSlips";
-import TaxPaymentSlips from "./TaxPaymentSlip/TaxPaymentSlips";
-import RequireRole from "./auth/RequireRole";
-import EmptyCompanyPage from "./company/EmptyCompanyPage";
+import App from "../../App";
+import NewPersonForm from "../person/NewPersonForm";
+import EditPersonForm from "../person/EditPersonForm";
+import NewLetterForm from "../letters/NewLetterForm";
+import EditLetterForm from "../letters/EditLetterForm";
+
+import FiscalYear from "../year/FiscalYear";
+import Letters from "../letters/Letters";
+import Persons from "../person/Persons";
+import NewCompanyForm from "../company/NewCompanyForm";
+import CreateCustomerForm from "../customers/CreateCustomerForm";
+import Customers from "../customers/Customers";
+import EditCustomerForm from "../customers/EditCustomerForm";
+import CompanyPage from "../company/CompanyPage";
+import CompanyContainer from "../company/CompanyContainer";
+import EditCompanyForm from "../company/EditCompanyForm";
+import Positions from "../position/Positions";
+import CreatePositionForm from "../position/CreatePositionForm";
+import EditPositionForm from "../position/EditPositionForm";
+import BoardMembers from "../boardmember/BoardMembers";
+import CreateBoardMemberForm from "../boardmember/CreateBoardMemberForm";
+import EditBoardMemberForm from "../boardmember/EditBoardMemberForm";
+import CompanyDocumentList from "../company/CompanyDocumentList";
+import RequireAuth from "../auth/RequireAuth";
+import Users from "../users/Users";
+import Login from "../auth/Login";
+import {useAuth} from "../../hooks/useAuth";
+import AccessDenied from "../auth/AccessDenied";
+import ServerConnectionError from "../auth/ServerConnectionError";
+import {IdleTimeoutProvider} from "../contexts/IdleTimeoutProvider";
+import CreateUserForm from "../users/CreateUserForm";
+import EditUserForm from "../users/EditUserForm";
+import AdminPanel from "../admin/AdminPanel";
+import ShareHolders from "../ShareHolder/ShareHolders";
+import InsuranceSlips from "../InsuranceSlip/InsuranceSlips";
+import TaxPaymentSlips from "../TaxPaymentSlip/TaxPaymentSlips";
+import RequireRole from "../auth/RequireRole";
+import EmptyCompanyPage from "../company/EmptyCompanyPage";
 
 const Main = () => {
     const navigate = useNavigate();
@@ -71,7 +70,7 @@ const Main = () => {
                                 <Route path="insurance-documents" element={<InsuranceSlips/>}/>
                                 <Route path="tax-documents" element={<TaxPaymentSlips/>}/>
                                 <Route path="empty-page" element={<EmptyCompanyPage/>}/>
-                                <Route path="*" element={<NotFoundPage/>}/>
+
                             </Route>
                         </Route>
 
@@ -103,7 +102,7 @@ const Main = () => {
                             <Route path="/admin" element={<AdminPanel />}>
                                 <Route path="access-denied" element={<AccessDenied />} />
                             </Route>
-                            <Route path="*" element={<NotFoundPage />} />
+
                         </Route>
                         <Route path="/year" index element={<FiscalYear/>}/>
                     </Route>

@@ -3,7 +3,7 @@ import IconEdit from '../assets/icons/IconEdit';
 import IconDeleteOutline from '../assets/icons/IconDeleteOutline';
 import Pagination from '../pagination/Pagination';
 import ConfirmationModal from './ConfirmationModal';
-import useDeepCompareEffect from "../hooks/useDeepCompareEffect";
+import useDeepCompareEffect from "../../hooks/useDeepCompareEffect";
 import {useMemo, useState} from "react";
 import Th from "./Th";
 import SearchDateInput from "./SearchDateInput";
@@ -100,9 +100,11 @@ const Table = ({ columns, fetchData, onEdit, onDelete, refreshTrigger }) => {
                     setShowErrorModal(false);
                 }
             } catch (error) {
+                console.log("table is reporting an error:", error);
                 if (error.response){
-                    setErrorMessage(error.response.data || 'Error occurred while fetching data.');
-                    setShowErrorModal(true); // Show the error modal
+                   if (error.response.status === 403 && error.code === "ERR_BAD_REQUEST"){
+                       navigate('/login');
+                   }
                 }
             }
         };

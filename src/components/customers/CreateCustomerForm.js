@@ -11,6 +11,7 @@ import Button from "../../utils/Button";
 import moment from "jalali-moment";
 import { verifyIranianLegalId } from "@persian-tools/persian-tools";
 import { LegalIdInput } from "../../utils/formComponents/LegalIdInput";
+import {bodyStyle, headerStyle, titleStyle} from "../../settings/styles";
 
 const CreateCustomerForm = ({ customer, onAddCustomer, show, onHide }) => {
 
@@ -59,10 +60,10 @@ const CreateCustomerForm = ({ customer, onAddCustomer, show, onHide }) => {
 
     return (
         <Modal size={"lg"} show={show}>
-            <Modal.Header style={{ backgroundColor: "rgba(46, 75, 108, 0.8)" }}>
-                <Modal.Title style={{ fontFamily: "IRANSansBold", fontSize: "0.8rem", color: "#fff" }}>جدید</Modal.Title>
+            <Modal.Header style={headerStyle}>
+                <Modal.Title style={titleStyle}>جدید</Modal.Title>
             </Modal.Header>
-            <Modal.Body style={{ backgroundColor: "rgba(240,240,240,0.3)" }}>
+            <Modal.Body style={bodyStyle}>
                 <div className="container modal-form">
                     <Form
                         defaultValues={customer}

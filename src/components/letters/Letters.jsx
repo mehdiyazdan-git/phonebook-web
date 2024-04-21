@@ -12,43 +12,92 @@ import ButtonContainer from "../../utils/formComponents/ButtonContainer";
 import DownloadTemplate from "../../utils/formComponents/DownloadTemplate";
 import { saveAs } from 'file-saver';
 import FileUpload from "../../utils/formComponents/FileUpload";
+import getCurrentYear from "../../utils/functions/getCurrentYear";
+
 
 
 const toShamsi = (date) => {
     return date ? moment(date, 'YYYY-MM-DD').format('jYYYY/jMM/jDD') : '';
 };
 
+
 const Letters = () => {
     const http = useHttp();
+    const [years, setYears] = useState([]);
     const { companyId } = useParams();
     const [editingLetter, setEditingLetter] = useState(null);
     const [refreshTrigger, setRefreshTrigger] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [showEditModal, setEditShowModal] = useState(false);
-
     const location = useLocation();
     const letterType = location.pathname.split('/').pop();
-
-    const initialYear = JSON.parse(sessionStorage.getItem('selectedYear'));
-    const [year, setYear] = useState(initialYear);
-
-    // Store the year in session storage when it changes
-    useEffect(() => {
-        if (year !== null) {
-            sessionStorage.setItem('selectedYear', JSON.stringify(year));
-        }
-    }, [year]);
-
-    // Refresh the component each time the location changes or year changes
-    useEffect(() => {
-        setRefreshTrigger(prev => !prev);
-    }, [location, year]); // Add year as a dependency
+    const [selectedYear, setSelectedYear] = useState();
 
 
-
-    const getAllByCompanyId = async (companyId, queryParams) => {
-        return await http.get(`/letters/pageable?companyId=${Number(companyId)}&yearId=${year ? Number(year.value) : 3}&${queryParams.toString()}`);
+    const SelectYear = () => {
+        return (
+            <div className="select-year">
+                <select
+                    className="form-control"
+                    value={selectedYear}
+                    style={{fontFamily:"IRANSans",fontSize:"0.8rem"}}
+                    onChange={(e) => {
+                        setSelectedYear(e.target.value);
+                        sessionStorage.setItem('selectedYear', e.target.value);
+                        setRefreshTrigger(!refreshTrigger);
+                    }}
+                >
+                    {years.map(year => (
+                        <option key={year.value} value={year.value} style={{fontFamily:"IRANSans",fontSize:"0.8rem"}}>
+                            {year.label}
+                        </option>
+                    ))}
+                </select>
+            </div>
+        );
     };
+
+    const fetchYears = async () => {
+        try {
+            const data = await http.get(`/years/select?searchQuery=`).then(r => r.data);
+            let yearOptions = data.map(year => ({
+                label: year.name,
+                value: year.id,
+                startingLetterNumber: year.startingLetterNumber
+            }));
+
+            // Sort year options in descending order by label
+            yearOptions.sort((a, b) => b.label - a.label);
+            setYears(yearOptions);
+
+            if (!selectedYear) {
+                const storedYear = sessionStorage.getItem('selectedYear');
+                const currentYear = getCurrentYear();
+                const currentYearOption = yearOptions.find(year => year.label === currentYear);
+
+                if (storedYear) {
+                    setSelectedYear(storedYear);
+                } else if (currentYearOption) {
+                    setSelectedYear(currentYearOption.value);
+                    sessionStorage.setItem('selectedYear', currentYearOption.value);
+                } else {
+                    // Set the first item from the sorted array if current year is not found
+                    setSelectedYear(yearOptions[0].value);
+                    sessionStorage.setItem('selectedYear', yearOptions[0].value);
+                }
+            }
+        } catch (e) {
+            console.log(e);
+        }
+    };
+
+    useEffect(() => {
+        fetchYears();
+    }, []);
+
+    useEffect(() => {
+        setRefreshTrigger(prev => !prev)
+    }, [location,selectedYear]);
 
     const createLetter = async (data) => {
         return await http.post("/letters", data);
@@ -63,9 +112,8 @@ const Letters = () => {
     };
 
     const fetchData = async (queryParams) => {
-        if (year) {
-            queryParams.set('yearId', year.value); // Ensure year value is used in fetch query
-        }
+        const sessionStorageYear = sessionStorage.getItem('selectedYear');
+        queryParams.set('yearId', Number(sessionStorageYear));
         queryParams.set('letterType', letterType.toUpperCase());
         if (companyId) {
             return await http.get(`/letters/pageable?companyId=${companyId}&${queryParams.toString()}`).then(r => r.data);
@@ -139,28 +187,17 @@ const Letters = () => {
     return (
         <div className="table-container">
             <ButtonContainer
-                lastChild={
-                    <FileUpload
-                        uploadUrl={"/letters/import"}
-                        setRefreshTrigger={setRefreshTrigger}
-                        refreshTrigger={refreshTrigger}
-                    />
-                }>
+                >
                 <Button variant="primary" onClick={() => setShowModal(true)}>
                     جدید
                 </Button>
                 <div className={"d-flex justify-content-end align-content-center"}>
                     <label className={"label align-content-center m-1 mx-3"}>انتخاب سال</label>
-                    <YearSelect value={year} onChange={setYear}/>
+                    <SelectYear/>
                 </div>
                 <Button variant="success" onClick={downloadExcelFile}>
                     دانلود به Excel
                 </Button>
-                <DownloadTemplate
-                    downloadUrl="/letters/template"
-                    buttonLabel="فرمت بارگذاری"
-                    fileName="template_letters.xlsx"
-                />
             </ButtonContainer>
             <NewLetterForm
                 onAddLetter={handleAddLetter}
@@ -168,6 +205,7 @@ const Letters = () => {
                 onHide={() => setShowModal(false)}
                 companyId={Number(companyId)}
                 letterType={letterType}
+                year={years.find(year => year.value === Number(sessionStorage.getItem('selectedYear')))}
             />
             <Table
                 columns={columns}

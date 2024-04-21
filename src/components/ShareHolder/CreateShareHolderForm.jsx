@@ -11,6 +11,7 @@ import SelectInput from "../../utils/formComponents/SelectInput";
 import useHttp from "../../hooks/useHttp";
 import AsyncSelectInput from "../form/AsyncSelectInput";
 import NumberInput from "../../utils/formComponents/NumberInput";
+import {bodyStyle, headerStyle, titleStyle} from "../../settings/styles";
 
 const CreateShareHolderForm = ({ shareholder, onAddShareHolder, show, onHide, companyId }) => {
     const validationSchema = Yup.object().shape({
@@ -62,10 +63,10 @@ const CreateShareHolderForm = ({ shareholder, onAddShareHolder, show, onHide, co
     };
     return (
         <Modal size={"lg"} show={show}>
-            <Modal.Header style={{ backgroundColor: "rgba(46, 75, 108, 0.8)" }}>
-                <Modal.Title style={{ fontFamily: "IRANSansBold", fontSize: "0.8rem", color: "#fff" }}>جدید</Modal.Title>
+            <Modal.Header style={headerStyle}>
+                <Modal.Title style={titleStyle}>جدید</Modal.Title>
             </Modal.Header>
-            <Modal.Body style={{ backgroundColor: "rgba(240,240,240,0.3)" }}>
+            <Modal.Body style={bodyStyle}>
                 <div className="container modal-form">
                     <Form
                         defaultValues={shareholder}

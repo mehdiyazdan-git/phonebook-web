@@ -4,6 +4,7 @@ import {Form} from "../../utils/Form";
 import AsyncSelectInput from "../../utils/formComponents/AsyncSelectInput";
 import Button from "../../utils/Button";
 import useHttp from "../../hooks/useHttp";
+import {bodyStyle, headerStyle, titleStyle} from "../../settings/styles";
 
 
 const EditBoardMemberForm = ({ boardMember,show,onHide,onUpdateMemberBoard}) => {
@@ -51,10 +52,10 @@ const EditBoardMemberForm = ({ boardMember,show,onHide,onUpdateMemberBoard}) => 
 
     return (
         <Modal show={show}>
-            <Modal.Header>
-                <Modal.Title style={{ fontFamily: "IRANSansBold", fontSize: "0.8rem", color: "#fff" }}>فرم ویرایش اعضاء</Modal.Title>
+            <Modal.Header style={headerStyle}>
+                <Modal.Title style={titleStyle}>فرم ویرایش اعضاء</Modal.Title>
             </Modal.Header>
-            <Modal.Body style={{ backgroundColor: "rgba(240,240,240,0.3)" }}>
+            <Modal.Body style={bodyStyle}>
                 <div className="container modal-form">
                     <Form
                         onSubmit={onSubmit}

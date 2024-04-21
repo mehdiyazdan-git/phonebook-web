@@ -6,6 +6,7 @@ import {Modal} from 'react-bootstrap';
 import { TextInput } from "../../utils/formComponents/TextInput";
 import Button from "../../utils/Button";
 import {Form} from "../../utils/Form";
+import {bodyStyle, headerStyle, titleStyle} from "../../settings/styles";
 
 const CreatePositionForm = ({ show, onHide,onAddPosition }) => {
     const validationSchema = Yup.object().shape({
@@ -21,10 +22,10 @@ const CreatePositionForm = ({ show, onHide,onAddPosition }) => {
 
     return (
         <Modal show={show} onHide={onHide}>
-            <Modal.Header closeButton>
-                <Modal.Title>ایجاد پست جدید</Modal.Title>
+            <Modal.Header style={ headerStyle }>
+                <Modal.Title style={titleStyle}>ایجاد پست جدید</Modal.Title>
             </Modal.Header>
-            <Modal.Body>
+            <Modal.Body style={bodyStyle}>
                 <Form
                     onSubmit={handleSubmit}
                     resolver={resolver}
@@ -37,7 +38,7 @@ const CreatePositionForm = ({ show, onHide,onAddPosition }) => {
                         <Button type="submit" variant="primary">
                             ایجاد
                         </Button>
-                        <Button onClick={onHide} variant="secondary">
+                        <Button onClick={onHide} variant="warning">
                             انصراف
                         </Button>
                     </div>

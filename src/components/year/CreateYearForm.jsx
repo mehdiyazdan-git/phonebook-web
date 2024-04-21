@@ -5,6 +5,7 @@ import { Modal } from 'react-bootstrap';
 import { Form } from '../../utils/Form';
 import { TextInput } from '../../utils/formComponents/TextInput';
 import Button from '../../utils/Button';
+import {bodyStyle, headerStyle, titleStyle} from "../../settings/styles";
 
 const schema = yup.object({
     name: yup.number()
@@ -29,10 +30,10 @@ const CreateYearForm = ({ onAddYear, show, onHide }) => {
 
     return (
         <Modal size="lg" show={show} onHide={onHide}>
-            <Modal.Header style={{ backgroundColor: "rgba(63,51,106,0.6)" }}>
-                <Modal.Title style={{ fontFamily: "IRANSansBold", fontSize: "0.8rem", color: "#fff" }}>افزودن سال جدید</Modal.Title>
+            <Modal.Header style={headerStyle}>
+                <Modal.Title style={titleStyle}>افزودن سال جدید</Modal.Title>
             </Modal.Header>
-            <Modal.Body>
+            <Modal.Body style={bodyStyle}>
                 <Form
                     defaultValues={{ name: '' }}
                     onSubmit={onSubmit}

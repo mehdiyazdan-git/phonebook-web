@@ -12,6 +12,7 @@ import useHttp from "../../hooks/useHttp";
 import AsyncSelectInput from "../form/AsyncSelectInput";
 import NumberInput from "../../utils/formComponents/NumberInput";
 import DateInput from "../../utils/formComponents/DateInput";
+import {bodyStyle, headerStyle, titleStyle} from "../../settings/styles";
 
 const CreateTaxPaymentSlipForm = ({ onAddTaxPaymentSlip, show, onHide, companyId }) => {
     const validationSchema = Yup.object().shape({
@@ -58,10 +59,10 @@ const CreateTaxPaymentSlipForm = ({ onAddTaxPaymentSlip, show, onHide, companyId
     };
     return (
         <Modal size={"lg"} show={show}>
-            <Modal.Header style={{ backgroundColor: "rgba(46, 75, 108, 0.8)" }}>
-                <Modal.Title style={{ fontFamily: "IRANSansBold", fontSize: "0.8rem", color: "#fff" }}>جدید</Modal.Title>
+            <Modal.Header style={headerStyle}>
+                <Modal.Title style={titleStyle}>جدید</Modal.Title>
             </Modal.Header>
-            <Modal.Body  className="glass-effect">
+            <Modal.Body style={bodyStyle}  className="glass-effect">
                 <div className="container modal-form">
                     <Form
                         defaultValues={{

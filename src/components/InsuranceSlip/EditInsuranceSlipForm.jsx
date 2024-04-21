@@ -13,6 +13,7 @@ import useHttp from "../../hooks/useHttp";
 import DateInput from "../../utils/formComponents/DateInput";
 import { saveAs } from 'file-saver';
 import FileComponent from "../file/FileComponent";
+import {bodyStyle, headerStyle, titleStyle} from "../../settings/styles";
 
 const EditInsuranceSlipForm = ({ insuranceSlip, onUpdateInsuranceSlip, show, onHide,onUploadFile,onFileDelete }) => {
     const validationSchema = Yup.object().shape({
@@ -32,6 +33,27 @@ const EditInsuranceSlipForm = ({ insuranceSlip, onUpdateInsuranceSlip, show, onH
     const [fileData, setFileData] = useState(null);
     const [fileName, setFileName] = useState('');
     const [fileType, setFileType] = useState('');
+
+
+    const [createAtJalali, setCreateAtJalali] = React.useState('');
+    const [lastModifiedAtJalali, setLastModifiedAtJalali] = React.useState('');
+    const [createByFullName, setCreateByFullName] = React.useState('');
+    const [lastModifiedByFullName, setLastModifiedByFullName] = React.useState('');
+
+    const findById = async (id)     => {
+        return await http.get(`/insurance-slips/${id}`).then(r => r.data);
+    }
+
+    useEffect(() => {
+        if (insuranceSlip.id) {
+            findById(insuranceSlip.id).then(r => {
+                setCreateAtJalali(r.createAtJalali)
+                setLastModifiedAtJalali(r.lastModifiedAtJalali)
+                setCreateByFullName(r.createByFullName)
+                setLastModifiedByFullName(r.lastModifiedByFullName)
+            });
+        }
+    }, []);
 
     const getCompanySelect = async (queryParam) => {
         return await http.get(`/companies/select?queryParam=${queryParam ? queryParam : ''}`);
@@ -79,13 +101,16 @@ const EditInsuranceSlipForm = ({ insuranceSlip, onUpdateInsuranceSlip, show, onH
         endDate: insuranceSlip.endDate,
         companyId: insuranceSlip.companyId,
     }
+    const customMessages = {
+        noOptionsMessage: () => "هیچ رکوردی یافت نشد.."
+    };
 
     return (
         <Modal size={"lg"} show={show}>
-            <Modal.Header style={{ backgroundColor: "rgba(63,51,106,0.6)" }}>
-                <Modal.Title style={{ fontFamily: "IRANSansBold", fontSize: "0.8rem", color: "#fff" }}>ویرایش</Modal.Title>
+            <Modal.Header style={headerStyle}>
+                <Modal.Title style={titleStyle}>ویرایش</Modal.Title>
             </Modal.Header>
-            <Modal.Body style={{ backgroundColor: "rgba(240,240,240,0.3)" }}>
+            <Modal.Body style={bodyStyle}>
                 <div className="container modal-form">
                     <Form
                         defaultValues={defaultValues}
@@ -131,10 +156,17 @@ const EditInsuranceSlipForm = ({ insuranceSlip, onUpdateInsuranceSlip, show, onH
                                     name={"companyId"}
                                     apiFetchFunction={getCompanySelect}
                                     defaultValue={Number(insuranceSlip.companyId)}
+                                    noOptionsMessage={customMessages.noOptionsMessage}
                                 />
                             </Col>
                         </Row>
-
+                        <hr/>
+                        <FileComponent
+                            taxPaymentSlip={insuranceSlip}
+                            onUploadFile={onUploadFile}
+                            onFileDelete={onFileDelete}
+                            downloadUrl={`/insurance-slips/${insuranceSlip.id}/download-file`}
+                        />
                         <Button variant="success" type="submit">
                             ویرایش
                         </Button>
@@ -143,12 +175,18 @@ const EditInsuranceSlipForm = ({ insuranceSlip, onUpdateInsuranceSlip, show, onH
                         </Button>
                     </Form>
                     <hr/>
-                    <FileComponent
-                        taxPaymentSlip={insuranceSlip}
-                        onUploadFile={onUploadFile}
-                        onFileDelete={onFileDelete}
-                        downloadUrl={`/insurance-slips/${insuranceSlip.id}/download-file`}
-                    />
+                    <div className="row mt-3 mb-0" style={{
+                        fontFamily: 'IRANSans',
+                        fontSize: '0.8rem',
+                        marginBottom: 0
+                    }}>
+                        <div className="col">
+                            <p>{`ایجاد : ${createByFullName}`} | {` ${createAtJalali}`}</p>
+                        </div>
+                        <div className="col">
+                            <p>{`آخرین ویرایش : ${lastModifiedByFullName}`} | {`${lastModifiedAtJalali}`}</p>
+                        </div>
+                    </div>
                 </div>
             </Modal.Body>
         </Modal>

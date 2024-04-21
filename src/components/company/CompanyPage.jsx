@@ -13,7 +13,7 @@ const Sidebar = styled.aside`
   width: 180px;
   background: rgba(52, 58, 64, 0.42);
   color: white;
-  height: calc(100vh - 100px);
+  height: calc(100vh - 2.5rem);
   overflow-y: auto; // Allows scrolling of the Sidebar independently if needed
 `;
 

@@ -7,8 +7,6 @@ import moment from "jalali-moment";
 import Table from "../table/Table";
 import useHttp from "../../hooks/useHttp";
 import { saveAs } from 'file-saver';
-import FileUpload from "../../utils/formComponents/FileUpload";
-import DownloadTemplate from "../../utils/formComponents/DownloadTemplate";
 import ButtonContainer from "../../utils/formComponents/ButtonContainer";
 import {SiMicrosoftexcel} from "react-icons/si";
 import Modal from "react-bootstrap/Modal";
@@ -129,14 +127,7 @@ const Persons = () => {
 
     return (
         <div className="table-container">
-            <ButtonContainer
-                lastChild={
-                        <FileUpload
-                            uploadUrl={"/persons/import"}
-                            setRefreshTrigger={setRefreshTrigger}
-                            refreshTrigger={refreshTrigger}
-                        />
-            }>
+            <ButtonContainer>
                 <Button
                     variant="primary"
                     onClick={() => setShowModal(true)}
@@ -149,12 +140,6 @@ const Persons = () => {
                     className={"m-1"}
                     color={"#41941a"}
                     type="button"
-                />
-
-                <DownloadTemplate
-                    downloadUrl="/persons/template"
-                    buttonLabel="فرمت بارگذاری"
-                    fileName="person_template.xlsx"
                 />
                 <NewPersonForm
                     onAddPerson={handleAddPerson}

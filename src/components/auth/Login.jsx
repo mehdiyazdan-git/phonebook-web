@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { BASE_URL } from "../../config/config";
 import axios from "axios";
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "../../hooks/useAuth";
 import {useLocation, useNavigate} from "react-router-dom";
 import {TextInput} from "../../utils/formComponents/TextInput";
 import Button from "../../utils/Button";

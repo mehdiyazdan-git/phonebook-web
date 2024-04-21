@@ -4,14 +4,14 @@ import useHttp from '../../hooks/useHttp';
 
 const FileUpload = ({ uploadUrl, setRefreshTrigger, refreshTrigger }) => {
     const [file, setFile] = useState(null);
-    const [fileName, setFileName] = useState('انتخاب...');
+    const [fileName, setFileName] = useState('ورود اطلاعات با فایل اکسل...');
     const [uploadStatus, setUploadStatus] = useState('');
     const http = useHttp();
 
     const handleFileChange = (event) => {
         const file = event.target.files[0];
         setFile(file);
-        setFileName(file ? file.name : 'انتخاب...');
+        setFileName(file ? file.name : 'ورود اطلاعات با فایل اکسل...');
         setUploadStatus('');
     };
 

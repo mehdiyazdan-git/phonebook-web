@@ -11,6 +11,7 @@ import NumberInput from "../../utils/formComponents/NumberInput";
 import AsyncSelectInput from "../form/AsyncSelectInput";
 import useHttp from "../../hooks/useHttp";
 import FileComponent from "../file/FileComponent";
+import {bodyStyle, headerStyle, titleStyle} from "../../settings/styles";
 
 const EditShareHolderForm = ({ shareholder, onUpdateShareHolder, show, onHide, onUploadFile, onFileDelete }) => {
     const validationSchema = Yup.object().shape({
@@ -25,6 +26,26 @@ const EditShareHolderForm = ({ shareholder, onUpdateShareHolder, show, onHide, o
     const resolver = useYupValidationResolver(validationSchema);
 
     const http = useHttp();
+
+    const [createAtJalali, setCreateAtJalali] = React.useState('');
+    const [lastModifiedAtJalali, setLastModifiedAtJalali] = React.useState('');
+    const [createByFullName, setCreateByFullName] = React.useState('');
+    const [lastModifiedByFullName, setLastModifiedByFullName] = React.useState('');
+
+    const findById = async (id)     => {
+        return await http.get(`/shareholders/${id}`).then(r => r.data);
+    }
+
+    useEffect(() => {
+        if (shareholder.id) {
+            findById(shareholder.id).then(r => {
+                setCreateAtJalali(r.createAtJalali)
+                setLastModifiedAtJalali(r.lastModifiedAtJalali)
+                setCreateByFullName(r.createByFullName)
+                setLastModifiedByFullName(r.lastModifiedByFullName)
+            });
+        }
+    }, []);
 
     const getCompanySelect = async (queryParam) => {
         return await http.get(`/companies/select?queryParam=${queryParam ? queryParam : ''}`);
@@ -55,10 +76,10 @@ const EditShareHolderForm = ({ shareholder, onUpdateShareHolder, show, onHide, o
 
     return (
         <Modal size={"lg"} show={show}>
-            <Modal.Header style={{ backgroundColor: "rgba(63,51,106,0.6)" }}>
-                <Modal.Title style={{ fontFamily: "IRANSansBold", fontSize: "0.8rem", color: "#fff" }}>ویرایش</Modal.Title>
+            <Modal.Header style={headerStyle}>
+                <Modal.Title style={titleStyle}>ویرایش</Modal.Title>
             </Modal.Header>
-            <Modal.Body style={{ backgroundColor: "rgba(240,240,240,0.3)" }}>
+            <Modal.Body style={bodyStyle}>
                 <div className="container modal-form">
                     <Form
                         defaultValues={defaultValues}
@@ -85,28 +106,31 @@ const EditShareHolderForm = ({ shareholder, onUpdateShareHolder, show, onHide, o
                         </Row>
                         <Row>
                             <Col>
-                                <NumberInput name="numberOfShares" label={"تعداد سهام"} />
+                                <NumberInput name="numberOfShares" label={"تعداد سهام"}/>
                             </Col>
                             <Col>
-                                <NumberInput name="sharePrice" label={"قیمت سهم"} />
+                                <NumberInput name="sharePrice" label={"قیمت سهم"}/>
                             </Col>
 
                         </Row>
                         <Row>
                             <Col>
-                                <TextInput name="percentageOwnership" label={"درصد مالکیت"} />
+                                <TextInput name="percentageOwnership" label={"درصد مالکیت"}/>
                             </Col>
                             <Col>
                                 <SelectInput
                                     name="shareType"
                                     label={"نوع سهم"}
-                                    options={[{ value: 'REGISTERED', label: 'ثبت شده' }, { value: 'BEARER', label: 'حامل' }]}
+                                    options={[{value: 'REGISTERED', label: 'ثبت شده'}, {
+                                        value: 'BEARER',
+                                        label: 'حامل'
+                                    }]}
                                 />
                             </Col>
                         </Row>
                         <Row>
                             <Col>
-                                <TextInput name="id" label={"شناسه"} disabled={true} />
+                                <TextInput name="id" label={"شناسه"} disabled={true}/>
                             </Col>
                         </Row>
 
@@ -125,6 +149,19 @@ const EditShareHolderForm = ({ shareholder, onUpdateShareHolder, show, onHide, o
                         onFileDelete={onFileDelete}
                         downloadUrl={`/shareholders/${shareholder.id}/download-file`}
                     />
+                </div>
+                <hr/>
+                <div className="row mt-3 mb-0" style={{
+                    fontFamily: 'IRANSans',
+                    fontSize: '0.8rem',
+                    marginBottom: 0
+                }}>
+                    <div className="col">
+                        <p>{`ایجاد : ${createByFullName}`} | {` ${createAtJalali}`}</p>
+                    </div>
+                    <div className="col">
+                        <p>{`آخرین ویرایش : ${lastModifiedByFullName}`} | {`${lastModifiedAtJalali}`}</p>
+                    </div>
                 </div>
             </Modal.Body>
         </Modal>

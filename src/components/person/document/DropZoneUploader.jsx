@@ -73,24 +73,9 @@ const DropZoneUploader = ({ personId, companyId, letterId, refreshTrigger, setRe
     };
 
     const handleCancelClick = () => {
-        if (onHide !== null) {
+        if (onHide) {
             onHide();
         }
-    };
-
-    const handleDrop = (event) => {
-        event.preventDefault();
-        setDragging(false);
-
-        const filesArray = event.dataTransfer.files;
-        for (let i = 0; i < filesArray.length; i++) {
-            sendFile(filesArray[i]);
-        }
-    };
-
-    const handleDragOver = (event) => {
-        event.preventDefault();
-        setDragging(true);
     };
 
     const handleFileSelect = (event) => {
@@ -102,25 +87,6 @@ const DropZoneUploader = ({ personId, companyId, letterId, refreshTrigger, setRe
 
     return (
         <div>
-            <div
-                id="dropzone"
-                style={{
-                    margin: '2px',
-                    width: '50%',
-                    height: '150px',
-                    border: dragging ? '2px solid blue' : '1px dotted grey',
-                    textAlign: 'center',
-                    lineHeight: '150px',
-                    verticalAlign: 'middle',
-                    cursor: 'pointer',
-                    fontFamily: 'IRANSans',
-                    fontSize: '0.9rem',
-                }}
-                onDrop={handleDrop}
-                onDragOver={handleDragOver}
-            >
-                {dragging ? 'اینجا فایل را بکشید و رها کنید' : 'فایل را بکشید و در اینجا رها کنید'}
-            </div>
             <input
                 type="file"
                 id="fileElem"
@@ -135,7 +101,7 @@ const DropZoneUploader = ({ personId, companyId, letterId, refreshTrigger, setRe
                        fontSize: '0.7rem',
                    }}
                    htmlFor="fileElem">انتخاب..</label>
-            <button style={{
+            {onHide && <button style={{
                 cursor: 'pointer',
                 fontFamily: 'IRANSans',
                 fontSize: '0.7rem',
@@ -147,7 +113,7 @@ const DropZoneUploader = ({ personId, companyId, letterId, refreshTrigger, setRe
                 setFileSizeError(false);
             }} className="btn btn-warning btn-sm" type="button">
                 انصراف
-            </button>
+            </button>}
             {uploadProgress !== null && (
                 <div style={{
                     cursor: 'pointer',

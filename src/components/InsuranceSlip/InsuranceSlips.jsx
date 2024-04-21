@@ -142,25 +142,13 @@ const options = [
 
     return (
         <div className="table-container">
-            <ButtonContainer
-                lastChild={
-                    <FileUpload
-                        uploadUrl={"/insurance-slips/import"}
-                        setRefreshTrigger={setRefreshTrigger}
-                        refreshTrigger={refreshTrigger}
-                    />
-                }>
+            <ButtonContainer>
                 <Button variant="primary" onClick={() => setShowModal(true)}>
                     جدید
                 </Button>
                 <Button variant="success" onClick={downloadExcelFile}>
                     دانلود به Excel
                 </Button>
-                <DownloadTemplate
-                    downloadUrl="/insurance-slips/template"
-                    buttonLabel="فرمت بارگذاری"
-                    fileName="insurance_slip_template.xlsx"
-                />
                 <CreateInsuranceSlipForm
                     onAddInsuranceSlip={handleAddInsuranceSlip}
                     show={showModal}

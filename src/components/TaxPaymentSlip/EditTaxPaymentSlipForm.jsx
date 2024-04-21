@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import {Col, Modal, Row} from "react-bootstrap";
 import * as Yup from "yup";
@@ -12,9 +12,47 @@ import NumberInput from "../../utils/formComponents/NumberInput";
 import AsyncSelectInput from "../form/AsyncSelectInput";
 import useHttp from "../../hooks/useHttp";
 import FileComponent from "../file/FileComponent";
+import {bodyStyle, headerStyle, titleStyle} from "../../settings/styles";
 
 const EditTaxPaymentSlipForm = ({ taxPaymentSlip, onUpdateTaxPaymentSlip, show, onHide ,onUploadFile,onFileDelete}) => {
     const http = useHttp();
+    const [createAtJalali, setCreateAtJalali] = React.useState('');
+    const [lastModifiedAtJalali, setLastModifiedAtJalali] = React.useState('');
+    const [createByFullName, setCreateByFullName] = React.useState('');
+    const [lastModifiedByFullName, setLastModifiedByFullName] = React.useState('');
+
+    const findById = async (id) => {
+        try {
+            const response = await http.get(`/tax-payment-slips/${id}`);
+            return response.data;
+        } catch (error) {
+            console.error('An error occurred while fetching the tax payment slip:', error);
+            // Handle the error appropriately,
+            // For example, you might want to close the modal or show an error message
+            onHide();
+            // Return null or appropriate fallback data
+            return null;
+        }
+    }
+
+    useEffect(() => {
+        if (taxPaymentSlip.id) {
+            findById(taxPaymentSlip.id)
+                .then(r => {
+                    if (r) { // Make sure the response data is not null
+                        setCreateAtJalali(r.createAtJalali);
+                        setLastModifiedAtJalali(r.lastModifiedAtJalali);
+                        setCreateByFullName(r.createByFullName);
+                        setLastModifiedByFullName(r.lastModifiedByFullName);
+                    }
+                })
+                .catch(error => {
+                    // Handle errors if findById or the .then() block does not catch them
+                    console.error('An error occurred in useEffect while fetching the tax payment slip:', error);
+                    onHide(); // Optionally close the modal
+                });
+        }
+    }, [taxPaymentSlip.id, onHide]); // Add taxPaymentSlip.id and onHide as dependencies
     const validationSchema = Yup.object().shape({
         issueDate: Yup.date().required('تاریخ صدور الزامیست.'),
         slipNumber: Yup.string().required('شماره فیش الزامیست.'),
@@ -46,10 +84,10 @@ const EditTaxPaymentSlipForm = ({ taxPaymentSlip, onUpdateTaxPaymentSlip, show, 
 
     return (
         <Modal size={"lg"} show={show}>
-            <Modal.Header style={{ backgroundColor: "rgba(63,51,106,0.6)" }}>
-                <Modal.Title style={{ fontFamily: "IRANSansBold", fontSize: "0.8rem", color: "#fff" }}>ویرایش</Modal.Title>
+            <Modal.Header style={headerStyle}>
+                <Modal.Title style={titleStyle}>ویرایش</Modal.Title>
             </Modal.Header>
-            <Modal.Body style={{ backgroundColor: "rgba(240,240,240,0.3)" }}>
+            <Modal.Body style={bodyStyle}>
                 <div className="container modal-form">
                     <Form
                         defaultValues={defaultValues}
@@ -58,10 +96,10 @@ const EditTaxPaymentSlipForm = ({ taxPaymentSlip, onUpdateTaxPaymentSlip, show, 
                     >
                         <Row>
                             <Col>
-                                <DateInput name="issueDate" label={"تاریخ صدور"} />
+                                <DateInput name="issueDate" label={"تاریخ صدور"}/>
                             </Col>
                             <Col>
-                                <TextInput name="slipNumber" label={"شماره فیش"} />
+                                <TextInput name="slipNumber" label={"شماره فیش"}/>
                             </Col>
                         </Row>
                         <Row>
@@ -70,23 +108,23 @@ const EditTaxPaymentSlipForm = ({ taxPaymentSlip, onUpdateTaxPaymentSlip, show, 
                                     name="type"
                                     label={"نوع فیش"}
                                     options={[
-                                        { value: 'CORPORATE_INCOME_TAX', label: 'فیش پرداخت مالیات عملکرد اشخاص حقوقی' },
-                                        { value: 'PAYROLL_TAX', label: 'فیش پرداخت مالیات بر حقوق' },
-                                        { value: 'VALUE_ADDED_TAX', label: 'فیش پرداخت مالیات بر ارزش افزوده' },
-                                        { value: 'QUARTERLY_TRANSACTIONS', label: 'فیش پرداخت معاملات فصلی' },
-                                        { value: 'PROPERTY_RENT_TAX', label: 'فیش پرداخت مالیات اجاره املاک' },
-                                        { value: 'PROPERTY_TRANSFER_TAX', label: 'فیش پرداخت مالیات نقل و انتقال املاک' },
-                                        { value: 'OTHER_FEES_AND_CHARGES', label: 'فیش پرداخت سایر عوارض و وجوه' }
+                                        {value: 'CORPORATE_INCOME_TAX', label: 'فیش پرداخت مالیات عملکرد اشخاص حقوقی'},
+                                        {value: 'PAYROLL_TAX', label: 'فیش پرداخت مالیات بر حقوق'},
+                                        {value: 'VALUE_ADDED_TAX', label: 'فیش پرداخت مالیات بر ارزش افزوده'},
+                                        {value: 'QUARTERLY_TRANSACTIONS', label: 'فیش پرداخت معاملات فصلی'},
+                                        {value: 'PROPERTY_RENT_TAX', label: 'فیش پرداخت مالیات اجاره املاک'},
+                                        {value: 'PROPERTY_TRANSFER_TAX', label: 'فیش پرداخت مالیات نقل و انتقال املاک'},
+                                        {value: 'OTHER_FEES_AND_CHARGES', label: 'فیش پرداخت سایر عوارض و وجوه'}
                                     ]}
                                 />
                             </Col>
                             <Col>
-                                <NumberInput name="amount" label={"مبلغ"} />
+                                <NumberInput name="amount" label={"مبلغ"}/>
                             </Col>
                         </Row>
                         <Row>
                             <Col>
-                                <TextInput name="period" label={"دوره مالی"} />
+                                <TextInput name="period" label={"دوره مالی"}/>
                             </Col>
                             <Col>
                                 <label>{"شرکت"}</label>
@@ -112,6 +150,19 @@ const EditTaxPaymentSlipForm = ({ taxPaymentSlip, onUpdateTaxPaymentSlip, show, 
                         onFileDelete={onFileDelete}
                         downloadUrl={`/tax-payment-slips/${taxPaymentSlip.id}/download-file`}
                     />
+                </div>
+                <hr/>
+                <div className="row mt-3 mb-0" style={{
+                    fontFamily: 'IRANSans',
+                    fontSize: '0.8rem',
+                    marginBottom: 0
+                }}>
+                    <div className="col">
+                        <p>{`ایجاد : ${createByFullName}`} | {` ${createAtJalali}`}</p>
+                    </div>
+                    <div className="col">
+                        <p>{`آخرین ویرایش : ${lastModifiedByFullName}`} | {`${lastModifiedAtJalali}`}</p>
+                    </div>
                 </div>
             </Modal.Body>
         </Modal>

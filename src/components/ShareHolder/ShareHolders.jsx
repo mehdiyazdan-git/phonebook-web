@@ -140,14 +140,7 @@ const ShareHolders = () => {
 
     return (
         <div className="table-container">
-            <ButtonContainer
-                lastChild={
-                    <FileUpload
-                        uploadUrl={"/shareholders/import"}
-                        setRefreshTrigger={setRefreshTrigger}
-                        refreshTrigger={refreshTrigger}
-                    />
-                }>
+            <ButtonContainer>
                 <Button
                     variant="primary"
                     onClick={() => setShowModal(true)}
@@ -157,11 +150,6 @@ const ShareHolders = () => {
                 <Button variant="success" onClick={downloadExcelFile}>
                     دانلود به Excel
                 </Button>
-                <DownloadTemplate
-                    downloadUrl="/shareholders/template"
-                    buttonLabel="فرمت بارگذاری"
-                    fileName="shareholder_template.xlsx"
-                />
             </ButtonContainer>
             <div>
                 <CreateShareHolderForm

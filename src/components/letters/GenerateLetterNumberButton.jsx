@@ -5,9 +5,11 @@ import persianToArabicDigits from '../../utils/functions/persianToArabicDigits';
 import getCurrentYear from "../../utils/functions/getCurrentYear";
 import useHttp from "../../hooks/useHttp";
 
-const GenerateLetterNumberButton = () => {
+const GenerateLetterNumberButton = ({year}) => {
     const [defaultCompanies, setDefaultCompanies] = useState([]);
-    const { setValue, getValues } = useFormContext();
+    const {
+        setValue,
+        getValues } = useFormContext();
     const http = useHttp();
 
      const getCompanySelect = async (queryParam) => {
@@ -33,26 +35,28 @@ const GenerateLetterNumberButton = () => {
     }, []);
 
     const generateLetterNumber = () => {
+
         const companyId = getValues('companyId');
         const company = defaultCompanies.find((company) => company.id === companyId) || {};
-
-        const year = JSON.parse(sessionStorage.getItem('selectedYear')) || getCurrentYear();
         const letterNumberParts = [
-            persianToArabicDigits(year["label"].toString()),
+            persianToArabicDigits(year.label.toString()),
             company.letterPrefix,
             persianToArabicDigits((company.letterCounter + 1 + year.startingLetterNumber).toString()),
         ].reverse();
         setValue('letterNumber', letterNumberParts.join('/'));
+        console.log(year)
     };
 
     return (
-        <button
-            style={{ backgroundColor: 'transparent', border: 'none', padding: '0', margin: '0' }}
-            type="button"
-            onClick={generateLetterNumber}
-        >
-            <IconBxRefresh fontSize={30} />
-        </button>
+       <>
+           <button
+               style={{ backgroundColor: 'transparent', border: 'none', padding: '0', margin: '0' }}
+               type="button"
+               onClick={generateLetterNumber}
+           >
+               <IconBxRefresh fontSize={30} />
+           </button>
+       </>
     );
 };
 export default GenerateLetterNumberButton;

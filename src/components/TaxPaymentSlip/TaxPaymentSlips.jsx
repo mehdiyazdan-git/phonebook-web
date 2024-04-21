@@ -145,24 +145,14 @@ const TaxPaymentSlips = () => {
 
     return (
         <div className="table-container">
-            <ButtonContainer lastChild={
-                <FileUpload
-                    uploadUrl={"/tax-payment-slips/import"}
-                    setRefreshTrigger={setRefreshTrigger}
-                    refreshTrigger={refreshTrigger}
-                />
-            }>
+            <ButtonContainer>
                 <Button variant="primary" onClick={() => setShowModal(true)}>
                     جدید
                 </Button>
                 <Button variant="success" onClick={downloadExcelFile}>
                     دانلود به Excel
                 </Button>
-                <DownloadTemplate
-                    downloadUrl="/tax-payment-slips/template"
-                    buttonLabel="فرمت بارگذاری"
-                    fileName="template_tax_payment_slips.xlsx"
-                />
+
             </ButtonContainer>
             <div>
                 <CreateTaxPaymentSlipForm

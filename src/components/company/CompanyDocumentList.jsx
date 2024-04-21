@@ -72,7 +72,7 @@ const CompanyDocumentList = ({onHide }) => {
 
     return (
         <div className="p-0 m-0">
-            <div className="p-0 m-0" style={{minHeight:"200px"}}>
+            <div className="p-0 m-0" style={{minHeight:"300px",border:"1px solid #ccc",backgroundColor:"#fff",borderRadius:"5px"}}>
                 <table
                     className="table table-bordered m-0 p-0 w-100 table-sm table-striped table-responsive-sm table-responsive-md table-responsive-lg table-responsive-xl"
                     style={{fontFamily: "IRANSans", fontSize: "0.8rem"}}>

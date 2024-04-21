@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import axios from 'axios';
-import {useAuth} from "../hooks/useAuth";
+import {useAuth} from "../../hooks/useAuth";
 
 const FileUploadComponent = ({ uploadUrl, allowedTypes, multiple, onSuccess, onError }) => {
     const [files, setFiles] = useState([]);

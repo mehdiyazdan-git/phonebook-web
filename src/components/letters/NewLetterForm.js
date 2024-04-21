@@ -10,16 +10,15 @@ import FormRow from "../form/FormRow";
 import GenerateLetterNumberButton from "./GenerateLetterNumberButton";
 import Button from "../../utils/Button";
 import FormContainer from "../../utils/formComponents/FormContainer";
-import getCurrentYear from "../../utils/functions/getCurrentYear";
-import YearService from "../../services/yearServices";
 import { Alert } from 'react-bootstrap';
 import useHttp from "../../hooks/useHttp";
 import {Form} from "../../utils/Form";
+import {bodyStyle, headerStyle, titleStyle} from "../../settings/styles";
 
 
 
-const NewLetterForm = ({show, onHide, onAddLetter, companyId,letterType}) => {
-    const [years, setYears] = useState([]);
+const NewLetterForm = ({show, onHide, onAddLetter, companyId,letterType,year}) => {
+
     const [alertMessage, setAlertMessage] = useState('');
     const validationSchema = Yup.object().shape({
         creationDate: Yup.date().required('تاریخ نامه الزامیست.'),
@@ -42,32 +41,6 @@ const NewLetterForm = ({show, onHide, onAddLetter, companyId,letterType}) => {
         onHide()
     }
 
-    const headerStyle = {backgroundColor: 'rgba(63,51,106,0.6)',};
-    const titleStyle = {fontFamily: 'IRANSansBold', fontSize: '0.8rem', color: '#fff',};
-    const bodyStyle = {backgroundColor: 'rgba(240,240,240,0.3)',};
-
-    useEffect(() => {
-        const loadYears = async () => {
-            return await YearService.crud.getAllYears()
-        };
-        loadYears().then(response => {
-            setYears(response.data);
-        })
-            .catch(error => {
-                console.error('Error fetching years:', error);
-            });
-    }, []);
-
-    const getYearId = () => {
-        const currentYear = getCurrentYear();
-        const selectedYear = JSON.parse(sessionStorage.getItem('selectedYear'));
-        if (selectedYear) {
-            return selectedYear["value"];
-        } else {
-            return currentYear;
-        }
-    }
-
 
     return (
         <Modal size={"lg"} show={show} onHide={onHide}>
@@ -84,7 +57,7 @@ const NewLetterForm = ({show, onHide, onAddLetter, companyId,letterType}) => {
                         letterNumber: null,
                         customerId: '',
                         companyId: Number(companyId),
-                        yearId: getYearId(),
+                        yearId: Number(sessionStorage.getItem("selectedYear")),
                         letterState: 'DRAFT',
                         letterTypeId: letterType === "incoming" ? 1 : 2
                     }}
@@ -94,7 +67,7 @@ const NewLetterForm = ({show, onHide, onAddLetter, companyId,letterType}) => {
                             <h5 style={{fontFamily: "IRANSansBold", textAlign: "center"}}>ایجاد نامه</h5>
                         </div>
                         <div className="mt-3">
-                            <GenerateLetterNumberButton/>
+                            <GenerateLetterNumberButton year={year}/>
                             <FormRow>
                                 <Col><TextInput name="letterNumber" label={"شماره نامه"}/></Col>
                                 <Col><DateInput name="creationDate" label="تاریخ نامه:"/></Col>

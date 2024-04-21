@@ -5,6 +5,9 @@ import { Controller } from "react-hook-form";
 import { getCustomSelectStyles } from "./customStyles";
 
 const SelectInput = ({ name, options, label }) => {
+    const customMessages = {
+        noOptionsMessage: () => "هیچ رکوردی یافت نشد.."
+    };
     return (
         <ConnectForm>
             {({ control, setValue }) => (
@@ -31,6 +34,7 @@ const SelectInput = ({ name, options, label }) => {
                                     onChange={onSelectChange}
                                     className={error ? "error text-danger" : ""}
                                     placeholder={error ? error.message : 'انتخاب...'}
+                                    noOptionsMessage={customMessages.noOptionsMessage}
                                 />
                                 {error && <p className="text-danger">{error.message}</p>}
                             </div>

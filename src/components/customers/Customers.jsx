@@ -112,26 +112,13 @@ const Customers = () => {
 
     return (
         <div className="table-container">
-            <ButtonContainer
-                lastChild={
-                    <FileUpload
-                        uploadUrl={"/customers/import"}
-                        setRefreshTrigger={setRefreshTrigger}
-                        refreshTrigger={refreshTrigger}
-                    />
-            }>
-
+            <ButtonContainer>
                 <Button variant="primary" onClick={() => setShowModal(true)}>
                     جدید
                 </Button>
                 <Button variant="success" onClick={downloadExcelFile}>
                     دانلود به Excel
                 </Button>
-                <DownloadTemplate
-                    downloadUrl="/customers/template"
-                    buttonLabel="فرمت بارگذاری"
-                    fileName="customer_template.xlsx"
-                />
                 <CreateCustomerForm
                     onAddCustomer={handleAddCustomer}
                     show={showModal}

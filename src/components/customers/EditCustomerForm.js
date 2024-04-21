@@ -10,6 +10,7 @@ import { useYupValidationResolver } from "../../hooks/useYupValidationResolver";
 import moment from "jalali-moment";
 import {verifyIranianLegalId} from "@persian-tools/persian-tools";
 import {LegalIdInput} from "../../utils/formComponents/LegalIdInput";
+import {bodyStyle, headerStyle, titleStyle} from "../../settings/styles";
 
 const EditCustomerForm = ({ customer, onUpdateCustomer, show, onHide }) => {
 
@@ -40,10 +41,10 @@ const EditCustomerForm = ({ customer, onUpdateCustomer, show, onHide }) => {
 
     return (
         <Modal size={"lg"} show={show}>
-            <Modal.Header style={{ backgroundColor: "rgba(63,51,106,0.6)" }}>
-                <Modal.Title style={{ fontFamily: "IRANSansBold", fontSize: "0.8rem", color: "#fff" }}>ویرایش</Modal.Title>
+            <Modal.Header style={headerStyle}>
+                <Modal.Title style={titleStyle}>ویرایش</Modal.Title>
             </Modal.Header>
-            <Modal.Body style={{ backgroundColor: "rgba(240,240,240,0.3)" }}>
+            <Modal.Body style={bodyStyle}>
                 <div className="container modal-form">
                     <Form
                         defaultValues={customer}
