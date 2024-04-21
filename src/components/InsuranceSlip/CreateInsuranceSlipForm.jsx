@@ -14,7 +14,7 @@ import NumberInput from "../../utils/formComponents/NumberInput";
 import DateInput from "../../utils/formComponents/DateInput";
 import {bodyStyle, headerStyle, titleStyle} from "../../settings/styles";
 
-const CreateInsuranceSlipForm = ({ insuranceSlip, onAddInsuranceSlip, show, onHide, companyId }) => {
+const CreateInsuranceSlipForm = ({ onAddInsuranceSlip, show, onHide, companyId }) => {
     const validationSchema = Yup.object().shape({
         issueDate: Yup.date().required('تاریخ صدور الزامیست.'),
         slipNumber: Yup.string().required('شماره فیش الزامیست.'),
@@ -26,22 +26,13 @@ const CreateInsuranceSlipForm = ({ insuranceSlip, onAddInsuranceSlip, show, onHi
     });
     const http = useHttp();
 
+
     const getCompanySelect = async (queryParam) => {
         return await http.get(`/companies/select?queryParam=${queryParam ? queryParam : ''}`);
     };
 
     const resolver = useYupValidationResolver(validationSchema);
     const { reset } = useForm({
-        defaultValues: {
-            id: '',
-            issueDate: '',
-            slipNumber: '',
-            type: '',
-            amount: '',
-            startDate: '',
-            endDate: '',
-            companyId: Number(companyId),
-        },
         resolver: yupResolver(validationSchema),
     });
 
@@ -56,7 +47,7 @@ const CreateInsuranceSlipForm = ({ insuranceSlip, onAddInsuranceSlip, show, onHi
             amount: '',
             startDate: '',
             endDate: '',
-            companyId: '',
+            companyId: companyId,
         });
         onHide();
     };
@@ -68,7 +59,16 @@ const CreateInsuranceSlipForm = ({ insuranceSlip, onAddInsuranceSlip, show, onHi
             <Modal.Body style={bodyStyle}>
                 <div className="container modal-form">
                     <Form
-                        defaultValues={insuranceSlip}
+                        defaultValues={{
+                            id: '',
+                            issueDate: '',
+                            slipNumber: '',
+                            type: '',
+                            amount: '',
+                            startDate: '',
+                            endDate: '',
+                            companyId: companyId,
+                        }}
                         onSubmit={onSubmit}
                         resolver={resolver}
                     >
@@ -110,7 +110,6 @@ const CreateInsuranceSlipForm = ({ insuranceSlip, onAddInsuranceSlip, show, onHi
                                 <AsyncSelectInput
                                     name={"companyId"}
                                     apiFetchFunction={getCompanySelect}
-                                    defaultValue={Number(companyId)}
                                 />
                             </Col>
                         </Row>
