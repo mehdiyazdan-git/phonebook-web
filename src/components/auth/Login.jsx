@@ -14,6 +14,7 @@ import {Form} from "../../utils/Form";
 
 
 const Login = () => {
+
     const location = useLocation();
     const navigate = useNavigate();
     const from = location.state?.from?.pathname || '/';
@@ -96,7 +97,7 @@ const Login = () => {
                         </Row>
                         <Button variant={"secondary"} type="submit">ورود</Button>
                     </Form>
-                    {errorMessage && <p style={{fontSize:"0.7rem"}} className="error-message">{errorMessage}</p>}
+                    {errorMessage && <p style={{fontSize:"0.9rem",color:"#e4c540"}} >{errorMessage}</p>}
             </LoginContainer>
         </LoginWrapper>
     );

@@ -5,6 +5,8 @@ import './AppSettings.css';
 import { Alert } from "react-bootstrap";
 import VSphereSettings from "../admin/VSphereSettings";
 import {bodyStyle, inputStyle} from "../../settings/styles";
+import BackupSettings from "../admin/BackupSettings";
+import FileStreamSetting from "../admin/FileStreamSetting";
 
 const AppSettings = () => {
     const http = useHttp();
@@ -63,12 +65,12 @@ const AppSettings = () => {
     return (
         <div style={{border:"1px solid #9c9c9c"}} className="container mt-4 mt-md-5 mt-lg-6 mt-xl-7 border p-4 p-md-5 p-lg-6 p-xl-7 rounded">
             <h2 className="app-settings-title">تنظیمات برنامه</h2>
-
+            {/*first part*/}
             <div>
                 {isLoading ? (
                     <p className="app-settings-loading">در حال بارگذاری...</p>
                 ) : (
-                    <div style={bodyStyle} className="border p-4 p-md-5 p-lg-6 p-xl-7 rounded">
+                    <div style={bodyStyle} className="col-5 border p-4 p-md-5 p-lg-6 p-xl-7 rounded">
                         <label className="app-settings-label">
                             حداکثر اندازه فایل برای بارگذاری (مگابایت):
                             <input
@@ -111,7 +113,20 @@ const AppSettings = () => {
 
                     </div>
                 )}
-                <VSphereSettings/>
+                {/*second part*/}
+                <div className="mt-1 mt-md-5 mt-lg-6 mt-xl-7">
+
+                    <div style={{width:"100%"}} className="row mt-1 mt-md-5 mt-lg-6 mt-xl-7">
+                        <div className="col-5">
+                            <h3 style={{ fontFamily: "IRANSansBold", fontSize: "0.8rem",textIndent:"1rem" }}>تنظیمات vsphere</h3>
+                            <VSphereSettings/>
+                        </div>
+                        <div className="col-5">
+                            <h3 style={{ fontFamily: "IRANSansBold", fontSize: "0.8rem",textIndent:"1rem" }}>تنظیمات پشتیبان گیری</h3>
+                            <BackupSettings/>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     );

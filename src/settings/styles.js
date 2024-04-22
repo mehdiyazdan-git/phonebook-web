@@ -17,7 +17,7 @@ const labelStyle = {
     marginTop: '5px',
     marginLeft: '5px',
     fontFamily: 'IRANSansBold',
-    minWidth: '80px',
+    minWidth: '120px',
 };
 
 const errorStyle = {
@@ -30,7 +30,8 @@ const errorStyle = {
 const  inputStyle = {
     border: '1px solid #9c9c9c',
     borderRadius: '0.25rem',
-    fontSize: '0.875rem',
+    fontSize: '0.7rem',
+    minWidth: '200px',
     lineHeight: '1.5',
     padding: '0.375rem 0.75rem',
     transition: 'border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out',

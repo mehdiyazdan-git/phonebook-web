@@ -21,12 +21,14 @@ const toShamsi = (date) => {
 };
 
 const InsuranceSlips = () => {
+
     const { companyId } = useParams();
     const [editingInsuranceSlip, setEditingInsuranceSlip] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [showEditModal, setEditShowModal] = useState(false);
     const [refreshTrigger, setRefreshTrigger] = useState(false);
     const [errorMessage,setErrorMessage] = useState('');
+
     const http = useHttp();
 
     const getAllInsuranceSlips = async (queryParams) => {

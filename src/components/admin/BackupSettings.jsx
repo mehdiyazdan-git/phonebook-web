@@ -1,88 +1,77 @@
 import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import {useForm} from "react-hook-form";
 import useHttp from "../../hooks/useHttp";
 import Button from "../../utils/Button";
 import { Alert } from "react-bootstrap";
 import { bodyStyle, inputStyle, labelStyle } from "../../settings/styles";
 
-const VSphereSettings = () => {
+const BackupSettings = () => {
     const {
         register,
         handleSubmit,
         setValue,
-    } = useForm({ defaultValues: { vsphereUrl: "", vsphereUsername: "", vspherePassword: "" } });
+    } = useForm({ defaultValues: { backupPath: "", databaseName: "" } });
     const http = useHttp();
     const [isEditing, setIsEditing] = useState(false);
     const [alert, setAlert] = useState({ show: false, message: "", type: "success" });
 
+
     const onSubmit = (data) => {
-        http.put("/settings/vsphere-settings", data)
+        http.put("/v1/database/settings/backup", data)
             .then((response) => {
                 if (response.status === 200) {
-                    setAlert({ show: true, message: "ثبت تغییرات با موفقیت انجام شد.", type: "success" });
+                    setAlert({ show: true, message: "اطلاعات با موفقیت ثبت شد..", type: "success" });
                     setTimeout(() => setAlert({ show: false, message: "", type: "success" }), 5000);
                     setIsEditing(false);
                 } else {
-                    setAlert({ show: true, message: "خطا در بروز رسانی", type: "danger" });
+                    setAlert({ show: true, message: "خطا در ثبت اطلاعات...", type: "danger" });
                     setTimeout(() => setAlert({ show: false, message: "", type: "danger" }), 5000);
                 }
             })
             .catch((error) => {
-                console.error("خطا در بروز رسانی:", error);
-                setAlert({ show: true, message: "خطا در بروز رسانی", type: "danger" });
+                console.error("خطا در ثبت اطلاعات : ", error);
+                setAlert({ show: true, message: "Error updating backup settings", type: "danger" });
                 setTimeout(() => setAlert({ show: false, message: "", type: "danger" }), 5000);
             });
     };
 
     useEffect(() => {
-        http.get("/settings/vsphere-settings")
+        http.get("/v1/database/settings/backup")
             .then((response) => {
                 if (response.status === 200) {
-                    setValue("vsphereUrl", response.data.vsphereUrl);
-                    setValue("vsphereUsername", response.data.vsphereUsername);
-                    setValue("vspherePassword", response.data.vspherePassword);
+                    setValue("backupPath", response.data.backupPath);
+                    setValue("databaseName", response.data.databaseName);
                 }
             })
             .catch((error) => {
-                console.error("Error retrieving settings:", error);
-                setAlert({ show: true, message: "Error retrieving settings", type: "danger" });
-                setTimeout(() => setAlert({ show: false, message: "", type: "danger" }), 5000);
+                console.error("Error retrieving backup settings:", error);
+                setAlert({show: true, message: "Error retrieving backup settings", type: "danger"});
+                setTimeout(() => setAlert({show: false, message: "", type: "danger"}), 5000);
             });
     }, []);
 
     return (
-        <div style={bodyStyle} className="container border p-2 p-md-5 p-lg-6 p-xl-7 rounded">
+        <div style={{...bodyStyle,minHeight:"290px"}} className="container border p-4 p-md-5 p-lg-6 p-xl-7 rounded">
             <div className="row">
                 <div className="col m-1">
-                    <label style={labelStyle} htmlFor="username">
-                        نام کاربری:
+                    <label style={labelStyle} htmlFor="backupPath">
+                        مسیر ذخیر فایل پشتیبان:
                     </label>
                     <input
                         style={inputStyle}
-                        {...register("vsphereUsername")}
-                        placeholder="نام کاربری"
+                        {...register("backupPath")}
+                        placeholder="مسیر ذخیره"
                         disabled={!isEditing}
                     />
                 </div>
                 <div className="col m-1">
-                    <label style={labelStyle} htmlFor="password">
-                        کذر واژه:
+                    <label style={labelStyle} htmlFor="databaseName">
+                        نام بانک اطلاعاتی:
                     </label>
                     <input
                         style={inputStyle}
-                        {...register("vspherePassword")}
-                        placeholder="کلمه عبور"
-                        disabled={!isEditing}
-                    />
-                </div>
-                <div className="col m-1">
-                    <label style={labelStyle} htmlFor="url">
-                         آدرس سرور:
-                    </label>
-                    <input
-                        style={inputStyle}
-                        {...register("vsphereUrl")}
-                        placeholder="آدرس سرور"
+                        {...register("databaseName")}
+                        placeholder="نام بانک اطلاعاتی"
                         disabled={!isEditing}
                     />
                 </div>
@@ -106,4 +95,4 @@ const VSphereSettings = () => {
     );
 };
 
-export default VSphereSettings;
+export default BackupSettings;
