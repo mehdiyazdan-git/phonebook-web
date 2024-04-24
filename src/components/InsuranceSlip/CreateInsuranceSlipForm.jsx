@@ -16,14 +16,34 @@ import {bodyStyle, headerStyle, titleStyle} from "../../settings/styles";
 
 const CreateInsuranceSlipForm = ({ onAddInsuranceSlip, show, onHide, companyId }) => {
     const validationSchema = Yup.object().shape({
-        issueDate: Yup.date().required('تاریخ صدور الزامیست.'),
+        issueDate: Yup.date()
+            .typeError('تاریخ صدور نا معتبر است.')
+            .required('تاریخ صدور الزامیست.'),
         slipNumber: Yup.string().required('شماره فیش الزامیست.'),
         type: Yup.string().required('نوع الزامیست.'),
-        amount: Yup.number().required('مبلغ الزامیست.').positive('مبلغ باید مثبت باشد.'),
-        startDate: Yup.date().required('تاریخ شروع الزامیست.'),
-        endDate: Yup.date().required('تاریخ پایان الزامیست.'),
+        amount: Yup.number()
+            .typeError('مبلغ باید عدد باشد.')
+            .required('مبلغ الزامیست.')
+            .positive('مبلغ باید مثبت باشد.')
+            .moreThan(0, 'مبلغ باید بزرگتر از صفر باشد.'),
+        startDate: Yup.date()
+            .typeError('تاریخ شروع نا معتبر است.')
+            .required('تاریخ شروع الزامیست.'),
+        endDate: Yup.date()
+            .typeError('تاریخ پایان نا معتبر است.')
+            .required('تاریخ پایان الزامیست.')
+            .when('startDate', (startDate, schema) => {
+                // Convert startDate to a Date object to check validity
+                const start = new Date(startDate);
+                return startDate && !isNaN(start.getTime()) ?
+                    schema.min(start, 'تاریخ پایان نباید کوچکتر از تاریخ شروع باشد.') :
+                    schema;
+            }),
         companyId: Yup.number().required('شناسه شرکت الزامیست.'),
     });
+
+
+
     const http = useHttp();
 
 
@@ -97,6 +117,8 @@ const CreateInsuranceSlipForm = ({ onAddInsuranceSlip, show, onHide, companyId }
                             </Col>
                         </Row>
                         <Row>
+                            <strong style={{fontFamily:"IRANSans",fontSize:"0.8rem",color:"dodgerblue"}} className="mt-4">دوره مورد محاسبه</strong>
+                            <hr />
                             <Col>
                                 <DateInput name="startDate" label={"تاریخ شروع"} />
                             </Col>

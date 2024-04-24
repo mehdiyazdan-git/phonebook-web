@@ -7,6 +7,8 @@ import * as yup from 'yup';
 import { useYupValidationResolver } from '../../hooks/useYupValidationResolver';
 import Button from "../../utils/Button";
 import {bodyStyle, headerStyle, titleStyle} from "../../settings/styles";
+import CheckboxInput from "../../utils/formComponents/CheckboxInput";
+import {useAuth} from "../../hooks/useAuth";
 
 
 const schema = yup.object({
@@ -23,11 +25,13 @@ const schema = yup.object({
 
 const EditUserForm = ({ user, onUpdateUser, show, onHide }) => {
     const resolver = useYupValidationResolver(schema);
+    const auth = useAuth();
 
     const onSubmit = (data) => {
         onUpdateUser(data);
         onHide(); // Hide the modal after submitting
     };
+
 
     return (
         <Modal size={'lg'} show={show}>
@@ -43,12 +47,18 @@ const EditUserForm = ({ user, onUpdateUser, show, onHide }) => {
                         onSubmit={onSubmit}
                         resolver={resolver}
                     >
-                        <TextInput name="id" label={'شناسه'} disabled={true} />
+                        {/*<TextInput name="id" label={'شناسه'} disabled={true} />*/}
                         <TextInput name="firstname" label={'نام'} />
                         <TextInput name="lastname" label={'نام خانوادگی'} />
                         <TextInput name="username" label={'نام کاربری'} />
                         <TextInput name="email" label={'ایمیل'} />
                         <TextInput name="password" label={'رمز عبور'} type="password" />
+
+                        <CheckboxInput name="accountNonExpired" label="حساب غیر منقضی" disabled={auth.role === user.role} />
+                        <CheckboxInput name="credentialsNonExpired" label="اعتبارنامه غیر منقضی" disabled={auth.role === user.role}/>
+                        <CheckboxInput name="accountNonLocked" label="حساب غیر قفل" disabled={auth.role === user.role}/>
+                        <CheckboxInput name="enabled" label="فعال" disabled={auth.role === user.role}/>
+
                         <SelectInput
                             name="role"
                             label="نقش"

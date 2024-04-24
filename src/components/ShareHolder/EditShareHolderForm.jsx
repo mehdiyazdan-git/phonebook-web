@@ -16,9 +16,20 @@ import {bodyStyle, headerStyle, titleStyle} from "../../settings/styles";
 const EditShareHolderForm = ({ shareholder, onUpdateShareHolder, show, onHide, onUploadFile, onFileDelete }) => {
     const validationSchema = Yup.object().shape({
         personId: Yup.number().required('شناسه شخص الزامیست.'),
-        numberOfShares: Yup.number().required('تعداد سهام الزامیست.').positive('تعداد سهام باید مثبت باشد.'),
-        percentageOwnership: Yup.number().required('درصد مالکیت الزامیست.').min(0, 'درصد مالکیت نمی‌تواند منفی باشد.').max(100, 'درصد مالکیت نمی‌تواند بیشتر از ۱۰۰ باشد.'),
-        sharePrice: Yup.number().required('قیمت سهم الزامیست.').positive('قیمت سهم باید مثبت باشد.'),
+        numberOfShares: Yup.number()
+            .typeError('تعداد سهام باید مقدار عددی باشد')
+            .required('تعداد سهام الزامیست.')
+            .positive('تعداد سهام باید مثبت باشد.')
+            .lessThan(2147483647,'تعداد سهام نمیتواند بیشتر از 2,147,483,647 باشد.'),
+        percentageOwnership: Yup.number()
+            .typeError('درصد مالکیت باید مقدار عددی باشد')
+            .required('درصد مالکیت الزامیست.')
+            .moreThan(0, 'درصد مالکیت باید بیشتر از صفر باشد.')
+            .max(100, 'درصد مالکیت نمی‌تواند بیشتر از ۱۰۰ باشد.'),
+        sharePrice: Yup.number()
+            .required('قیمت سهم الزامیست.')
+            .positive('قیمت سهم باید مثبت باشد.')
+            .lessThan(99999999.99,'قیمت سهم نمیتواند بیشتر از 99,999,999/99 باشد.'),
         shareType: Yup.string().required('نوع سهم الزامیست.'),
         companyId: Yup.number().required('شناسه شرکت الزامیست.'),
     });
@@ -93,6 +104,7 @@ const EditShareHolderForm = ({ shareholder, onUpdateShareHolder, show, onHide, o
                                     name={"companyId"}
                                     apiFetchFunction={getCompanySelect}
                                     defaultValue={Number(shareholder.companyId)}
+                                    isDisabled={true}
                                 />
                             </Col>
 
@@ -121,18 +133,19 @@ const EditShareHolderForm = ({ shareholder, onUpdateShareHolder, show, onHide, o
                                 <SelectInput
                                     name="shareType"
                                     label={"نوع سهم"}
-                                    options={[{value: 'REGISTERED', label: 'ثبت شده'}, {
-                                        value: 'BEARER',
-                                        label: 'حامل'
-                                    }]}
+                                    options={
+                                    [
+                                        {value: 'REGISTERED', label: 'با نام'},
+                                        {value: 'BEARER', label: 'بی نام'}
+                                    ]}
                                 />
                             </Col>
                         </Row>
-                        <Row>
-                            <Col>
-                                <TextInput name="id" label={"شناسه"} disabled={true}/>
-                            </Col>
-                        </Row>
+                        {/*<Row>*/}
+                        {/*    <Col>*/}
+                        {/*        <TextInput name="id" label={"شناسه"} disabled={true}/>*/}
+                        {/*    </Col>*/}
+                        {/*</Row>*/}
 
 
                         <Button variant="success" type="submit">

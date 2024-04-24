@@ -46,24 +46,42 @@ const ShareHolders = () => {
     };
 
     const handleAddShareHolder = async (newShareHolder) => {
-        const response = await createShareHolder(newShareHolder);
-        if (response.status === 201) {
-            setRefreshTrigger(!refreshTrigger);
+        try {
+            const response = await createShareHolder(newShareHolder);
+            if (response.status === 201) {
+                setRefreshTrigger(prev => !prev);
+            }
+        } catch (error) {
+            console.error('Failed to add shareholder:', error);
+            // Optionally, you can handle the error more explicitly here, e.g., show an alert or notification to the user
         }
     };
+
 
     const handleUpdateShareHolder = async (updatedShareHolder) => {
-        const response = await updateShareHolder(updatedShareHolder.id, updatedShareHolder);
-        if (response.status === 200) {
-            setRefreshTrigger(!refreshTrigger);
-            setEditingShareHolder(null);
+        try {
+            const response = await updateShareHolder(updatedShareHolder.id, updatedShareHolder);
+            if (response.status === 200) {
+                setRefreshTrigger(prev => !prev);
+                setEditingShareHolder(null);
+            }
+        } catch (error) {
+            console.error('Failed to update shareholder:', error);
+            // Again, you could manage error notifications or other UI responses here
         }
     };
 
+
     const handleDeleteShareHolder = async (id) => {
-        await removeShareHolder(id);
-        setRefreshTrigger(!refreshTrigger);
+        try {
+            await removeShareHolder(id);
+            setRefreshTrigger(prev => !prev);
+        } catch (error) {
+            console.error('Failed to delete shareholder:', error);
+            // This is a good place to notify the user that the operation failed
+        }
     };
+
     const convertToPersianCaption = (caption) => {
         const persianCaptions = {
             REGISTERED: "با نام",
@@ -110,7 +128,7 @@ const ShareHolders = () => {
 
 
     async function downloadExcelFile() {
-        await http.get('/shareholders/export', { responseType: 'blob' })
+        await http.get(`/shareholders/export/${Number(companyId)}`, { responseType: 'blob' })
             .then((response) => response.data)
             .then((blobData) => {
                 saveAs(blobData, "shareholders.xlsx");

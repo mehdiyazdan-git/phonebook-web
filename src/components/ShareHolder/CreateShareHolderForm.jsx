@@ -16,12 +16,25 @@ import {bodyStyle, headerStyle, titleStyle} from "../../settings/styles";
 const CreateShareHolderForm = ({ shareholder, onAddShareHolder, show, onHide, companyId }) => {
     const validationSchema = Yup.object().shape({
         personId: Yup.number().required('شناسه شخص الزامیست.'),
-        numberOfShares: Yup.number().required('تعداد سهام الزامیست.').positive('تعداد سهام باید مثبت باشد.'),
-        percentageOwnership: Yup.number().required('درصد مالکیت الزامیست.').min(0, 'درصد مالکیت نمی‌تواند منفی باشد.').max(100, 'درصد مالکیت نمی‌تواند بیشتر از ۱۰۰ باشد.'),
-        sharePrice: Yup.number().required('قیمت سهم الزامیست.').positive('قیمت سهم باید مثبت باشد.'),
+        numberOfShares: Yup.number()
+            .typeError('تعداد سهام باید مقدار عددی باشد')
+            .required('تعداد سهام الزامیست.').positive('تعداد سهام باید مثبت باشد.')
+            .lessThan(2147483647,'تعداد سهام نمیتواند بیشتر از 2,147,483,647 باشد.'),
+        percentageOwnership: Yup.number()
+            .typeError('درصد مالکیت باید مقدار عددی باشد')
+            .required('درصد مالکیت الزامیست.')
+            .moreThan(0, 'درصد مالکیت باید بیشتر از صفر باشد.')
+            .max(100, 'درصد مالکیت نمی‌تواند بیشتر از ۱۰۰ باشد.'),
+        sharePrice: Yup.number()
+            .typeError('قیمت سهم باید مقدار عددی باشد')
+            .required('قیمت سهم الزامیست.')
+            .positive('قیمت سهم باید مثبت باشد.')
+            .lessThan(99999999.99,'قیمت سهم نمیتواند بیشتر از 99,999,999/99 باشد.'),
         shareType: Yup.string().required('نوع سهم الزامیست.'),
-        companyId: Yup.number().required('شناسه شرکت الزامیست.'),
+
     });
+
+
     const http = useHttp();
 
     const getCompanySelect = async (queryParam) => {
@@ -33,16 +46,6 @@ const CreateShareHolderForm = ({ shareholder, onAddShareHolder, show, onHide, co
 
     const resolver = useYupValidationResolver(validationSchema);
     const { reset } = useForm({
-        defaultValues: {
-            id: '',
-            personId: '',
-            numberOfShares: '',
-            percentageOwnership: '',
-            sharePrice: '',
-            shareType: '',
-            companyId: Number(companyId),
-            scannedShareCertificate: '',
-        },
         resolver: yupResolver(validationSchema),
     });
 
@@ -69,7 +72,16 @@ const CreateShareHolderForm = ({ shareholder, onAddShareHolder, show, onHide, co
             <Modal.Body style={bodyStyle}>
                 <div className="container modal-form">
                     <Form
-                        defaultValues={shareholder}
+                        defaultValues={{
+                            id: '',
+                            personId: '',
+                            numberOfShares: '',
+                            percentageOwnership: '',
+                            sharePrice: '',
+                            shareType: '',
+                            companyId: Number(companyId),
+                            scannedShareCertificate: '',
+                        }}
                         onSubmit={onSubmit}
                         resolver={resolver}
                     >
@@ -95,7 +107,15 @@ const CreateShareHolderForm = ({ shareholder, onAddShareHolder, show, onHide, co
                         </Row>
                         <Row>
                             <Col>
-                                <SelectInput name="shareType" label={"نوع سهم"} options={[{ value: 'REGISTERED', label: 'ثبت شده' }, { value: 'BEARER', label: 'حامل' }]} />
+                                <SelectInput
+                                    name="shareType"
+                                    label={"نوع سهم"}
+                                    options={
+                                        [
+                                            {value: 'REGISTERED', label: 'با نام'},
+                                            {value: 'BEARER', label: 'بی نام'}
+                                        ]}
+                                />
                             </Col>
                             <Col>
                                 <label>{"شرکت"}</label>
@@ -103,9 +123,11 @@ const CreateShareHolderForm = ({ shareholder, onAddShareHolder, show, onHide, co
                                     name={"companyId"}
                                     apiFetchFunction={getCompanySelect}
                                     defaultValue={Number(companyId)}
+                                    isDisabled={true}
                                 />
                             </Col>
                         </Row>
+                        <hr/>
                         <Button variant="primary" type="submit">
                             ایجاد
                         </Button>

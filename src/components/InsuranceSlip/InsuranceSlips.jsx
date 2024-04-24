@@ -57,43 +57,74 @@ const InsuranceSlips = () => {
     };
 
     const handleAddInsuranceSlip = async (newInsuranceSlip) => {
-        const response = await createInsuranceSlip(newInsuranceSlip);
-        if (response.status === 201) {
-            setRefreshTrigger(!refreshTrigger);
+        try {
+            const response = await createInsuranceSlip(newInsuranceSlip);
+            if (response.status === 201) {
+                setRefreshTrigger(!refreshTrigger);
+            }
+        } catch (error) {
+            console.error('Failed to add insurance slip:', error);
+            // Optionally, add error handling logic here, such as setting an error state or showing a notification
         }
     };
+
 
     const handleUpdateInsuranceSlip = async (updatedInsuranceSlip) => {
-        const response = await updateInsuranceSlip(updatedInsuranceSlip.id, updatedInsuranceSlip);
-        if (response.status === 200) {
-            setRefreshTrigger(!refreshTrigger);
-            setEditingInsuranceSlip(null);
+        try {
+            const response = await updateInsuranceSlip(updatedInsuranceSlip.id, updatedInsuranceSlip);
+            if (response.status === 200) {
+                setRefreshTrigger(!refreshTrigger);
+                setEditingInsuranceSlip(null);
+            }
+        } catch (error) {
+            console.error('Failed to update insurance slip:', error);
+            // Handle error (e.g., user notification, rollback logic)
         }
     };
 
+
     const handleDeleteInsuranceSlip = async (id) => {
-        await removeInsuranceSlip(id);
-        setRefreshTrigger(!refreshTrigger);
+        try {
+            await removeInsuranceSlip(id);
+            setRefreshTrigger(!refreshTrigger);
+        } catch (error) {
+            console.error('Failed to delete insurance slip:', error);
+            // Handle error (e.g., user notification)
+        }
     };
 
-    const onUploadFile = async (id,formData) => {
-        return await http.post(`/insurance-slips/${id}/upload-file`, formData)
-            .then(response => {
-                if (response.status === 201){
-                    setRefreshTrigger(!refreshTrigger);
-                    return response;
-                }}
-            )
-    }
-    const onFileDelete = async (id) => {
-        return await http.delete(`/insurance-slips/${id}/delete-file`)
-            .then((response) => {
-                if (response.status === 204) {
-                    setRefreshTrigger(!refreshTrigger);
-                    return response;
-                }
-            })
+
+    const onUploadFile = async (id, formData) => {
+        try {
+            const response = await http.post(`/insurance-slips/${id}/upload-file`, formData);
+            if (response.status === 201) {
+                setRefreshTrigger(!refreshTrigger);
+                return response;
+            }
+        } catch (error) {
+            console.error('Failed to upload file:', error);
+            // Handle error (e.g., display an error message to the user)
+            throw error;  // Re-throw error if you want calling function to handle it
+        }
     };
+
+    const onFileDelete = async (id) => {
+        try {
+            const response = await http.delete(`/insurance-slips/${id}/delete-file`);
+            if (response.status === 204) {
+                setRefreshTrigger(!refreshTrigger);
+                return response;
+            }
+        } catch (error) {
+            console.error('Failed to delete file:', error);
+            // Optionally, you can handle the error more explicitly here, e.g., by showing a user notification
+            throw error;  // You can re-throw the error if you want the caller to handle it as well
+        } finally {
+            // Code here will run regardless of whether the try block succeeded or the catch block was executed.
+            // For example, you might want to disable a loading indicator here.
+        }
+    };
+
     const convertToPersianCaption = (caption) => {
         const persianCaptions = {
             'INSURANCE_PREMIUM': 'حق بیمه',
@@ -132,7 +163,7 @@ const options = [
 
 
     async function downloadExcelFile() {
-        await http.get('/insurance-slips/export', { responseType: 'blob' })
+        await http.get(`/insurance-slips/export/${Number(companyId)}`, { responseType: 'blob' })
             .then((response) => response.data)
             .then((blobData) => {
                 saveAs(blobData, "insurance_slips.xlsx");

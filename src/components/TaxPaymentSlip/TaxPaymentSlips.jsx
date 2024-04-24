@@ -133,7 +133,7 @@ const TaxPaymentSlips = () => {
 
 
     async function downloadExcelFile() {
-        await http.get('/tax-payment-slips/export', { responseType: 'blob' })
+        await http.get(`/tax-payment-slips/export/${Number(companyId)}`, { responseType: 'blob' })
             .then((response) => response.data)
             .then((blobData) => {
                 saveAs(blobData, "tax_payment_slips.xlsx");

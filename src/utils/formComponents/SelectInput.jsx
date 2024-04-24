@@ -36,7 +36,6 @@ const SelectInput = ({ name, options, label }) => {
                                     placeholder={error ? error.message : 'انتخاب...'}
                                     noOptionsMessage={customMessages.noOptionsMessage}
                                 />
-                                {error && <p className="text-danger">{error.message}</p>}
                             </div>
                         );
                     }}

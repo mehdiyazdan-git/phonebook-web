@@ -17,7 +17,7 @@ const FileComponent = ({ taxPaymentSlip, onUploadFile, onFileDelete,downloadUrl 
     const [showConfirmationModal, setShowConfirmationModal] = React.useState(false);
 
     useEffect(() => {
-        http.get('/settings/max-upload-file-size')
+        http.get('/app-settings/max-upload-file-size')
             .then(response => {
                 console.log("file-size" , response.data)
                 setMaxUploadFileSize(response.data);
@@ -35,6 +35,7 @@ const FileComponent = ({ taxPaymentSlip, onUploadFile, onFileDelete,downloadUrl 
         setTimeout(() => {
             setMessage('');
             setVariant('');
+            setFile(null);
         }, duration);
     };
 
@@ -70,6 +71,7 @@ const FileComponent = ({ taxPaymentSlip, onUploadFile, onFileDelete,downloadUrl 
     };
 
     const UploadButton = () => {
+        console.log(maxUploadFileSize)
         const handleFileUpload = async () => {
             if (!file) {
                 setMessage('فایلی انتخاب نشده است.');
@@ -79,7 +81,17 @@ const FileComponent = ({ taxPaymentSlip, onUploadFile, onFileDelete,downloadUrl 
                 setMessage('حجم فایل بیشتر از حد مجاز است.'); // Specify the limit if possible, e.g., "1 MB"
                 setVariant('danger');
                 clearMessage();
-            } else {
+            }else if (
+                file.name.split('.').pop() !== 'pdf' &&
+                file.name.split('.').pop() !== 'jpg' &&
+                file.name.split('.').pop() !== 'jpeg' &&
+                file.name.split('.').pop() !== 'png'
+            ){
+                setMessage('فرمت فایل باید pdf یا jpg یا jpeg یا png باشد.');
+                setVariant('danger');
+                clearMessage();
+            }
+            else {
                 const formData = new FormData();
                 formData.append("file", file);
                 formData.append('fileName', fileName);
