@@ -28,6 +28,7 @@ const EditCompanyForm = () => {
     };
 
     const onSubmit = async (data) => {
+        console.log(data)
         const formattedDate = moment(new Date(data.registrationDate)).format('YYYY-MM-DD');
         const formData = {
             ...data,

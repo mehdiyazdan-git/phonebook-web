@@ -29,6 +29,7 @@ const ModalEditCompanyForm = ({ company, onUpdateCompany, show, onHide }) => {
     const resolver = useYupValidationResolver(validationSchema);
 
     const onSubmit = (data) => {
+        console.log('Submitted data:', data)
         const trimmedData = Object.keys(data).reduce((acc, key) => {
             if (typeof data[key] === 'string' && data[key].trim() !== '') {
                 acc[key] = data[key].trim();

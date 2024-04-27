@@ -28,6 +28,7 @@ const Login = () => {
     const resolver = useYupValidationResolver(schema);
     const onSubmit = async (data) => {
         console.log(data);
+        console.log(BASE_URL)
         try {
             const response = await axios.post(`${BASE_URL}/v1/auth/authenticate`, {
                 username: data.username,
