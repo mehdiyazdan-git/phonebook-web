@@ -1,7 +1,7 @@
 import React from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { Modal } from 'react-bootstrap';
+import {Col, Modal, Row} from 'react-bootstrap';
 import {Form} from "../../utils/Form";
 import {TextInput} from "../../utils/formComponents/TextInput";
 import SelectInput from "../../utils/formComponents/SelectInput";
@@ -50,27 +50,27 @@ const CreateUserForm = ({ onAddUser, show, onHide }) => {
                     onSubmit={onSubmit}
                     resolver={yupResolver(schema)}
                 >
-                    <TextInput name="firstname" label="نام" />
-                    <TextInput name="lastname" label="نام خانوادگی" />
-                    <TextInput name="username" label="نام کاربری" />
-                    <TextInput name="email" label="ایمیل" />
-                    <TextInput name="password" label="رمز عبور" type="password" />
-
-                    <CheckboxInput name="accountNonExpired" label="حساب غیر منقضی" />
-                    <CheckboxInput name="credentialsNonExpired" label="اعتبارنامه غیر منقضی" />
-                    <CheckboxInput name="accountNonLocked" label="حساب غیر قفل" />
+                   <Row>
+                       <Col><TextInput name="firstname" label="نام" /></Col>
+                      <Col><TextInput name="lastname" label="نام خانوادگی" /></Col>
+                   </Row>
+                    <Row>
+                        <Col><TextInput name="username" label="نام کاربری" /></Col>
+                        <Col><TextInput name="password" label="رمز عبور" type="password" /></Col>
+                    </Row>
+                    <Row>
+                        <Col><TextInput name="email" label="ایمیل" /></Col>
+                        <Col><SelectInput
+                            name="role"
+                            label="نقش"
+                            options={[
+                                { value: 'ADMIN', label: 'مدیر سیستم' },
+                                { value: 'MANAGER', label: 'مدیر محتوا' },
+                                { value: 'USER', label: 'کاربر' }
+                            ]}
+                        /></Col>
+                    </Row>
                     <CheckboxInput name="enabled" label="فعال" />
-
-                    <SelectInput
-                        name="role"
-                        label="نقش"
-                        options={[
-                            { value: 'ADMIN', label: 'مدیر سیستم' },
-                            { value: 'MANAGER', label: 'مدیر محتوا' },
-                            { value: 'USER', label: 'کاربر' }
-                        ]}
-                    />
-
                     <Button variant="primary" type="submit">
                         افزودن کاربر
                     </Button>

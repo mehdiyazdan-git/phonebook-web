@@ -28,11 +28,12 @@ const errorStyle = {
     fontFamily: 'IRANSansBold',
 };
 const  inputStyle = {
-    border: '1px solid #9c9c9c',
+    border: '1px solid #73b5fe',
     borderRadius: '0.25rem',
     fontSize: '0.7rem',
-    minWidth: '200px',
+    minWidth: '250px',
     lineHeight: '1.5',
+    minHeight: '40px',
     padding: '0.375rem 0.75rem',
     transition: 'border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out',
     fontFamily: 'IRANSans',

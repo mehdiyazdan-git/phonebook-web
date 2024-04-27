@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal } from 'react-bootstrap';
+import {Col, Modal, Row} from 'react-bootstrap';
 import { Form } from '../../utils/Form';
 import { TextInput } from '../../utils/formComponents/TextInput';
 import SelectInput from '../../utils/formComponents/SelectInput';
@@ -8,7 +8,6 @@ import { useYupValidationResolver } from '../../hooks/useYupValidationResolver';
 import Button from "../../utils/Button";
 import {bodyStyle, headerStyle, titleStyle} from "../../settings/styles";
 import CheckboxInput from "../../utils/formComponents/CheckboxInput";
-import {useAuth} from "../../hooks/useAuth";
 
 
 const schema = yup.object({
@@ -24,10 +23,11 @@ const schema = yup.object({
 });
 
 const EditUserForm = ({ user, onUpdateUser, show, onHide }) => {
+
     const resolver = useYupValidationResolver(schema);
-    const auth = useAuth();
 
     const onSubmit = (data) => {
+        console.log('data', data)
         onUpdateUser(data);
         onHide(); // Hide the modal after submitting
     };
@@ -46,29 +46,27 @@ const EditUserForm = ({ user, onUpdateUser, show, onHide }) => {
                         defaultValues={user}
                         onSubmit={onSubmit}
                         resolver={resolver}
-                    >
-                        {/*<TextInput name="id" label={'شناسه'} disabled={true} />*/}
-                        <TextInput name="firstname" label={'نام'} />
-                        <TextInput name="lastname" label={'نام خانوادگی'} />
-                        <TextInput name="username" label={'نام کاربری'} />
-                        <TextInput name="email" label={'ایمیل'} />
-                        <TextInput name="password" label={'رمز عبور'} type="password" />
-
-                        <CheckboxInput name="accountNonExpired" label="حساب غیر منقضی" disabled={auth.role === user.role} />
-                        <CheckboxInput name="credentialsNonExpired" label="اعتبارنامه غیر منقضی" disabled={auth.role === user.role}/>
-                        <CheckboxInput name="accountNonLocked" label="حساب غیر قفل" disabled={auth.role === user.role}/>
-                        <CheckboxInput name="enabled" label="فعال" disabled={auth.role === user.role}/>
-
-                        <SelectInput
-                            name="role"
-                            label="نقش"
-                            options={[
-                                { value: 'ADMIN', label: 'مدیر' },
-                                { value: 'MANAGER', label: 'مدیر محتوا' },
-                                { value: 'USER', label: 'کاربر' }
-                            ]}
-                            defaultValue={user.role}
-                        />
+                    ><Row>
+                        <Col><TextInput name="firstname" label="نام" /></Col>
+                        <Col><TextInput name="lastname" label="نام خانوادگی" /></Col>
+                    </Row>
+                        <Row>
+                            <Col><TextInput name="username" label="نام کاربری" /></Col>
+                        </Row>
+                        <Row>
+                            <Col><TextInput name="email" label="ایمیل" /></Col>
+                            <Col><SelectInput
+                                name="role"
+                                label="نقش"
+                                options={[
+                                    { value: 'ADMIN', label: 'مدیر سیستم' },
+                                    { value: 'MANAGER', label: 'مدیر محتوا' },
+                                    { value: 'USER', label: 'کاربر' }
+                                ]}
+                            /></Col>
+                        </Row>
+                        <CheckboxInput name="enabled" label="فعال" />
+                        <hr/>
                         <Button variant="success" type="submit">
                             ویرایش
                         </Button>

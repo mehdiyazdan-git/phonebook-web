@@ -7,10 +7,11 @@ import {Form} from "../../utils/Form";
 import {TextInput} from "../../utils/formComponents/TextInput";
 import DateInput from "../../utils/formComponents/DateInput";
 import Button from "../../utils/Button";
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import useHttp from "../../hooks/useHttp";
 
 const EditCompanyForm = () => {
+    const navigate = useNavigate();
     const {companyId} = useParams();
     const  [successUpdate,setSuccessUpdate] = useState(false);
     const http = useHttp();
@@ -39,15 +40,52 @@ const EditCompanyForm = () => {
                 }
             })
     };
+    const initialValues  = {
+        id: '',
+        taxEconomicCode: '',
+        taxFileNumber: '',
+        taxFileClass: '',
+        taxTrackingID: '',
+        taxPortalUsername: '',
+        taxPortalPassword: '',
+        taxDepartment: '',
+        companyName: '',
+        nationalId: '',
+        registrationNumber: '',
+        registrationDate: '',
+        address: '',
+        postalCode: '',
+        phoneNumber: '',
+        faxNumber: '',
+        softwareUsername: '',
+        softwarePassword: '',
+        softwareCallCenter: '',
+        insurancePortalUsername: '',
+        insurancePortalPassword: '',
+        insuranceBranch: '',
+        letterPrefix: '',
+    }
+    const handleDefaultValues = async () => {
+       try {
+           if (typeof Number(companyId) === 'number' && companyId > 0){
+               return await http
+                   .get(`/companies/${Number(companyId)}`)
+                   .then(response => response.data);
+           }
+           return initialValues;
+       }catch (e){
+           if (e.response && e.response.status === 403){
+               navigate('/login');
+           }
+       }
+    }
 
     return (
         <div className="container">
             <div style={{ backgroundColor: "rgba(240,240,240,0.3)" }}>
                 <div className="container-fluid modal-form">
                     <Form
-                        defaultValues={async () => await http
-                            .get(`/companies/${Number(companyId)}`)
-                            .then(response => response.data)}
+                        defaultValues={handleDefaultValues}
                         onSubmit={onSubmit}
                         resolver={resolver}
                     >

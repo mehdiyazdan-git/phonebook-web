@@ -12,8 +12,9 @@ import SearchInput from "./SearchInput";
 import SelectSearchInput from "../../utils/formComponents/SelectSearchInput";
 import Modal from "react-bootstrap/Modal";
 import {useNavigate} from "react-router-dom";
+import IconKey from "../assets/icons/IconKey";
 
-const Table = ({ columns, fetchData, onEdit, onDelete, refreshTrigger }) => {
+const Table = ({ columns, fetchData, onEdit, onDelete, refreshTrigger,onResetPassword }) => {
     const [data, setData] = useState([]);
     const [currentPage, setCurrentPage] = useState(0);
     const [pageSize, setPageSize] = useState(10);
@@ -132,7 +133,7 @@ const Table = ({ columns, fetchData, onEdit, onDelete, refreshTrigger }) => {
                             {column.title}
                         </Th>
                     ))}
-                    <th width="5%">{"ویرایش|حذف"}</th>
+                    <th width="7%">{"ویرایش|حذف"}</th>
                 </tr>
                 <tr className="table-header-row">
                     {columns.map((column) =>
@@ -186,6 +187,8 @@ const Table = ({ columns, fetchData, onEdit, onDelete, refreshTrigger }) => {
                             <td key={column.key}>{column.render ? column.render(item) : item[column.key]}</td>
                         ))}
                         <td style={{padding: '0px'}}>
+                            {onResetPassword && <IconKey style={{margin: '0px 10px', cursor: 'pointer'}} fontSize={'1rem'} color="orange"
+                                       onClick={() => onResetPassword(item)}/>}
                             <IconEdit style={{margin: '0px 10px', cursor: 'pointer'}} fontSize={'1rem'} color="green"
                                       onClick={() => onEdit(item)}/>
                             <IconDeleteOutline

@@ -7,7 +7,6 @@ import BoardMembers from "../boardmember/BoardMembers";
 import AppSettings from "../AppSettings/AppSettings";
 import Companies from "../company/Companies";
 import VirtualMachines from "../VirtualMachines/VirtualMachines";
-import BackupRequest from "./BackupRequest";
 
 const LayoutWrapper = styled.div`
   display: flex;
@@ -78,9 +77,6 @@ const AdminPanel = () => {
                     <SidebarLink onClick={() => handleTabClick('settings')} className={activeTab === 'settings' ? 'active' : ''}>
                         تنظیمات
                     </SidebarLink>
-                    <SidebarLink onClick={() => handleTabClick('backup')} className={activeTab === 'backup' ? 'active' : ''}>
-                        عملیات فایل پشتیبان
-                    </SidebarLink>
                     <SidebarLink onClick={() => handleTabClick('virtual-machines')} className={activeTab === 'virtual-machines' ? 'active' : ''}>
                         ماشین های مجازی
                     </SidebarLink>
@@ -92,7 +88,6 @@ const AdminPanel = () => {
                     {activeTab === 'positions' && <Positions />}
                     {activeTab === 'board-members' && <BoardMembers />}
                     {activeTab === 'settings' && <AppSettings />}
-                    {activeTab === 'backup' && <BackupRequest/>}
                     {activeTab === 'virtual-machines' && <VirtualMachines />}
                 </Content>
             </LayoutWrapper>
