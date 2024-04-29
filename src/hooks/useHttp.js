@@ -1,11 +1,9 @@
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 import { BASE_URL } from '../config/config';
 import { useAuth } from './useAuth';
 
 const useHttp = () => {
-    const { accessToken } = useAuth();
-    const navigate = useNavigate();
+    const auth = useAuth();
     const instance = axios.create({
         baseURL: BASE_URL,
     });
@@ -14,8 +12,8 @@ const useHttp = () => {
     instance.interceptors.request.use(
         (config) => {
             // Add the Authorization header if the accessToken exists
-            if (accessToken) {
-                config.headers.Authorization = `Bearer ${accessToken}`;
+            if (auth.accessToken) {
+                config.headers.Authorization = `Bearer ${auth.accessToken}`;
             }
             return config;
         }, (error) => {
@@ -31,16 +29,23 @@ const useHttp = () => {
             // Handle responses
             return response;
         },
-        (error) => {
-            // Handle errors in response
+        async (error) => {
             if (error.response) {
-                // Handle 403 Forbidden error specifically
-                if (error.response.status === 403) {
-                    console.error("Access denied. Redirecting to login.");
-                    navigate('/login');
-                } else {
-                    console.error("Server responded with an error:", error.response.status);
+                if (error.response.status === 403 && error.response.data === "token expired") {
+                 await auth.restoreAccessToken().then(() => {
+                      // Retry the request
+                      error.config.headers.Authorization = `Bearer ${auth.accessToken}`;
+                      return axios.request(error.config);
+                  }).catch((refreshError) => {
+                      if (refreshError.response && refreshError.response.status === 401){
+                          // Unauthorized, logout
+                          console.error("Unauthorized.refresh token also expired, Please log in again.");
+                          auth.logout();
+                      }
+                    });
                 }
+                console.error("Unauthorized. Please log in again.");
+                await auth.logout();
             } else if (error.request) {
                 // Handle case where no response was received
                 console.log("No response received. Please check your network connection.");

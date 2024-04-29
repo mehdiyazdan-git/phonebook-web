@@ -38,6 +38,7 @@ import InsuranceSlips from "../InsuranceSlip/InsuranceSlips";
 import TaxPaymentSlips from "../TaxPaymentSlip/TaxPaymentSlips";
 import RequireRole from "../auth/RequireRole";
 import EmptyCompanyPage from "../company/EmptyCompanyPage";
+import Stopwatch from "../../utils/formComponents/Stopwatch";
 
 const Main = () => {
     const navigate = useNavigate();
@@ -77,6 +78,7 @@ const Main = () => {
                         <Route path="/persons" index element={<Persons/>}/>
                         <Route path="/persons/create" element={<NewPersonForm/>}/>
                         <Route path="/persons/:personId/edit" element={<EditPersonForm/>}/>
+
 
                         <Route path="/users" index element={<Users/>}/>
                         <Route path="/users/create" element={<CreateUserForm/>}/>

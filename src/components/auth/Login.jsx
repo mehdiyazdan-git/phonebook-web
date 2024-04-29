@@ -1,7 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import { BASE_URL } from "../../config/config";
-import axios from "axios";
 import { useAuth } from "../../hooks/useAuth";
 import {useLocation, useNavigate} from "react-router-dom";
 import {TextInput} from "../../utils/formComponents/TextInput";
@@ -10,7 +8,6 @@ import {Row} from "react-bootstrap";
 import * as yup from "yup";
 import {useYupValidationResolver} from "../../hooks/useYupValidationResolver";
 import {Form} from "../../utils/Form";
-
 
 
 const Login = () => {
@@ -27,44 +24,27 @@ const Login = () => {
     }).required();
     const resolver = useYupValidationResolver(schema);
     const onSubmit = async (data) => {
-        console.log(data);
-        console.log(BASE_URL)
-        try {
-            const response = await axios.post(`${BASE_URL}/v1/auth/authenticate`, {
-                username: data.username,
-                password: data.password
-            });
+        const result = await auth.login(data.username, data.password);
+        if (result === true) {
+            navigate(from); // Navigate after successful login
+        } else {
+            handleErrors(result); // Handle errors based on the error response
+        }
+    };
 
-            if (response.status === 200) {
-                auth.setAccessToken(response.data.access_token);
-                auth.setCurrentUser(response.data.userName);
-                auth.setRefreshToken(response.data.refresh_token);
-                auth.setRole(response.data.role);
-                navigate(from);
-                console.log('Authentication successful:', response.data);
-            }
-        } catch (error) {
-            if (error.response) {
-                switch (error.response.status) {
-                    case 401:
-                        setErrorMessage('نام کاربری یا رمز عبور اشتباه است');
-                        break;
-
-                    case 404:
-                        setErrorMessage('کاربری با این مشخصات یافت نشت');
-                        break;
-
-                    case 500:
-                        setErrorMessage('سرور دچار مشکل شده است، لطفا بعدا دوباره تلاش کنید');
-                        break;
-
-                }
-            } else if (error.request) {
-                setErrorMessage('خطا در اتصال به سرور، لطفاً دوباره تلاش کنید');
-            } else {
-                setErrorMessage('خطایی رخ داده است، لطفاً دوباره تلاش کنید');
-            }
-            console.error('Authentication error:', error);
+    const handleErrors = (response) => {
+        switch (response.status) {
+            case 401:
+                setErrorMessage('Incorrect username or password');
+                break;
+            case 404:
+                setErrorMessage('User not found');
+                break;
+            case 500:
+                setErrorMessage('Server error, please try again later');
+                break;
+            default:
+                setErrorMessage('An error occurred, please try again');
         }
     };
 

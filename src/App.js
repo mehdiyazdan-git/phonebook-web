@@ -59,7 +59,7 @@ function App() {
 
     const handleLogout = (event) => {
         event.preventDefault();
-        http.post("/v1/auth/sign-out", {refreshToken : `Bearer ${auth.refreshToken}`
+        http.post("/v1/auth/logout", {refreshToken : `Bearer ${auth.refreshToken}`
     })
             .then((res) => {
                 if (res.status === 204){
