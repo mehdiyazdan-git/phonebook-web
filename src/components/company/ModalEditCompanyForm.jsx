@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Modal, Row, Col } from "react-bootstrap";
 import * as Yup from "yup";
@@ -9,6 +9,7 @@ import { Form } from "../../utils/Form";
 import { useYupValidationResolver } from "../../hooks/useYupValidationResolver";
 import moment from "jalali-moment";
 import {bodyStyle, headerStyle, titleStyle} from "../../settings/styles";
+import useHttp from "../../hooks/useHttp";
 
 function parseAndFormatDate(dateString) {
     const dateObj = new Date(dateString);
@@ -19,6 +20,7 @@ function parseAndFormatDate(dateString) {
 }
 
 const ModalEditCompanyForm = ({ company, onUpdateCompany, show, onHide }) => {
+    const http = useHttp();
 
     const validationSchema = Yup.object().shape({
         taxEconomicCode: Yup.string().required('کد اقتصادی الزامیست.'),
@@ -45,6 +47,24 @@ const ModalEditCompanyForm = ({ company, onUpdateCompany, show, onHide }) => {
         onUpdateCompany(trimmedData);
         onHide();
     };
+    const findById = async (id)     => {
+        return await http.get(`/companies/${id}`).then(r => r.data);
+    }
+    const [createAtJalali, setCreateAtJalali] = React.useState('');
+    const [lastModifiedAtJalali, setLastModifiedAtJalali] = React.useState('');
+    const [createByFullName, setCreateByFullName] = React.useState('');
+    const [lastModifiedByFullName, setLastModifiedByFullName] = React.useState('');
+
+    useEffect(() => {
+        if (company.id) {
+            findById(company.id).then(r => {
+                setCreateAtJalali(r.createAtJalali)
+                setLastModifiedAtJalali(r.lastModifiedAtJalali)
+                setCreateByFullName(r.createByFullName)
+                setLastModifiedByFullName(r.lastModifiedByFullName)
+            });
+        }
+    }, []);
 
     return (
         <Modal size={"lg"} show={show}>
@@ -122,6 +142,19 @@ const ModalEditCompanyForm = ({ company, onUpdateCompany, show, onHide }) => {
                             انصراف
                         </Button>
                     </Form>
+                </div>
+                <hr/>
+                <div className="row mt-3 mb-0" style={{
+                    fontFamily: 'IRANSans',
+                    fontSize: '0.8rem',
+                    marginBottom: 0
+                }}>
+                    <div className="col">
+                        <p>{`ایجاد : ${createByFullName}`} | {` ${createAtJalali}`}</p>
+                    </div>
+                    <div className="col">
+                        <p>{`آخرین ویرایش : ${lastModifiedByFullName}`} | {`${lastModifiedAtJalali}`}</p>
+                    </div>
                 </div>
             </Modal.Body>
         </Modal>

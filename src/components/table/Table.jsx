@@ -13,8 +13,11 @@ import SelectSearchInput from "../../utils/formComponents/SelectSearchInput";
 import Modal from "react-bootstrap/Modal";
 import {useNavigate} from "react-router-dom";
 import IconKey from "../assets/icons/IconKey";
+import {useAuth} from "../../hooks/useAuth";
+import LoadingDataErrorPage from "../../utils/formComponents/LoadingDataErrorPage";
 
 const Table = ({ columns, fetchData, onEdit, onDelete, refreshTrigger,onResetPassword }) => {
+
     const [data, setData] = useState([]);
     const [currentPage, setCurrentPage] = useState(0);
     const [pageSize, setPageSize] = useState(10);
@@ -27,6 +30,7 @@ const Table = ({ columns, fetchData, onEdit, onDelete, refreshTrigger,onResetPas
     const [errorMessage, setErrorMessage] = useState('');
     const [showErrorModal, setShowErrorModal] = useState(false);
     const navigate = useNavigate();
+    const auth = useAuth();
 
     const initialSearchState = useMemo(() => columns.reduce((acc, column) => {
         if (column.searchable) {
@@ -45,6 +49,8 @@ const Table = ({ columns, fetchData, onEdit, onDelete, refreshTrigger,onResetPas
         setPageSize(newPageSize);
         sessionStorage.setItem('pageSize', newPageSize);
     };
+
+
 
     const ErrorModal = ({ show, handleClose, errorMessage }) => {
         return (
@@ -80,8 +86,6 @@ const Table = ({ columns, fetchData, onEdit, onDelete, refreshTrigger,onResetPas
         }
     };
 
-    // ...
-
     useDeepCompareEffect(() => {
         const load = async () => {
             try {
@@ -103,17 +107,19 @@ const Table = ({ columns, fetchData, onEdit, onDelete, refreshTrigger,onResetPas
             } catch (error) {
                 console.log("table is reporting an error:", error);
                 if (error.response){
-                   if (error.response.status === 403 && error.code === "ERR_BAD_REQUEST"){
-                       navigate('/login');
+                   if (error.response.status > 400){
+                       navigate('server-error');
                    }
+                    navigate('server-error');
                 }
             }
         };
         load();
     }, [currentPage, pageSize, search, sortBy, sortOrder, refreshTrigger]);
 
-// ...
-
+    if (!data){
+        return <LoadingDataErrorPage/>
+    }
 
     return (
         <>

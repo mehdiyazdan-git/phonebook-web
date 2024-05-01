@@ -1,8 +1,10 @@
 import axios from 'axios';
 import { BASE_URL } from '../config/config';
 import { useAuth } from './useAuth';
+import {useNavigate} from "react-router-dom";
 
 const useHttp = () => {
+    const navigate = useNavigate()
     const auth = useAuth();
     const instance = axios.create({
         baseURL: BASE_URL,
@@ -26,34 +28,22 @@ const useHttp = () => {
     // Response Interceptor
     instance.interceptors.response.use(
         (response) => {
-            // Handle responses
             return response;
         },
         async (error) => {
             if (error.response) {
-                if (error.response.status === 403 && error.response.data === "token expired") {
-                 await auth.restoreAccessToken().then(() => {
-                      // Retry the request
-                      error.config.headers.Authorization = `Bearer ${auth.accessToken}`;
-                      return axios.request(error.config);
-                  }).catch((refreshError) => {
-                      if (refreshError.response && refreshError.response.status === 401){
-                          // Unauthorized, logout
-                          console.error("Unauthorized.refresh token also expired, Please log in again.");
-                          auth.logout();
-                      }
-                    });
+                if (error.response.data.error === 'expired token' && (error.response.status === 401 || error.response.status === 403))  {
+                  console.log("Token expired. navigating to login...");
+                  navigate("/login");
                 }
-                console.error("Unauthorized. Please log in again.");
-                await auth.logout();
             } else if (error.request) {
-                // Handle case where no response was received
                 console.log("No response received. Please check your network connection.");
+                navigate("/server-error")
             } else {
-                // Handle other errors
                 console.error("Error setting up response handling:", error.message);
+                return Promise.reject(error);
             }
-            return Promise.reject(error);
+
         }
     );
 

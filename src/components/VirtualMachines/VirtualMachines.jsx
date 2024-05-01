@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import useHttp from '../../hooks/useHttp';
+import LoadingDataErrorPage from "../../utils/formComponents/LoadingDataErrorPage";
 
 const VirtualMachines = () => {
     const http = useHttp();
@@ -10,7 +11,9 @@ const VirtualMachines = () => {
         setIsLoading(true);  // Start loading
         try {
             const response = await http.get('/vmware/vms');
-            setVms(response.data);
+            if (response.data){
+                setVms(response.data)
+            }
             setIsLoading(false);  // Stop loading after data is fetched
         } catch (error) {
             console.error(error);
@@ -40,8 +43,10 @@ const VirtualMachines = () => {
                     <strong style={style}>در حال بارگذاری...</strong>
                 </p>
             ) : (
-                <>
-                    <table className="recipient-table table-fixed-height mt-3">
+                <div>
+                    {(!vms || (typeof vms === 'undefined') || vms.length === 0)
+                        ? <LoadingDataErrorPage />
+                        :  <table className="recipient-table table-fixed-height mt-3">
                         <thead>
                         <tr className="table-header-row">
                             {columns.map((column, index) => (
@@ -66,11 +71,16 @@ const VirtualMachines = () => {
                             </tr>
                         )}
                         </tbody>
-                    </table>
-                    <p style={style}>
-                        * اگر نام ریموت و آدرس IP ماشین خالی است. احتمالا VMware Tools برای آن ماشین نصب نشده است.
-                    </p>
-                </>
+                        <tfoot>
+                        <tr>
+                            <td colSpan={columns.length} style={style}>
+                                * اگر نام ریموت و آدرس IP ماشین خالی است. احتمالا VMware Tools برای آن ماشین نصب نشده
+                                است.
+                            </td>
+                        </tr>
+                        </tfoot>
+                    </table>}
+                </div>
             )}
         </div>
     );

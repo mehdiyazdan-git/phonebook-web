@@ -8,6 +8,8 @@ import Table from "../table/Table";
 import useHttp from "../../hooks/useHttp";
 import { saveAs } from 'file-saver';
 import Modal from "react-bootstrap/Modal";
+import ButtonContainer from "../../utils/formComponents/ButtonContainer";
+import FileUpload from "../../utils/formComponents/FileUpload";
 
 const toShamsi = (date) => {
     return date ? moment(date, 'YYYY-MM-DD').format('jYYYY/jMM/jDD') : '';
@@ -125,7 +127,7 @@ const Companies = () => {
     return (
         <div className="table-container">
             <span style={{ fontFamily: "IRANSansBold", fontSize: "1.2rem" }}>لیست شرکت‌ها</span>
-            <div>
+            <ButtonContainer lastChild={<FileUpload uploadUrl={`/companies/import-companies`} refreshTrigger={refreshTrigger} setRefreshTrigger={setRefreshTrigger}/>}>
                 <Button variant="primary" onClick={() => setShowModal(true)}>
                     جدید
                 </Button>
@@ -137,7 +139,7 @@ const Companies = () => {
                     show={showModal}
                     onHide={() => setShowModal(false)}
                 />
-            </div>
+            </ButtonContainer>
             <Table
                 columns={columns}
                 fetchData={getAllCompanies}

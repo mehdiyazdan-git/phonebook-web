@@ -11,8 +11,10 @@ import moment from "jalali-moment";
 import {verifyIranianLegalId} from "@persian-tools/persian-tools";
 import {LegalIdInput} from "../../utils/formComponents/LegalIdInput";
 import {bodyStyle, headerStyle, titleStyle} from "../../settings/styles";
+import useHttp from "../../hooks/useHttp";
 
 const EditCustomerForm = ({ customer, onUpdateCustomer, show, onHide }) => {
+    const http = useHttp();
 
     const validationSchema = Yup.object().shape({
         name: Yup.string().required('نام الزامیست.'),
@@ -26,6 +28,28 @@ const EditCustomerForm = ({ customer, onUpdateCustomer, show, onHide }) => {
     });
 
     const resolver = useYupValidationResolver(validationSchema);
+
+    const findById = async (id)=> {
+        return await http.get(`/customers/${id}`).then(r => r.data);
+    }
+    const [customerName, setCustomerName] = React.useState('');
+
+    const [createAtJalali, setCreateAtJalali] = React.useState('');
+    const [lastModifiedAtJalali, setLastModifiedAtJalali] = React.useState('');
+    const [createByFullName, setCreateByFullName] = React.useState('');
+    const [lastModifiedByFullName, setLastModifiedByFullName] = React.useState('');
+
+    useEffect(() => {
+        if (customer.id) {
+            findById(customer?.id).then(r => {
+                setCreateAtJalali(r.createAtJalali)
+                setLastModifiedAtJalali(r.lastModifiedAtJalali)
+                setCreateByFullName(r.createByFullName)
+                setLastModifiedByFullName(r.lastModifiedByFullName)
+                setCustomerName(r.name)
+            });
+        }
+    }, []);
 
     const onSubmit = (data) => {
         if (data.registerDate) {
@@ -42,7 +66,9 @@ const EditCustomerForm = ({ customer, onUpdateCustomer, show, onHide }) => {
     return (
         <Modal size={"lg"} show={show}>
             <Modal.Header style={headerStyle}>
-                <Modal.Title style={titleStyle}>ویرایش</Modal.Title>
+                <Modal.Title style={titleStyle}>
+                    {`ویرایش : ${customerName}`}
+                </Modal.Title>
             </Modal.Header>
             <Modal.Body style={bodyStyle}>
                 <div className="container modal-form">
@@ -66,6 +92,19 @@ const EditCustomerForm = ({ customer, onUpdateCustomer, show, onHide }) => {
                             انصراف
                         </Button>
                     </Form>
+                    <hr/>
+                    <div className="row mt-3 mb-0" style={{
+                        fontFamily: 'IRANSans',
+                        fontSize: '0.8rem',
+                        marginBottom: 0
+                    }}>
+                        <div className="col">
+                            <p>{`ایجاد : ${createByFullName}`} | {` ${createAtJalali}`}</p>
+                        </div>
+                        <div className="col">
+                            <p>{`آخرین ویرایش : ${lastModifiedByFullName}`} | {`${lastModifiedAtJalali}`}</p>
+                        </div>
+                    </div>
                 </div>
             </Modal.Body>
         </Modal>

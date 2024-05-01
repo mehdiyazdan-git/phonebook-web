@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Alert, Modal} from "react-bootstrap";
 import {Form} from "../../utils/Form";
 import AsyncSelectInput from "../../utils/formComponents/AsyncSelectInput";
@@ -48,6 +48,24 @@ const EditBoardMemberForm = ({ boardMember,show,onHide,onUpdateMemberBoard}) => 
             setSubmitting(false);
         }
     };
+    const findById = async (id)=> {
+        return await http.get(`/board-members/${id}`).then(r => r.data);
+    }
+    const [createAtJalali, setCreateAtJalali] = React.useState('');
+    const [lastModifiedAtJalali, setLastModifiedAtJalali] = React.useState('');
+    const [createByFullName, setCreateByFullName] = React.useState('');
+    const [lastModifiedByFullName, setLastModifiedByFullName] = React.useState('');
+
+    useEffect(() => {
+        if (boardMember.id) {
+            findById(boardMember?.id).then(r => {
+                setCreateAtJalali(r.createAtJalali)
+                setLastModifiedAtJalali(r.lastModifiedAtJalali)
+                setCreateByFullName(r.createByFullName)
+                setLastModifiedByFullName(r.lastModifiedByFullName)
+            });
+        }
+    }, []);
 
 
     return (
@@ -94,6 +112,19 @@ const EditBoardMemberForm = ({ boardMember,show,onHide,onUpdateMemberBoard}) => 
                             </Button>
                         </div>
                     </Form>
+                    <hr/>
+                    <div className="row mt-3 mb-0" style={{
+                        fontFamily: 'IRANSans',
+                        fontSize: '0.8rem',
+                        marginBottom: 0
+                    }}>
+                        <div className="col">
+                            <p>{`ایجاد : ${createByFullName}`} | {` ${createAtJalali}`}</p>
+                        </div>
+                        <div className="col">
+                            <p>{`آخرین ویرایش : ${lastModifiedByFullName}`} | {`${lastModifiedAtJalali}`}</p>
+                        </div>
+                    </div>
                 </div>
                 {(formError.length !== 0)
                     && <Alert style={{

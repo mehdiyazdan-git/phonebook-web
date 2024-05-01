@@ -1,11 +1,12 @@
 import './App.css';
 import { Outlet, useNavigate } from "react-router-dom";
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import IconPowerOff from "./components/assets/icons/IconPoweroff";
 import SidebarMenu from "./components/sidebar/SidebarMenu";
 import styled from "styled-components";
 import {useAuth} from "./hooks/useAuth";
 import useHttp from "./hooks/useHttp";
+import PersianDateTime from "./utils/formComponents/PersianDateTime";
 
 const LayoutWrapper = styled.div`
   display: flex;
@@ -52,37 +53,36 @@ const PageContentWrapper = styled.div`
 `;
 
 function App() {
-    const navigate = useNavigate();
+    const [fullName , setFullName] = useState("");
     const {currentUser} = useAuth();
     const http = useHttp();
     const auth = useAuth();
 
-    const handleLogout = (event) => {
-        event.preventDefault();
-        http.post("/v1/auth/logout", {refreshToken : `Bearer ${auth.refreshToken}`
+    const getFullNameByUsername = async (username) => {
+        return  http.get(`/users/${username}/fullName`);
+    }
+    useEffect(() => {
+        try {
+            getFullNameByUsername(currentUser).then(res => {
+                setFullName(res?.data);
+            })
+        }catch (e){
+            console.log(e);
+        }
     })
-            .then((res) => {
-                if (res.status === 204){
-                    localStorage.removeItem("token");
-                    navigate("/login");
-                    console.log(res);
-                }
-            }).catch((err) => {
-            console.log(err);
-        });
-        };
+
 
     return (
         <LayoutWrapper dir="rtl">
             <Navbar>
                 <NavbarCol>
-                    <span style={{ color: "white",fontFamily:"IRANSans",fontSize:"0.8rem" }}>{` کاربر جاری : ${currentUser}`}</span>
+                    <span style={{ color: "white",fontFamily:"IRANSans",fontSize:"0.8rem" }}>{` کاربر جاری : ${fullName}`}</span>
                 </NavbarCol>
                 <NavbarCol>
-
+                        <PersianDateTime/>
                 </NavbarCol>
                 <NavbarCol>
-                    <button style={{ color: "red" }} className="btn" onClick={handleLogout}>
+                    <button style={{ color: "red" }} className="btn" onClick={auth.logout}>
                         <IconPowerOff style={{ color: "#ed8937", fontSize: "30" }} />
                     </button>
                 </NavbarCol>

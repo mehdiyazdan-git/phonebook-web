@@ -11,16 +11,19 @@ const ErrorMessage = styled.h1`
   color: red;
   font-size: 24px;
   margin-bottom: 20px;
+  font-family: "IRANSansBold", sans-serif;
 `;
 
 const ErrorDescription = styled.p`
   color: #333;
   font-size: 18px;
+  font-family: "IRANSans", sans-serif;
 `;
 
 const RetryButton = styled.button`
     padding: 10px 20px;
     font-size: 18px;
+    font-family: "IRANSansBold", sans-serif;
     color: #fff;
     background-color: #007bff;
     border: none;
@@ -40,11 +43,12 @@ const ServerConnectionError = () => {
 
     return (
         <ErrorContainer>
-            <ErrorMessage>Server Connection Error</ErrorMessage>
-            <ErrorDescription>Sorry, we're having trouble connecting to the server. Please try again later.</ErrorDescription>
-            <RetryButton onClick={handleRetry}>Go to Login Page</RetryButton>
+            <ErrorMessage>خطای اتصال به سرور</ErrorMessage>
+            <ErrorDescription>متاسفیم، در اتصال به سرور مشکل داریم. لطفا بعدا دوباره امتحان کنید.</ErrorDescription>
+            <RetryButton onClick={handleRetry}>برو به صفحه ورود</RetryButton>
         </ErrorContainer>
     );
+
 };
 
 export default ServerConnectionError;

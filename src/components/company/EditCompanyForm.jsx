@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import * as Yup from "yup";
 import {useYupValidationResolver} from "../../hooks/useYupValidationResolver";
 import moment from "jalali-moment";
@@ -22,6 +22,25 @@ const EditCompanyForm = () => {
     });
 
     const resolver = useYupValidationResolver(validationSchema);
+
+    const findById = async (id)     => {
+        return await http.get(`/companies/${id}`).then(r => r.data);
+    }
+    const [createAtJalali, setCreateAtJalali] = React.useState('');
+    const [lastModifiedAtJalali, setLastModifiedAtJalali] = React.useState('');
+    const [createByFullName, setCreateByFullName] = React.useState('');
+    const [lastModifiedByFullName, setLastModifiedByFullName] = React.useState('');
+
+    useEffect(() => {
+        if (companyId) {
+            findById(Number(companyId)).then(r => {
+                setCreateAtJalali(r.createAtJalali)
+                setLastModifiedAtJalali(r.lastModifiedAtJalali)
+                setCreateByFullName(r.createByFullName)
+                setLastModifiedByFullName(r.lastModifiedByFullName)
+            });
+        }
+    }, []);
 
     const updateCompany = async (id, data) => {
         return await http.put(`/companies/${id}`, data);
@@ -156,6 +175,19 @@ const EditCompanyForm = () => {
                     </Form>
                 </div>
                 {successUpdate &&  <Alert style={{fontFamily:"IRANSans",fontSize:"0.6rem"}} variant={"success"}>بروز رسانی موفق</Alert>}
+            </div>
+            <hr/>
+            <div className="row mt-3 mb-0" style={{
+                fontFamily: 'IRANSans',
+                fontSize: '0.8rem',
+                marginBottom: 0
+            }}>
+                <div className="col">
+                    <p>{`ایجاد : ${createByFullName}`} | {` ${createAtJalali}`}</p>
+                </div>
+                <div className="col">
+                    <p>{`آخرین ویرایش : ${lastModifiedByFullName}`} | {`${lastModifiedAtJalali}`}</p>
+                </div>
             </div>
         </div>
     );

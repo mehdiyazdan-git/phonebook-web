@@ -13,11 +13,11 @@ const schema = yup.object({
         .label('نام سال')
         .min(1000, 'نام سال باید یک عدد 4 رقمی باشد.')
         .max(9999, 'نام سال باید یک عدد 4 رقمی باشد.')
-        .transform(v => parseInt(v, 10) || undefined), // Optional type conversion (use with caution)
+        .transform(v => parseInt(v, 10) || undefined), // Optional type conversion
     startingLetterNumber: yup.number()
         .required('شروع شماره نامه الزامیست.')
-        .positive('شروع شماره نامه باید یک عدد مثبت باشد.')
-        .integer('شروع شماره نامه باید یک عدد صحیح باشد.'),
+        .integer('شروع شماره نامه باید یک عدد صحیح باشد.')
+        .min(0, 'شروع شماره نامه باید یک عدد مثبت یا صفر باشد.'), // Allowing zero
 });
 
 

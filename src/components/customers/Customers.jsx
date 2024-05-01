@@ -112,7 +112,7 @@ const Customers = () => {
 
     return (
         <div className="table-container">
-            <ButtonContainer>
+            <ButtonContainer lastChild={<FileUpload uploadUrl={"/customers/import"} setRefreshTrigger={setRefreshTrigger} refreshTrigger={refreshTrigger}/>}>
                 <Button variant="primary" onClick={() => setShowModal(true)}>
                     جدید
                 </Button>

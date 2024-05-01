@@ -10,6 +10,7 @@ import { saveAs } from 'file-saver';
 import ButtonContainer from "../../utils/formComponents/ButtonContainer";
 import {SiMicrosoftexcel} from "react-icons/si";
 import Modal from "react-bootstrap/Modal";
+import FileUpload from "../../utils/formComponents/FileUpload";
 
 
 
@@ -127,7 +128,7 @@ const Persons = () => {
 
     return (
         <div className="table-container">
-            <ButtonContainer>
+            <ButtonContainer lastChild={<FileUpload uploadUrl={`/persons/import`} refreshTrigger={refreshTrigger} setRefreshTrigger={setRefreshTrigger}/>}>
                 <Button
                     variant="primary"
                     onClick={() => setShowModal(true)}

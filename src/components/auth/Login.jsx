@@ -8,6 +8,7 @@ import {Row} from "react-bootstrap";
 import * as yup from "yup";
 import {useYupValidationResolver} from "../../hooks/useYupValidationResolver";
 import {Form} from "../../utils/Form";
+import {PasswordInput} from "../../utils/formComponents/PasswordInput";
 
 
 const Login = () => {
@@ -26,25 +27,25 @@ const Login = () => {
     const onSubmit = async (data) => {
         const result = await auth.login(data.username, data.password);
         if (result === true) {
-            navigate(from); // Navigate after successful login
+            navigate(from);
         } else {
-            handleErrors(result); // Handle errors based on the error response
+            handleErrors(result);
         }
     };
 
     const handleErrors = (response) => {
         switch (response.status) {
             case 401:
-                setErrorMessage('Incorrect username or password');
+                setErrorMessage('نام کاربری یا کلمه عبور اشتباه است');
                 break;
             case 404:
-                setErrorMessage('User not found');
+                setErrorMessage('کاربری با این نام و کلمه عبور یافت نشد');
                 break;
             case 500:
-                setErrorMessage('Server error, please try again later');
+                setErrorMessage('سرور دچار مشکل است، لطفا مجددا تلاش کنید');
                 break;
             default:
-                setErrorMessage('An error occurred, please try again');
+                setErrorMessage('خطایی رخ داده است، لطفا مجددا تلاش کنید');
         }
     };
 
@@ -68,7 +69,7 @@ const Login = () => {
                                 labelStyle={{color:"rgb(75, 190, 230)",fontFamily:"IRANSans",marginBottom:"0"}}
                                 backgroundColor="rgba(27, 27, 27, 0.1)"
                             />
-                            <TextInput
+                            <PasswordInput
                                 name={"password"}
                                 type={"password"}
                                 label={"کلمه عبور"}

@@ -26,7 +26,6 @@ import CompanyDocumentList from "../company/CompanyDocumentList";
 import RequireAuth from "../auth/RequireAuth";
 import Users from "../users/Users";
 import Login from "../auth/Login";
-import {useAuth} from "../../hooks/useAuth";
 import AccessDenied from "../auth/AccessDenied";
 import ServerConnectionError from "../auth/ServerConnectionError";
 import {IdleTimeoutProvider} from "../contexts/IdleTimeoutProvider";
@@ -38,7 +37,7 @@ import InsuranceSlips from "../InsuranceSlip/InsuranceSlips";
 import TaxPaymentSlips from "../TaxPaymentSlip/TaxPaymentSlips";
 import RequireRole from "../auth/RequireRole";
 import EmptyCompanyPage from "../company/EmptyCompanyPage";
-import Stopwatch from "../../utils/formComponents/Stopwatch";
+import LoadingDataErrorPage from "../../utils/formComponents/LoadingDataErrorPage";
 
 const Main = () => {
     const navigate = useNavigate();
@@ -48,8 +47,6 @@ const Main = () => {
         navigate('/login');
     };
 
-    const {role} = useAuth();
-
     return (
         <IdleTimeoutProvider
             onIdle={onIdle}
@@ -57,7 +54,7 @@ const Main = () => {
         >
             <Routes>
                 <Route element={<RequireAuth />}>
-                    <Route path="/" element={<App/>}>
+                    <Route path="/" element={<App/>} >
                         <Route path="/companies" element={<CompanyPage/>}>
                             <Route path=":companyId" element={<CompanyContainer/>}>
                                 <Route path="edit" element={<EditCompanyForm/>}/>
@@ -71,7 +68,6 @@ const Main = () => {
                                 <Route path="insurance-documents" element={<InsuranceSlips/>}/>
                                 <Route path="tax-documents" element={<TaxPaymentSlips/>}/>
                                 <Route path="empty-page" element={<EmptyCompanyPage/>}/>
-
                             </Route>
                         </Route>
 
@@ -104,9 +100,9 @@ const Main = () => {
                             <Route path="/admin" element={<AdminPanel />}>
                                 <Route path="access-denied" element={<AccessDenied />} />
                             </Route>
-
                         </Route>
                         <Route path="/year" index element={<FiscalYear/>}/>
+                        <Route path="server-error" element={<ServerConnectionError />} />
                     </Route>
                 </Route>
                 <Route path="/login" element={<Login />} />

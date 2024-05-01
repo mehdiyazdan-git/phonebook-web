@@ -45,7 +45,6 @@ const SidebarMenu = () => {
             {role === 'ADMIN' && (
                 <SidebarLink to="/admin">پنل ادمین</SidebarLink>
             )}
-            <SidebarLink to={`/stop-watch`}>stop-watch</SidebarLink>
         </Sidebar>
     );
 };
