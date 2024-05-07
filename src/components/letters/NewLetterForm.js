@@ -43,7 +43,7 @@ const NewLetterForm = ({show, onHide, onAddLetter, companyId,letterType,year}) =
 
 
     return (
-        <Modal size={"lg"} show={show} onHide={onHide}>
+        <Modal size={"lg"} show={show}>
             <Modal.Header style={headerStyle}>
                 <Modal.Title style={titleStyle}>ایجاد نامه جدید</Modal.Title>
             </Modal.Header>

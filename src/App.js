@@ -57,14 +57,23 @@ function App() {
     const {currentUser} = useAuth();
     const http = useHttp();
     const auth = useAuth();
+    const navigate = useNavigate();
 
     const getFullNameByUsername = async (username) => {
-        return  http.get(`/users/${username}/fullName`);
+        try {
+            const response = await http.get(`/users/${username}/fullName`);
+            if (response.status === 200){
+                return response;
+            }
+        }catch (e){
+            console.log(e)
+            navigate('/server-error')
+        }
     }
     useEffect(() => {
         try {
             getFullNameByUsername(currentUser).then(res => {
-                setFullName(res?.data);
+                setFullName(res?.data ? res.data : "نامشخص");
             })
         }catch (e){
             console.log(e);

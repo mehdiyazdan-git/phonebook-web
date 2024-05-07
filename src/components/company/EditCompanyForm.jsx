@@ -24,7 +24,17 @@ const EditCompanyForm = () => {
     const resolver = useYupValidationResolver(validationSchema);
 
     const findById = async (id)     => {
-        return await http.get(`/companies/${id}`).then(r => r.data);
+       try {
+            const response = await http.get(`/companies/${id}`);
+            if (response.status === 200){
+                return response.data
+            }else {
+                return null
+            }
+       }catch (e){
+           console.log(e)
+           navigate('/server-error')
+       }
     }
     const [createAtJalali, setCreateAtJalali] = React.useState('');
     const [lastModifiedAtJalali, setLastModifiedAtJalali] = React.useState('');

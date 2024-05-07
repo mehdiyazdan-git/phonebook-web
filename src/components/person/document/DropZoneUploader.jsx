@@ -13,7 +13,7 @@ const DropZoneUploader = ({ personId, companyId, letterId, refreshTrigger, setRe
     const navigate = useNavigate(); // Initialize navigate function
 
     useEffect(() => {
-        http.get('/settings/max-upload-file-size')
+        http.get('/app-settings/max-upload-file-size')
             .then(response => {
                 if (response && response.status === 403){
                     navigate("/login")
