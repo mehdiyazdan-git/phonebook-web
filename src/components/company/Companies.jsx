@@ -78,7 +78,7 @@ const Companies = () => {
         try {
             const response = await updateCompany(updatedCompany.id, updatedCompany);
             if (response.status === 200) {
-                setRefreshTrigger(!refreshTrigger); // Toggle the refresh trigger
+                setRefreshTrigger(!refreshTrigger);
                 setEditShowModal(false);
             } else {
                 setErrorMessage(response.data);

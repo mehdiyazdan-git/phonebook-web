@@ -32,8 +32,8 @@ const NewLetterForm = ({show, onHide, onAddLetter, companyId,letterType,year}) =
     const getCompanySelect = async (queryParam) => {
         return await http.get(`/companies/select?queryParam=${queryParam ? queryParam : ''}`);
     };
-    const getCustomerSelect = async () => {
-        return await http.get(`/customers/select`);
+    const getCustomerSelect = async (searchQuery) => {
+        return await http.get(`/customers/search?searchQuery=${searchQuery ? searchQuery : ''}`);
     };
 
     const onSubmit = (data) => {

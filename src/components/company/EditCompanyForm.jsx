@@ -57,6 +57,9 @@ const EditCompanyForm = () => {
             .then(response => {
                 if (response.status === 200){
                     setSuccessUpdate(true)
+                    setTimeout(() => {
+                        setSuccessUpdate(false)
+                    }, 3000);
                 }
             })
     };
@@ -168,9 +171,6 @@ const EditCompanyForm = () => {
 
                         <Button variant="success" type="submit">
                             ویرایش
-                        </Button>
-                        <Button  variant="warning" type="button">
-                            انصراف
                         </Button>
                     </Form>
                 </div>
