@@ -25,10 +25,9 @@ const BoardMembers = () => {
                 .then((r) => r.data);
         }
     };
-
-    const createBoardMember = async (data) => {
-        return await http.post('/board-members', data);
-    };
+    const createBoardMember = async (newBoardMember) => {
+        return await http.post('/board-members', newBoardMember);
+    }
 
     const updateBoardMember = async (id, data) => {
         return await http.put(`/board-members/${id}`, data);
@@ -38,16 +37,14 @@ const BoardMembers = () => {
         return await http.delete(`/board-members/${id}`);
     };
 
-    const handleAddBoardMember = async (newBoardMember) => {
+    const handleAddBoardMember =  async (newBoardMember) => {
         try{
-            const response = await createBoardMember(newBoardMember);
-            console.log(response)
-            if (response.status === 201) {
-                setShowModal(false);
-                setRefreshTrigger(!refreshTrigger);
-            }
+             const response = await createBoardMember(newBoardMember);
+             if (response.status === 201) {
+                 setShowModal(false);
+                 setRefreshTrigger(!refreshTrigger);
+             }
         }catch(error){
-            console.error(error);
             return error.response.data
         }
     };

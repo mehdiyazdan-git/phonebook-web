@@ -67,7 +67,7 @@ const NewLetterForm = ({show, onHide, onAddLetter, companyId,letterType,year}) =
                             <h5 style={{fontFamily: "IRANSansBold", textAlign: "center"}}>ایجاد نامه</h5>
                         </div>
                         <div className="mt-3">
-                            <GenerateLetterNumberButton year={year}/>
+                            {letterType === "outgoing" && <GenerateLetterNumberButton year={year}/>}
                             <FormRow>
                                 <Col><TextInput name="letterNumber" label={"شماره نامه"}/></Col>
                                 <Col><DateInput name="creationDate" label="تاریخ نامه:"/></Col>

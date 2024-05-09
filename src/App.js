@@ -67,7 +67,7 @@ function App() {
             }
         }catch (e){
             console.log(e)
-            navigate('/server-error')
+            navigate('/login')
         }
     }
     useEffect(() => {

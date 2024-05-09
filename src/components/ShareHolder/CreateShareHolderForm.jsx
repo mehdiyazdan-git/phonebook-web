@@ -18,6 +18,7 @@ const CreateShareHolderForm = ({ shareholder, onAddShareHolder, show, onHide, co
         personId: Yup.number().required('شناسه شخص الزامیست.'),
         numberOfShares: Yup.number()
             .typeError('تعداد سهام باید مقدار عددی باشد')
+            .integer('تعداد سهام باید عدد صحیح باشد')
             .required('تعداد سهام الزامیست.').positive('تعداد سهام باید مثبت باشد.')
             .lessThan(2147483647,'تعداد سهام نمیتواند بیشتر از 2,147,483,647 باشد.'),
         percentageOwnership: Yup.number()

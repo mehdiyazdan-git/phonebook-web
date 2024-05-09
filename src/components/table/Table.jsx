@@ -55,7 +55,9 @@ const Table = ({ columns, fetchData, onEdit, onDelete, refreshTrigger,onResetPas
     const ErrorModal = ({ show, handleClose, errorMessage }) => {
         return (
             <Modal show={show} onHide={handleClose} centered>
-                <Modal.Body className="text-center" style={{ fontFamily: "IRANSans",fontSize: "0.8rem", padding: "20px",fontWeight: "bold"}}>
+                <Modal.Body
+                    className="text-center"
+                    style={{ fontFamily: "IRANSans",fontSize: "0.8rem", padding: "20px",fontWeight: "bold"}}>
                     <div className="text-danger">{errorMessage}</div>
                     <button className="btn btn-primary btn-sm mt-4" onClick={handleClose}>
                         بستن

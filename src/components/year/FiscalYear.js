@@ -64,7 +64,12 @@ const FiscalYear = () => {
     const columns = [
         { key: 'id', title: 'شناسه', width: '5%', sortable: true },
         { key: 'name', title: 'سال', width: '20%', sortable: true, searchable: true },
-        { key: 'startingLetterNumber', title: 'شروع شماره نامه', width: '20%', sortable: true, searchable: true },
+        {
+            key: 'startingLetterNumber',
+            title: 'شروع شماره نامه',
+            width: '20%',
+            sortable: true,
+        },
     ];
     const ErrorModal = ({ show, handleClose, errorMessage }) => {
         return (

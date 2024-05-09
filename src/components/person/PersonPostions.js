@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import useHttp from "../../hooks/useHttp";
 import Button from "../../utils/Button";
-import IconDeleteOutline from "../assets/icons/IconDeleteOutline";
 
 const PersonPositions = ({personId,onHide}) => {
     const [personPositions, setPersonPositions] = useState();
@@ -51,7 +50,6 @@ const PersonPositions = ({personId,onHide}) => {
                     <tr className="table-header-row">
                         <th>سمت</th>
                         <th>شرکت</th>
-                        <th>عملیات</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -59,12 +57,6 @@ const PersonPositions = ({personId,onHide}) => {
                         <tr>
                             <td>{position.positionName}</td>
                             <td>{position.companyCompanyName}</td>
-                            <td>
-                                <IconDeleteOutline
-                                    size={"1.3rem"}
-                                    onClick={() => handleDelete(position.id)}
-                                />
-                            </td>
                         </tr>
                     ))}
                     </tbody>

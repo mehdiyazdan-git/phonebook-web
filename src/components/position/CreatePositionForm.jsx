@@ -1,24 +1,37 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 import { yupResolver } from "@hookform/resolvers/yup";
-import {Modal} from 'react-bootstrap';
+import {Alert, Modal} from 'react-bootstrap';
 import { TextInput } from "../../utils/formComponents/TextInput";
 import Button from "../../utils/Button";
 import {Form} from "../../utils/Form";
 import {bodyStyle, headerStyle, titleStyle} from "../../settings/styles";
 
 const CreatePositionForm = ({ show, onHide,onAddPosition }) => {
+    const [formError, setFormError] = useState('');
     const validationSchema = Yup.object().shape({
         name: Yup.string().required('نام پست الزامیست.')
     });
     const {reset } = useForm();
     const resolver = yupResolver(validationSchema);
     const handleSubmit = async (data) => {
-        onAddPosition(data);
-        reset(); // Clear the form
-        onHide(); // Close the modal
+       const message = await onAddPosition(data);
+       if (message){
+           setFormError(message);
+       } else {
+           handleClose()
+       }
     };
+    const handleClose = () => {
+        reset();
+        setFormError('');
+        onHide();
+    };
+
+    if (!show) {
+        return null;
+    }
 
     return (
         <Modal show={show} onHide={onHide}>
@@ -38,11 +51,18 @@ const CreatePositionForm = ({ show, onHide,onAddPosition }) => {
                         <Button type="submit" variant="primary">
                             ایجاد
                         </Button>
-                        <Button onClick={onHide} variant="warning">
+                        <Button onClick={handleClose} variant="warning">
                             انصراف
                         </Button>
                     </div>
                 </Form>
+                {formError && (
+                    <Alert style={{
+                        fontFamily: "IRANSans",
+                        fontSize: "0.7rem",
+                        fontWeight: "bold"
+                    }} variant="danger">{formError}</Alert>
+                )}
             </Modal.Body>
         </Modal>
     );

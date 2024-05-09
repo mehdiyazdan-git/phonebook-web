@@ -33,7 +33,7 @@ const CompanyDocumentList = ({onHide }) => {
         if (companyId) {
             fetchData(Number(companyId));
         }
-    }, [companyId, http, refreshTrigger]);
+    }, [companyId, refreshTrigger]);
 
     const handleDeleteConfirm = async () => {
         if (selectedDocumentId) {

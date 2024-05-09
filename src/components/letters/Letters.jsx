@@ -7,11 +7,8 @@ import NewLetterForm from "./NewLetterForm";
 import EditLetterForm from "./EditLetterForm";
 import {useLocation, useParams} from "react-router-dom";
 import useHttp from "../../hooks/useHttp";
-import YearSelect from "../year/YearSelector";
 import ButtonContainer from "../../utils/formComponents/ButtonContainer";
-import DownloadTemplate from "../../utils/formComponents/DownloadTemplate";
 import { saveAs } from 'file-saver';
-import FileUpload from "../../utils/formComponents/FileUpload";
 import getCurrentYear from "../../utils/functions/getCurrentYear";
 
 
@@ -133,8 +130,11 @@ const Letters = () => {
             });
     }
 
-
+    const formatDate = (date) => moment(new Date(date)).format('YYYY-MM-DD');
     const handleAddLetter = async (newLetter) => {
+        if (newLetter.creationDate){
+            newLetter.creationDate = formatDate(newLetter.creationDate);
+        }
         newLetter.letterType = "DRAFT";
         const response = await createLetter(newLetter);
         if (response.status === 201) {
@@ -143,6 +143,9 @@ const Letters = () => {
     };
 
     const handleUpdateLetter = async (updatedLetter) => {
+        if (updatedLetter.creationDate){
+            updatedLetter.creationDate = formatDate(updatedLetter.creationDate);
+        }
         const response = await updateLetter(updatedLetter.id, updatedLetter);
         if (response.status === 200) {
             setRefreshTrigger(!refreshTrigger);

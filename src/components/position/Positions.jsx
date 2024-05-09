@@ -29,17 +29,25 @@ const Positions = () => {
     };
 
     const handleAddPosition = async (newPosition) => {
-        const response = await createPosition(newPosition);
-        if (response.status === 201) {
-            setRefreshTrigger(!refreshTrigger);
+        try {
+            const response = await createPosition(newPosition);
+            if (response.status === 201) {
+                setRefreshTrigger(!refreshTrigger);
+            }
+        }catch (e){
+            return e.response.data
         }
     };
 
     const handleUpdatePosition = async (updatedPosition) => {
-        const response = await updatePosition(updatedPosition.id, updatedPosition);
-        if (response.status === 200) {
-            setRefreshTrigger(!refreshTrigger);
-            setEditingPosition(null);
+        try {
+            const response = await updatePosition(updatedPosition.id, updatedPosition);
+            if (response.status === 200) {
+                setRefreshTrigger(!refreshTrigger);
+                setEditingPosition(null);
+            }
+        }catch (e){
+            return e.response.data
         }
     };
 

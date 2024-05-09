@@ -27,7 +27,7 @@ const DropZoneUploader = ({ personId, companyId, letterId, refreshTrigger, setRe
                 }
 
             });
-    }, [http]);
+    }, []);
 
     const sendFile = async (file) => {
         if (uploadComplete) setUploadComplete(false);
@@ -37,9 +37,14 @@ const DropZoneUploader = ({ personId, companyId, letterId, refreshTrigger, setRe
         }
         setFileSizeError(false);
         const formData = new FormData();
-        formData.append('documentName', file.name);
-        formData.append('documentType', extensionToType[file.name.split('.').pop()]);
-        formData.append('fileExtension', file.name.split('.').pop());
+
+        const documentType = extensionToType[file.name.split('.').pop()];
+        const fileExtension = file.name.split('.').pop();
+        const documentName = file.name;
+
+        formData.append('documentName', documentName);
+        formData.append('documentType', documentType);
+        formData.append('fileExtension', fileExtension);
         formData.append('documentFile', file);
         if (personId !== undefined)
             formData.append('personId', personId);
@@ -55,6 +60,9 @@ const DropZoneUploader = ({ personId, companyId, letterId, refreshTrigger, setRe
                     const progress = Math.round((loaded * 100) / total);
                     setUploadProgress(progress);
                 },
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                }
             });
 
             setUploadComplete(true);

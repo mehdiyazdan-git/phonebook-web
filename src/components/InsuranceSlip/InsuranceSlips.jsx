@@ -15,6 +15,7 @@ import ButtonContainer from "../../utils/formComponents/ButtonContainer";
 import IconAttach from "../assets/icons/IconAttach";
 import {SiMicrosoftexcel} from "react-icons/si";
 import NewPersonForm from "../person/NewPersonForm";
+import {date} from "yup";
 
 const toShamsi = (date) => {
     return date ? moment(date, 'YYYY-MM-DD').format('jYYYY/jMM/jDD') : '';
@@ -56,8 +57,19 @@ const InsuranceSlips = () => {
         return await http.delete(`/insurance-slips/${id}`);
     };
 
+    const formatDate = (date) => moment(new Date(date)).format('YYYY-MM-DD');
+
     const handleAddInsuranceSlip = async (newInsuranceSlip) => {
         try {
+            if (newInsuranceSlip.issueDate){
+                newInsuranceSlip.issueDate = formatDate(newInsuranceSlip.issueDate)
+            }
+            if (newInsuranceSlip.startDate){
+                newInsuranceSlip.startDate = formatDate(newInsuranceSlip.startDate)
+            }
+            if (newInsuranceSlip.endDate){
+                newInsuranceSlip.endDate = formatDate(newInsuranceSlip.endDate)
+            }
             const response = await createInsuranceSlip(newInsuranceSlip);
             if (response.status === 201) {
                 setRefreshTrigger(!refreshTrigger);
@@ -71,6 +83,15 @@ const InsuranceSlips = () => {
 
     const handleUpdateInsuranceSlip = async (updatedInsuranceSlip) => {
         try {
+            if (updatedInsuranceSlip.issueDate){
+                updatedInsuranceSlip.issueDate = formatDate(updatedInsuranceSlip.issueDate)
+            }
+            if (updatedInsuranceSlip.startDate){
+                updatedInsuranceSlip.startDate = formatDate(updatedInsuranceSlip.startDate)
+            }
+            if (updatedInsuranceSlip.endDate){
+                updatedInsuranceSlip.endDate = formatDate(updatedInsuranceSlip.endDate)
+            }
             const response = await updateInsuranceSlip(updatedInsuranceSlip.id, updatedInsuranceSlip);
             if (response.status === 200) {
                 setRefreshTrigger(!refreshTrigger);

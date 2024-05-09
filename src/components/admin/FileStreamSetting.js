@@ -3,6 +3,7 @@ import useHttp from "../../hooks/useHttp";
 import Button from "../../utils/Button";
 import { Alert } from "react-bootstrap";
 import { bodyStyle, inputStyle } from "../../settings/styles";
+import {Tooltip as ReactTooltip} from "react-tooltip";
 
 const FileStreamSetting = () => {
     const http = useHttp();
@@ -96,6 +97,16 @@ const FileStreamSetting = () => {
                     )}
                 </div>
             )}
+            <ReactTooltip
+                id="export-client-summary-to-excel-button"
+                place="bottom-end"
+                content="دانلود فایل اکسل خلاصه وضعیت مشتری"
+                style={{
+                    backgroundColor:"rgba(100,100,100,0.3)",
+                    color:"green",
+                    fontFamily:"IRANSans",
+                }}
+            />
         </div>
     );
 };

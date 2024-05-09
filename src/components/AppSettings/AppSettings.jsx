@@ -25,13 +25,20 @@ function AppSettings() {
         http.get('/app-settings')
             .then(response => {
                 const fields = [
-                    'maxUploadFileSize',
                     'vsphereUrl',
                     'vsphereUsername',
                     'vspherePassword'
                 ];
                 fields.forEach(field => setValue(field, response.data[field]));
-                setInitialSettings(response.data);
+
+                const maxUploadFileSizeMB = response.data['maxUploadFileSize'] / (1024 * 1024);
+                setValue('maxUploadFileSize', maxUploadFileSizeMB.toFixed(2));
+
+                const initialSettings = {
+                    ...response.data,
+                    maxUploadFileSize: maxUploadFileSizeMB.toFixed(2)
+                };
+                setInitialSettings(initialSettings);
             })
             .catch(error => {
                 if (error.response && error.request){
@@ -43,16 +50,33 @@ function AppSettings() {
                 else{
                     console.error('Error fetching app settings:', error);
                 }
-
             });
-    }, [setValue]);
+    }, [setValue, setInitialSettings, setAlert]);
+
+    const roundToNearestMultipleOf8 = (num) => {
+        return Math.round(num / 8) * 8;
+    };
+
 
     const onSubmit = data => {
-        setIsEditing(true)
-        http.put('/app-settings', data)
+        setIsEditing(true);
+
+        // Convert maxUploadFileSize from MB to bytes and round to the nearest multiple of 8
+        const fileSizeInBytes = data.maxUploadFileSize * 1024 * 1024;
+        const roundedFileSize = roundToNearestMultipleOf8(fileSizeInBytes);
+
+        const updatedData = {
+            ...data,
+            maxUploadFileSize: roundedFileSize
+        };
+
+        http.put('/app-settings', updatedData)
             .then(response => {
-                if (response.status === 200){
+                if (response.status === 200) {
                     setIsEditing(false);
+                    // Convert maxUploadFileSize from bytes to MB for display and ensure it's still a multiple of 8
+                    response.data.maxUploadFileSize = (response.data.maxUploadFileSize / (1024 * 1024)).toFixed(2);
+
                     const fields = [
                         'maxUploadFileSize',
                         'vsphereUrl',
@@ -72,6 +96,8 @@ function AppSettings() {
                 console.error('Error updating settings:', error);
             });
     };
+
+
     const onCancel = () => {
         reset(initialSettings);
     };
@@ -86,6 +112,7 @@ function AppSettings() {
                 <form style={bodyStyle} className="mt-4 border border-1 rounded" onSubmit={handleSubmit(onSubmit)}>
                     <label style={labelStyle}>حداکثر حجم بارگذاری:</label>
                     <input style={inputStyle} {...register("maxUploadFileSize")} />
+                    <span className="m-1">مگابایت</span>
                     <p>{errors.maxUploadFileSize?.message}</p>
 
                     <label style={labelStyle}>آدرس vsphere:</label>

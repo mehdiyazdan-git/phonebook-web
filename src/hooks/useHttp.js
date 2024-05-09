@@ -10,42 +10,31 @@ const useHttp = () => {
         baseURL: BASE_URL,
     });
 
-    // Request Interceptor
-    instance.interceptors.request.use(
-        (config) => {
-            // Add the Authorization header if the accessToken exists
-            if (auth.accessToken) {
-                config.headers.Authorization = `Bearer ${auth.accessToken}`;
-            }
-            return config;
-        }, (error) => {
-            // Handle errors before the request is sent
-            console.error("Error in request setup:", error);
-            return Promise.reject(error);
+    instance.interceptors.request.use(function (config) {
+        config.headers.Authorization = `Bearer ${auth.accessToken}`;
+        if (config.headers['Content-Type'] === null){
+            config.headers['Content-Type'] = 'application/json';
         }
-    );
-
-    // Response Interceptor
-    instance.interceptors.response.use(
-        (response) => {
-            return response;
-        },
-        async (error) => {
-            if (error.response) {
-                if (error.response.data.error === 'expired token' && (error.response.status === 401 || error.response.status === 403))  {
-                  console.log("Token expired. navigating to login...");
-                  navigate("/login");
-                }
-            } else if (error.request) {
-                console.log("No response received. Please check your network connection.");
-                navigate("/server-error")
-            } else {
-                console.error("Error setting up response handling:", error.message);
-                return Promise.reject(error);
-            }
-
+        if (config.headers['Accept'] === null){
+            config.headers['Accept'] = 'application/json';
         }
-    );
+        return config;
+    }, function (error) {
+        return Promise.reject(error);
+    });
+
+
+    instance.interceptors.response.use(function (response) {
+        return response;
+    }, function (error) {
+        if (error.response){
+            if (error.response.status === 401 || error.response.status === 403) {
+                auth.logout();
+                navigate("/login");
+            }
+        }
+        return Promise.reject(error);
+    });
 
     return instance;
 };

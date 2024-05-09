@@ -49,7 +49,12 @@ const TaxPaymentSlips = () => {
         return await http.delete(`/tax-payment-slips/${id}`);
     };
 
+    const formatDate = (date) => moment(new Date(date)).format('YYYY-MM-DD');
+
     const handleAddTaxPaymentSlip = async (newTaxPaymentSlip) => {
+        if (newTaxPaymentSlip.issueDate){
+            newTaxPaymentSlip.issueDate = formatDate(newTaxPaymentSlip.issueDate)
+        }
         const response = await createTaxPaymentSlip(newTaxPaymentSlip);
         if (response.status === 201) {
             setRefreshTrigger(!refreshTrigger);
@@ -57,6 +62,9 @@ const TaxPaymentSlips = () => {
     };
 
     const handleUpdateTaxPaymentSlip = async (updatedTaxPaymentSlip) => {
+        if (updatedTaxPaymentSlip.issueDate){
+            updatedTaxPaymentSlip.issueDate = formatDate(updatedTaxPaymentSlip.issueDate)
+        }
         const response = await updateTaxPaymentSlip(updatedTaxPaymentSlip.id, updatedTaxPaymentSlip);
         if (response.status === 200) {
             setRefreshTrigger(!refreshTrigger);

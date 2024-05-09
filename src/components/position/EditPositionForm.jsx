@@ -1,7 +1,7 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Modal } from 'react-bootstrap';
+import {Alert, Modal} from 'react-bootstrap';
 import { TextInput } from "../../utils/formComponents/TextInput";
 import Button from "../../utils/Button";
 import {Form} from "../../utils/Form";
@@ -9,6 +9,7 @@ import useHttp from "../../hooks/useHttp";
 import {bodyStyle, headerStyle, titleStyle} from "../../settings/styles";
 
 const EditPositionForm = ({ position, onUpdatePosition, show, onHide }) => {
+    const [formError, setFormError] = useState('');
     const validationSchema = Yup.object().shape({
         name: Yup.string().required('نام پست الزامیست.')
     });
@@ -37,8 +38,17 @@ const EditPositionForm = ({ position, onUpdatePosition, show, onHide }) => {
     }, []);
     const onSubmit = async data => {
         try {
-            await  onUpdatePosition(data); // Callback function to update the local state
-            onHide(); // Close the modal
+          const message =  await  onUpdatePosition(data);
+          if (message){
+              setFormError(message);
+              setTimeout(() => {
+                  setFormError('');
+              }, 3000);
+          } else {
+              setFormError('');
+              onHide(); // Close the modal
+              }
+
         } catch (error) {
             console.error('There was an error updating the position:', error);
         }
@@ -86,7 +96,13 @@ const EditPositionForm = ({ position, onUpdatePosition, show, onHide }) => {
                         <p>{`آخرین ویرایش : ${lastModifiedByFullName}`} | {`${lastModifiedAtJalali}`}</p>
                     </div>
                 </div>
-
+                {formError && (
+                    <Alert style={{
+                        fontFamily: "IRANSans",
+                        fontSize: "0.7rem",
+                        fontWeight: "bold"
+                    }} variant="danger">{formError}</Alert>
+                )}
             </Modal.Body>
         </Modal>
     );

@@ -42,7 +42,7 @@ const Login = () => {
                 setErrorMessage('کاربری با این نام و کلمه عبور یافت نشد');
                 break;
             case 500:
-                setErrorMessage('سرور دچار مشکل است، لطفا مجددا تلاش کنید');
+                setErrorMessage('ارتباط با سرور برقرار نشد، لطفا مجددا تلاش کنید');
                 break;
             default:
                 setErrorMessage('خطایی رخ داده است، لطفا مجددا تلاش کنید');

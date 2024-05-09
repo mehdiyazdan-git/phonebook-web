@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import IconBxRefresh from '../assets/icons/IconBxRefresh';
-import persianToArabicDigits from '../../utils/functions/persianToArabicDigits';
-import getCurrentYear from "../../utils/functions/getCurrentYear";
 import useHttp from "../../hooks/useHttp";
 
 const GenerateLetterNumberButton = ({year}) => {
@@ -33,19 +31,37 @@ const GenerateLetterNumberButton = ({year}) => {
         };
         fetchDefaultCompanies();
     }, []);
+    const retrieveNewLetterNumber = async(companyId,yearId) => {
+        return await http.get(`/letters/generate-number?companyId=${companyId}&yearId=${yearId}`);
+    }
 
-    const generateLetterNumber = () => {
-
-        const companyId = getValues('companyId');
-        const company = defaultCompanies.find((company) => company.id === companyId) || {};
-        const letterNumberParts = [
-            persianToArabicDigits(year.label.toString()),
-            company.letterPrefix,
-            persianToArabicDigits((company.letterCounter + 1 + year.startingLetterNumber).toString()),
-        ].reverse();
-        setValue('letterNumber', letterNumberParts.join('/'));
-        console.log(year)
+    const generateLetterNumber = async () => {
+        try {
+            const companyId = getValues('companyId');
+            const response = await retrieveNewLetterNumber(companyId,year.value);
+            if (response.status === 200){
+                setValue('letterNumber', response.data.split('/').reverse().join('/'));
+            }
+        }catch (error){
+            console.error('Error generating letter number:', error);
+        }
     };
+
+    useEffect(() => {
+        async function fetchLetterNumber() {
+            if (defaultCompanies.length > 0) {
+                const selectedCompany = defaultCompanies.find(
+                    (company) => company.id === getValues('companyId')
+                );
+                if (selectedCompany) {
+                    const letterNumber = await retrieveNewLetterNumber(selectedCompany.id,year.value)
+                        .then(response => response.data.split('/').reverse().join('/'));
+                    setValue('letterNumber', letterNumber);
+                }
+            }
+        }
+        fetchLetterNumber();
+    }, []);
 
     return (
        <>

@@ -6,6 +6,7 @@ import { Alert, Modal } from "react-bootstrap";
 import useHttp from "../../hooks/useHttp";
 import {bodyStyle, headerStyle, titleStyle} from "../../settings/styles";
 
+
 const CreateBoardMemberForm = ({ show, onHide, onAddBoardMember,companyId }) => {
     const [formError, setFormError] = useState('');
     const [submitting, setSubmitting] = useState(false);
@@ -25,27 +26,24 @@ const CreateBoardMemberForm = ({ show, onHide, onAddBoardMember,companyId }) => 
         setFormError('');
         setSubmitting(false);
         onHide();
-        
+
     };
 
-    const onSubmit = async (data) => {
+    const onSubmit =   async (data) => {
         setSubmitting(true);
         setFormError('');
-        try {
-            const errorMessage = await onAddBoardMember(data);
-            if (errorMessage) {
-                const cleanMessage = errorMessage.replace('400 BAD_REQUEST', '').trim();
-                setFormError(cleanMessage);
-            } else {
-                onHide();
-            }
-        } catch (error) {
-            console.error('Error creating board member:', error);
-            setFormError(error.response.data.message.replace('400 BAD_REQUEST', '').trim());
-        } finally {
-            setSubmitting(false);
-        }
+       const message = await onAddBoardMember(data);
+       if (message) {
+           setFormError(message);
+           setSubmitting(false);
+       }else {
+           setSubmitting(false)
+           handleClose();
+       }
+       setSubmitting(false);
     };
+
+
 
     return (
         <Modal show={show} onHide={handleClose}>
