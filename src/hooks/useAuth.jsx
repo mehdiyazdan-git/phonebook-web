@@ -44,7 +44,7 @@ export const AuthProvider = ({ children }) => {
 
     const logout = async () => {
         try {
-            const response = await axios.post(`http://192.168.2.106:8081/api/v1/auth/logout`, {}, {
+            const response = await axios.post(`${BASE_URL}/v1/auth/logout`, {}, {
                 headers: { Authorization: `Bearer ${accessToken}` }
             });
             if (response.status === 204) {
@@ -52,6 +52,10 @@ export const AuthProvider = ({ children }) => {
                 navigate('/login');
             }
         } catch (error) {
+            if (error.request && !error.response && error.request.status === 0){
+                cleanCredentials();
+                navigate('/login');
+            }
             console.error("Error during logout:", error);
         }
     };
